@@ -117,7 +117,7 @@ export default function DemoDock() {
         <button type="button" disabled={pilot.running} aria-current={isCurrent ? 'step' : undefined} aria-label={`${n}. ${stage.label}`}
           title={`${n}. ${stage.label}${isCurrent ? '' : ' – siirry tähän vaiheeseen'}`}
           onClick={() => (isCurrent ? undefined : pilot.enter(stageStart(stage.key)))}>
-          <span className="dock-step-n">{done ? <CheckIcon size={13} /> : n}</span>
+          <span className="dock-step-n">{done ? <CheckIcon size={12} /> : n}</span>
           {isCurrent && <span className="dock-step-t">{stage.label}</span>}
         </button>
       </li>
@@ -130,18 +130,18 @@ export default function DemoDock() {
         {/* Demo-ohjaus: back and Seuraava in one control at the start of the bar. */}
         <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
           <span className="dock-pilot-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
-            <PresentIcon size={17} /> Demo-ohjaus
+            <PresentIcon size={16} /> Demo-ohjaus
           </span>
           <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
-            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={18} /></button>
+            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={17} /></button>
           <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
             title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
-            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={18} />
+            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={17} />
           </button>
         </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
-            <li key="valituki" className="pilot-group">
+            <li key="valituki" className="pilot-group" title="Mieliluotsi">
               <span className="pilot-group-label">Mieliluotsi</span>
               <ol>{item.map(pill)}</ol>
             </li>

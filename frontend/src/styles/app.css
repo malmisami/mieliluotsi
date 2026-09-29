@@ -1136,7 +1136,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
+  gap: 8px 12px;
 }
 
 
@@ -1144,9 +1144,9 @@ body {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 6px;
-  margin-right: 10px;
-  padding: 3px 3px 3px 12px;
+  gap: 5px;
+  margin-right: 4px;
+  padding: 3px 3px 3px 11px;
   border: 1px dashed rgba(243, 195, 91, 0.55);
   border-radius: 13px;
 }
@@ -1154,10 +1154,10 @@ body {
 .vt .dock-pilot-label {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin-right: 4px;
+  gap: 6px;
+  margin-right: 3px;
   color: #f3c35b;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1343,8 +1343,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  height: 36px;
-  padding: 0 11px;
+  height: 34px;
+  padding: 0 9px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   background: transparent;
@@ -1375,9 +1375,9 @@ body {
 
 .vt .dock-steps li + li::before {
   content: '';
-  width: 15px;
+  width: 7px;
   height: 2px;
-  margin: 0 3px;
+  margin: 0 2px;
   background: rgba(255, 255, 255, 0.16);
 }
 
@@ -1394,7 +1394,7 @@ body {
   border-radius: 999px;
   background: transparent;
   color: #b9c7cd;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1409,11 +1409,11 @@ body {
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 25px;
-  height: 25px;
+  width: 22px;
+  height: 22px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -1425,15 +1425,11 @@ body {
 
 .vt .dock-step-t {
   min-width: 0;
-  max-width: 330px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* The current step's title gives way first when the row is narrow (full title on hover). */
+/* The current step's name is always shown whole: the rest of the row is sized to leave room for the longest one. */
 .vt .dock-steps li.current {
-  flex: 0 1 auto;
-  min-width: 70px;
+  flex: none;
 }
 
 .vt .dock-steps li.current button {
@@ -1448,7 +1444,7 @@ body {
 }
 
 .vt .dock-steps li.current button {
-  padding: 2px 13px 2px 2px;
+  padding: 2px 11px 2px 2px;
   background: #f3c35b;
   color: #1f1500;
   font-weight: 700;
@@ -1469,16 +1465,27 @@ body {
 
 .vt .pilot-rail .pilot-group {
   gap: 2px;
-  padding: 2px 8px 2px 12px;
+  padding: 2px 6px 2px 10px;
   border: 1px dashed rgba(159, 224, 208, 0.35);
   border-radius: 999px;
 }
 
 .vt .pilot-group-label {
-  margin-right: 5px;
+  margin-right: 4px;
   color: #9fe0d0;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+}
+
+.vt .pilot-group:has(li.current) .pilot-group-label {
+  display: none;
+}
+
+@media (max-width: 1250px) {
+  /* Room for the current step's whole name: the dashed frame still marks the Mieliluotsi steps (name on hover). */
+  .vt .pilot-group-label {
+    display: none;
+  }
 }
 
 .vt .pilot-group ol {
@@ -1496,17 +1503,17 @@ body {
 }
 
 .vt .dock-btn.pilot-next {
-  gap: 8px;
-  height: 36px;
-  padding: 0 20px;
+  gap: 7px;
+  height: 34px;
+  padding: 0 15px;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .vt .dock-btn.pilot-prev {
-  height: 36px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 9px;
   border-radius: 10px;
 }
 
@@ -1514,12 +1521,12 @@ body {
   display: inline-flex;
   flex: none;
   align-items: center;
-  height: 36px;
-  padding: 0 14px;
+  height: 34px;
+  padding: 0 11px;
   border-radius: 999px;
   background: rgba(243, 195, 91, 0.16);
   color: #f3c35b;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: default;
