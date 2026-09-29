@@ -142,10 +142,10 @@ export default function DemoDock() {
             {pilot.pointer}/{BEATS.length}
           </span>
           <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
-            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={20} /></button>
+            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={18} /></button>
           <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
             title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
-            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={20} />
+            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={18} />
           </button>
         </div>
         <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"

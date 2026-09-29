@@ -1321,7 +1321,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 7px 11px;
+  height: 36px;
+  padding: 0 11px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   background: transparent;
@@ -1371,7 +1372,8 @@ body {
   border-radius: 999px;
   background: transparent;
   color: #b9c7cd;
-  font-size: 14.5px;
+  font-size: 15px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -1427,7 +1429,7 @@ body {
   padding: 2px 13px 2px 2px;
   background: #f3c35b;
   color: #1f1500;
-  font-weight: 750;
+  font-weight: 700;
   cursor: default;
 }
 
@@ -1453,10 +1455,8 @@ body {
 .vt .pilot-group-label {
   margin-right: 5px;
   color: #9fe0d0;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .vt .pilot-group ol {
@@ -1473,27 +1473,32 @@ body {
   gap: 10px;
 }
 
-.vt .pilot-next {
+.vt .dock-btn.pilot-next {
   gap: 8px;
-  padding: 9px 24px;
+  height: 36px;
+  padding: 0 20px;
   border-radius: 10px;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
 }
 
-.vt .pilot-prev {
-  padding: 9px 13px;
+.vt .dock-btn.pilot-prev {
+  height: 36px;
+  padding: 0 12px;
   border-radius: 10px;
 }
 
 .vt .pilot-count {
+  display: inline-flex;
   flex: none;
-  padding: 6px 14px;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
   border-radius: 999px;
   background: rgba(243, 195, 91, 0.16);
   color: #f3c35b;
-  font-size: 17px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   cursor: default;
 }
