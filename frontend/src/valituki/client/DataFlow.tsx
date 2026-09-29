@@ -13,7 +13,8 @@ export function DataFlow({ flows, asideRef }: { flows: Flow[]; asideRef: RefObje
     const stage = aside?.parentElement;
     const phone = stage?.querySelector('.phone');
     if (!aside || !stage || !phone || !flows.length) return undefined;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    // Played even with "reduce motion" (e.g. Windows with animation effects off): it is the demo's way of showing where the
+    // data goes – short, one-off and never looping.
     if (getComputedStyle(stage).flexDirection === 'column') return undefined; // phone above the panel: no room for a path
 
     const box = stage.getBoundingClientRect();

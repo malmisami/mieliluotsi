@@ -6106,6 +6106,11 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* The presenter's highlight of the step stays: one short pulse that shows where to look. */
+  .vt .pilot-spot {
+    animation-duration: 2.6s !important;
+  }
 }
 
 /* ---------- Responsive ---------- */
