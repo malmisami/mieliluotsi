@@ -79,7 +79,7 @@ stores no API key. Everyone who opens the address shares one demo state, which s
 
 ## PRODUCT
 
-Three demo roles, switched from the top bar (no login in the demo):
+Three demo roles, switched from the view selector on the stage – beside the phone in the client view (no login in the demo):
 
 | Role | What it is |
 |---|---|
@@ -311,7 +311,7 @@ the same engine day by day (`seed.py`), so every observation and timeline row co
 
 ### Demo dock (dark strip – not part of the product)
 
-Shown on every view, the Konsepti page included, and sticky under the top bar. **Seuraava** (or → / PageDown; ← / PageUp
+Shown on every view, the Konsepti page included, as the only (sticky) bar, with the brand at its left. **Seuraava** (or → / PageDown; ← / PageUp
 goes back) drives the whole demo in 25 steps that follow the Konsepti page: avun haku → AI-alkukeskustelu → Mieliluotsi
 (KKT, seuranta ja muutosten tunnistus, Therapy Fit Profile) → sopivin terapeutti ja handover → terapia + välitehtävät →
 seuranta terapian jälkeen. Each step types the demo text, presses the right button through the same API, opens the right

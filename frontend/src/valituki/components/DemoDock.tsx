@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtNum } from '../format';
@@ -60,7 +61,7 @@ const lastBeat = (stage: string) => BEATS.reduce((last, beat, i) => (beat.stage 
 /** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: the concept's
     stages (click one to jump there), the step number and Seuraava; everything else (time, scenarios, other clients) opens
     from the chevron. The AI switch sits in the top bar. → / PageDown = Seuraava, ← / PageUp = back. */
-export default function DemoDock() {
+export default function DemoDock({ brand }: { brand?: ReactNode }) {
   const { view, run, busy, scope, role, setRole, setClientId, setProClientId } = useValituki();
   const [more, setMore] = useState(false);
   const demo = view.demo;
@@ -102,6 +103,7 @@ export default function DemoDock() {
   return (
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
+        {brand}
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
             <li key="valituki" className="pilot-group">

@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
 import type { ViewScope } from './api';
 import ClientApp from './client/ClientApp';
-import DemoDock, { AISwitch } from './components/DemoDock';
+import DemoDock from './components/DemoDock';
+import StageControls from './components/StageControls';
 import { ValitukiContext } from './context';
 import type { ClientTab, ProTab, ValitukiContextValue } from './context';
-import { PersonIcon, StethoscopeIcon, UsersIcon } from './icons';
 import PitchScreen from './pitch/PitchScreen';
 import ProfessionalApp from './pro/ProfessionalApp';
 import TherapistApp from './therapist/TherapistApp';
@@ -103,9 +103,6 @@ export default function ValitukiApp() {
       // The phone keeps an iPhone's proportions (836 px tall at full size) and is scaled down to the room below the dock.
       const room = Math.min(860, Math.max(540, window.innerHeight - top - 28));
       stage.parentElement?.style.setProperty('--phone-zoom', String(Math.min(1, room / 836)));
-      // The demo dock sticks right under the (sticky) top bar.
-      const header = stage.parentElement?.querySelector<HTMLElement>('.topbar');
-      if (header) stage.parentElement?.style.setProperty('--topbar-h', `${header.offsetHeight}px`);
     };
     update();
     const observer = new ResizeObserver(update);
@@ -140,46 +137,27 @@ export default function ValitukiApp() {
     clientTab, setClientTab, proTab, setProTab, proClientId, setProClientId,
   };
 
-  const clientName = view?.demo.clients.find((c) => c.id === clientId)?.firstName;
-  const therapistName = view?.demo.therapists.find((t) => t.id === therapistId)?.name.split(' ')[0];
 
   return (
     <div className={`vt role-${role}`}>
-      <header className="topbar">
-        <div className="topbar-inner">
-          <a className="brand" href="#/konsepti" onClick={(e) => { e.preventDefault(); setRole('pitch'); }}>
-            <BrandMark />
-            <span className="brand-text">
+      {/* The demo dock is the only bar: the brand, the concept's stages and Seuraava (→) – on every view. */}
+      {ctx && (
+        <ValitukiContext.Provider value={ctx}>
+          <DemoDock brand={(
+            <a className="brand" href="#/konsepti" title="Konsepti" onClick={(e) => { e.preventDefault(); setRole('pitch'); }}>
+              <BrandMark />
               <span className="brand-name">Mieliluotsi</span>
-              <span className="brand-tag">Tuki alkaa heti, vaikka terapia ei vielä ala.</span>
-            </span>
-          </a>
-          {ctx && <ValitukiContext.Provider value={ctx}><div className="topbar-ai"><AISwitch /></div></ValitukiContext.Provider>}
-          <nav className="roles" aria-label="Demo: näkymä">
-            <span className="roles-label">Demo:</span>
-            <div className="roles-group" role="group">
-              <button type="button" aria-pressed={role === 'client'} onClick={() => setRole('client')}>
-                <PersonIcon size={17} /> Asiakas{clientName ? <span className="role-who">{clientName}</span> : null}
-              </button>
-              <button type="button" aria-pressed={role === 'professional'} onClick={() => setRole('professional')}>
-                <StethoscopeIcon size={17} /> Ammattilainen
-              </button>
-              <button type="button" aria-pressed={role === 'therapist'} onClick={() => setRole('therapist')}>
-                <UsersIcon size={17} /> Terapeutti{therapistName ? <span className="role-who">{therapistName}</span> : null}
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
-      {/* On every view, the Konsepti page included: the demo is driven from here (Seuraava / →). */}
-      {ctx && <ValitukiContext.Provider value={ctx}><DemoDock /></ValitukiContext.Provider>}
+            </a>
+          )} />
+        </ValitukiContext.Provider>
+      )}
 
       <main className="stage" id="main" ref={stageRef}>
         {error && <div className="alert alert-error" role="alert">{error}</div>}
         {!view && !error && <p className="loading" role="status">Ladataan Mieliluotsia…</p>}
         {ctx && (
           <ValitukiContext.Provider value={ctx}>
+            {role !== 'client' && <StageControls />}
             {role === 'client' && <ClientApp />}
             {role === 'professional' && <ProfessionalApp />}
             {role === 'therapist' && <TherapistApp />}

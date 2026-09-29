@@ -1082,34 +1082,16 @@ body {
   color: #174f34;
 }
 
-/* ---------- Shell: top bar, demo dock, stage ---------- */
-
-.vt .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: saturate(1.4) blur(10px);
-}
-
-.vt .topbar-inner {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 6px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-}
+/* ---------- Shell: demo dock, stage ---------- */
 
 .vt .brand {
   display: flex;
+  flex: none;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   min-width: 0;
-  color: var(--ink);
+  margin-right: 6px;
+  color: #fff;
   text-decoration: none;
 }
 
@@ -1126,7 +1108,7 @@ body {
 }
 
 .vt .brand-name {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -1191,12 +1173,62 @@ body {
   font-weight: 750;
 }
 
+/* Demo controls on the stage: whose view and which AI – a row above a view, a column beside the phone. */
+.vt .stage-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 18px;
+}
+
+.vt .stage-controls.is-side {
+  position: sticky;
+  top: calc(var(--stage-top, 58px) + 4px);
+  z-index: 2;
+  flex: none;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 18px;
+  width: max-content;
+  margin: 0 40px 0 0;
+}
+
+.vt .stage-controls.is-side .dock-ai-status .dock-ai-text {
+  display: none;
+}
+
+.vt .stage-controls.is-side .roles {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.vt .stage-controls.is-side .roles-group {
+  flex-direction: column;
+}
+
+.vt .stage-controls.is-side .roles-group button {
+  justify-content: flex-start;
+  padding: 8px 10px;
+}
+
+.vt .stage-controls.is-side .role-who {
+  margin-left: auto;
+}
+
+.vt .stage-controls.is-side .dock-ai {
+  align-self: flex-start;
+}
+
 /* Demo dock – visibly NOT part of the product */
 
 .vt .dock {
-  /* Sticks under the top bar so that Seuraava and the cue stay visible on long pages too. */
+  /* The only bar: sticks to the top so that Seuraava and the cue stay visible on long pages too. */
   position: sticky;
-  top: var(--topbar-h, 58px);
+  top: 0;
   z-index: 35;
   background: #13222b;
   color: #dbe6ea;
@@ -1310,49 +1342,47 @@ body {
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* The AI switch in the white top bar: the same control in light colours. */
-.vt .topbar-ai {
+/* The AI switch on the stage: the same control in light colours. */
+.vt .stage-ai {
   display: flex;
   flex: 0 1 auto;
   min-width: 0;
-  margin-right: auto;
-  margin-left: 20px;
 }
 
-.vt .topbar-ai .dock-ai {
+.vt .stage-ai .dock-ai {
   border-color: var(--line);
   background: var(--surface-2);
   color: var(--muted);
 }
 
-.vt .topbar-ai .dock-seg {
+.vt .stage-ai .dock-seg {
   background: rgba(20, 35, 43, 0.08);
 }
 
-.vt .topbar-ai .dock-seg button {
+.vt .stage-ai .dock-seg button {
   color: var(--muted);
 }
 
-.vt .topbar-ai .dock-seg button[aria-pressed='true'] {
+.vt .stage-ai .dock-seg button[aria-pressed='true'] {
   background: var(--surface);
   color: var(--ink);
   box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
 }
 
-.vt .topbar-ai .dock-ai.is-live .dock-ai-status {
+.vt .stage-ai .dock-ai.is-live .dock-ai-status {
   color: #1d7a4f;
 }
 
-.vt .topbar-ai .dock-ai.is-warn .dock-ai-status {
+.vt .stage-ai .dock-ai.is-warn .dock-ai-status {
   color: #8a5a00;
 }
 
-.vt .topbar-ai .dock-ai-test {
+.vt .stage-ai .dock-ai-test {
   border-color: var(--line);
   color: var(--ink);
 }
 
-.vt .topbar-ai .dock-ai-test:hover:not(:disabled) {
+.vt .stage-ai .dock-ai-test:hover:not(:disabled) {
   background: var(--surface);
 }
 
@@ -1685,7 +1715,10 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 160px; /* room for the data-flow animation between the phone and the panel */
+}
+
+.vt .client-stage > .phone {
+  margin-right: 160px; /* room for the data-flow animation between the phone and the panel */
 }
 
 .vt .phone {
@@ -6089,6 +6122,24 @@ body {
     top: 0;
   }
 
+  .vt .client-stage > .phone {
+    margin-right: 0;
+  }
+
+  .vt .stage-controls.is-side {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    max-width: 560px;
+    margin: 0;
+  }
+
+  .vt .stage-controls.is-side .roles,
+  .vt .stage-controls.is-side .roles-group {
+    flex-direction: row;
+  }
+
   .vt .backstage {
     flex: none;
     width: 100%;
@@ -6136,14 +6187,6 @@ body {
 }
 
 @media (max-width: 640px) {
-  .vt .topbar {
-    position: static;
-  }
-
-  .vt .topbar-inner {
-    padding: 8px 16px;
-  }
-
   .vt .roles {
     width: 100%;
   }

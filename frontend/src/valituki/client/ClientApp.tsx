@@ -5,6 +5,7 @@ import { useValituki } from '../context';
 import type { ClientTab } from '../context';
 import { ArrowLeftIcon, BellIcon, ChatIcon, GridIcon, HomeIcon, LifebuoyIcon, RouteIcon, TrendIcon } from '../icons';
 import { HelpSheet, SafetyScreen } from '../components/Safety';
+import StageControls from '../components/StageControls';
 import type { ClientView } from '../types';
 import ActivitySheet from './ActivitySheet';
 import Backstage from './Backstage';
@@ -129,6 +130,7 @@ export default function ClientApp() {
   return (
     <ClientUIContext.Provider value={ui}>
       <div className="client-stage">
+        <StageControls side />
         <div className="phone cx" aria-label={`Asiakkaan sovellus: ${current.displayName}`}>
           <div className="phone-inner">
             {inIntake ? (
