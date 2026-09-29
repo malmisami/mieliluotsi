@@ -1,0 +1,128 @@
+{
+  "version": "demo-2",
+  "note": "Deterministiset turvallisuussäännöt. Tekstit normalisoidaan ennen vertailua (pienet kirjaimet, ä→a, ö→o, å→a, välimerkit pois). Säännöt ovat tarkoituksella varovaisia: kieltomuotoja ei tulkita. Demo-policy, joka vaatii kliinisen validoinnin.",
+  "phraseRules": [
+    {
+      "id": "SAF-L3-SUICIDE-FI",
+      "level": 3,
+      "category": "Itsetuhoiset ajatukset",
+      "patterns": [
+        "\\b(halua|tahdo|tahto)\\w*\\s+kuolla",
+        "\\btapan itseni",
+        "\\btappaa itseni",
+        "\\bitsemurh",
+        "\\ben (halua|jaksa) (enaa )?elaa",
+        "\\blopettaa (tama |koko )?elamani",
+        "\\bpaattaa elamani",
+        "\\bparempi (olisi )?(jos )?(olisin )?kuollut",
+        "\\bolisi parempi olla kuollut",
+        "\\bkaikki olisivat paremmin ilman minua",
+        "\\bei ole (enaa )?syyta elaa"
+      ]
+    },
+    {
+      "id": "SAF-L3-SELFHARM-FI",
+      "level": 3,
+      "category": "Itsensä vahingoittaminen",
+      "patterns": [
+        "\\b(vahingoittaa|satuttaa|viiltaa) itse",
+        "\\bvahingoitan itseani",
+        "\\bsatutan itseani",
+        "\\bviiltel",
+        "\\byliannostu",
+        "\\botan kaikki (laakkeeni|pillerit|tabletit)"
+      ]
+    },
+    {
+      "id": "SAF-L3-HARM-OTHERS-FI",
+      "level": 3,
+      "category": "Toisen vahingoittaminen",
+      "patterns": [
+        "\\b(satuttaa|vahingoittaa|tappaa) (jotakuta|toista|muita|hanet|hanta|jonkun)",
+        "\\btapan (hanet|jonkun)"
+      ]
+    },
+    {
+      "id": "SAF-L3-DANGER-FI",
+      "level": 3,
+      "category": "Välitön vaara",
+      "patterns": [
+        "\\bhengenvaara",
+        "\\ben ole turvassa",
+        "\\bvalittomassa vaarassa"
+      ]
+    },
+    {
+      "id": "SAF-L3-SV",
+      "level": 3,
+      "category": "Itsetuhoiset ajatukset (ruotsi)",
+      "patterns": [
+        "\\bvill (jag )?do\\b",
+        "\\bta livet av mig",
+        "\\bsjalvmord",
+        "\\bskada mig sjalv",
+        "\\bvill (jag )?inte leva"
+      ]
+    },
+    {
+      "id": "SAF-L3-EN",
+      "level": 3,
+      "category": "Itsetuhoiset ajatukset (englanti)",
+      "patterns": [
+        "\\bkill myself",
+        "\\bsuicid",
+        "\\bend my life",
+        "\\bwant to die",
+        "\\bhurt myself",
+        "\\bself.?harm",
+        "\\bnot safe\\b"
+      ]
+    },
+    {
+      "id": "SAF-L2-HOPELESS-FI",
+      "level": 2,
+      "category": "Toivottomuus tai voimien loppuminen",
+      "patterns": [
+        "\\btoivot(on|toma|onta|tomuus|tomalta)",
+        "\\ben jaksa enaa",
+        "\\ben kesta enaa",
+        "\\ben pysty enaa",
+        "\\bromahd",
+        "\\bei mitaan jarkea",
+        "\\ben nae tulevaisuutta",
+        "\\bkukaan ei valita"
+      ]
+    },
+    {
+      "id": "SAF-L2-SV-EN",
+      "level": 2,
+      "category": "Toivottomuus (ruotsi / englanti)",
+      "patterns": [
+        "\\borkar inte mer",
+        "\\bhopeless",
+        "\\bcan'?t go on",
+        "\\bcannot go on"
+      ]
+    },
+    {
+      "id": "SAF-L1-DISTRESS-FI",
+      "level": 1,
+      "category": "Kuormitus",
+      "patterns": [
+        "\\b(tosi|todella|erittain|hirvean) (huono|paha|raskas)",
+        "\\bahdistaa (tosi|todella|hirveasti|paljon)",
+        "\\ben saa unta",
+        "\\ben ole nukkunut",
+        "\\byksinainen",
+        "\\bpaniikki"
+      ]
+    }
+  ],
+  "structured": {
+    "moodFloor": {
+      "ruleId": "SAF-L1-MOOD-FLOOR",
+      "threshold": 1,
+      "level": 1
+    }
+  }
+}

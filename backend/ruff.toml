@@ -1,0 +1,17 @@
+line-length = 140
+target-version = "py312"
+# The earlier OmaGenomi code is kept verbatim behind LEGACY_FEATURES_ENABLED so that it can be restored; it was never
+# linted and is outside the Välituki lint scope.
+extend-exclude = [
+    "app/loop",
+    "app/support",
+    "app/wellbeing",
+    "app/services",
+    "app/models.py",
+    "app/dependencies.py",
+    "app/legacy_api.py",
+    "tests/legacy",
+]
+
+[lint]
+select = ["E", "F", "W", "I", "B"]

@@ -1,0 +1,164 @@
+{
+  "version": "1.0",
+  "synthetic": true,
+  "notice_fi": "Kaikki tämän tiedoston löydökset, luokitukset ja säännöt ovat synteettisiä ja tehty vain OmaGenomi Loop -demoa varten. Tiedosto ei ole lääketieteellinen lähde.",
+  "source": {
+    "id": "omagenomi-loop-synthetic-evidence-v1",
+    "name": "OmaGenomi Loop – synteettinen demoevidenssi v1.0",
+    "synthetic": true
+  },
+  "evidence_levels": {
+    "synthetic_demo_moderate": "Kohtalainen (synteettinen demotaso)",
+    "not_assessed": "Ei arvioitu"
+  },
+  "event_type_labels": {
+    "lab_result": "Laboratoriotulos",
+    "vital_sign": "Mittaustulos",
+    "medication": "Lääkitystieto",
+    "research_update": "Uusi tutkimustieto",
+    "free_text": "Vapaamuotoinen terveysteksti",
+    "family_history": "Suvun sairaushistoria",
+    "lifestyle_survey": "Elämäntapatesti",
+    "diagnosis": "Diagnoosi",
+    "care_episode": "Hoitokäynti",
+    "professional_note": "Ammattilaisen kirjaus",
+    "contact": "Asiointi",
+    "self_report": "Oma ilmoitus"
+  },
+  "findings": [
+    {
+      "id": "GF-001",
+      "match": {
+        "gene": "LDLR",
+        "rsid": "rs999000001",
+        "alt": "G"
+      },
+      "gene": "LDLR",
+      "variant": "rs999000001 (chr19:11102786 A>G)",
+      "title": "LDLR-geenin synteettinen demolöydös",
+      "description": "LDLR-geeni ohjaa LDL-reseptorin toimintaa. Reseptori auttaa poistamaan LDL-kolesterolia verenkierrosta.",
+      "conditions": [
+        "Hypercholesterolemia (synthetic demo)"
+      ],
+      "classification": "Todennäköisesti haitallinen (synteettinen demoluokitus)",
+      "confirmationStatus": "synthetic_demo_confirmed",
+      "evidenceLevel": "synthetic_demo_moderate",
+      "monitoringEligible": true,
+      "relevantEventTypes": [
+        "lab_result",
+        "medication",
+        "research_update",
+        "family_history"
+      ],
+      "relevantCodes": [
+        "LDL",
+        "MED_NEW",
+        "EVIDENCE_REVIEW",
+        "CVD_FAMILY_HISTORY",
+        "CVD_FAMILY_HISTORY_NEGATIVE"
+      ],
+      "monitoredEventDescriptions": [
+        "LDL-kolesterolin laboratoriotulokset",
+        "Käyttäjän vahvistama suvun sairaushistoria",
+        "Uudet lääkitystiedot (vain taustatiedoksi, lääkitykseen ei oteta kantaa)",
+        "Uusi tutkimustieto tästä löydöksestä"
+      ],
+      "lastReviewedAt": "2026-08-15",
+      "missingInformationItems": [
+        {
+          "id": "MI-001",
+          "type": "family_history",
+          "label": "Suvun sairaushistoria",
+          "question": "Onko lähisukulaisillasi ollut nuorella iällä korkeaa kolesterolia tai sydän- ja verisuonisairauksia?",
+          "askable": true
+        },
+        {
+          "id": "MI-002",
+          "type": "prior_lab_results",
+          "label": "Aiemmat LDL-tulokset vertailua varten",
+          "question": null,
+          "askable": false
+        },
+        {
+          "id": "MI-003",
+          "type": "professional_confirmation",
+          "label": "Ammattilaisen tekemä vahvistus löydökselle (nyt vain synteettinen demovahvistus)",
+          "question": null,
+          "askable": false
+        }
+      ],
+      "questionsForProfessional": [
+        "Miten LDLR-löydös ja LDL-tulos kannattaa tulkita yhdessä minun kohdallani?",
+        "Tarvitaanko löydökselle vahvistus laboratoriossa tai perinnöllisyyslääkärin arvio?",
+        "Millä aikavälillä LDL-arvoa olisi hyvä seurata?",
+        "Onko sukuni sairaushistorialla merkitystä tulkinnassa?"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "RULE-LDLR-LDL-HIGH-001",
+      "name": "LDLR-löydös ja viitealueen ylittävä LDL-tulos",
+      "description": "JOS aktiivisessa seurannassa on LDLR-löydös, jonka vahvistustila on synthetic_demo_confirmed tai professionally_confirmed, JA uusi terveystapahtuma sisältää koodin LDL, jonka poikkeamamerkintä on high, NIIN muodostetaan tila professional_review_recommended.",
+      "gene": "LDLR",
+      "requiredConfirmationStatus": [
+        "synthetic_demo_confirmed",
+        "professionally_confirmed"
+      ],
+      "eventType": "lab_result",
+      "eventCode": "LDL",
+      "abnormalFlag": "high",
+      "resultState": "professional_review_recommended",
+      "connection_fi": "LDLR-geeni liittyy LDL-kolesterolin poistumiseen verenkierrosta. Kun seurannassa olevan LDLR-löydöksen rinnalle tulee viitealueen ylittävä LDL-tulos, tiedot kannattaa käydä läpi yhdessä terveydenhuollon ammattilaisen kanssa.",
+      "kind": "single_event",
+      "demoNotice_fi": "Synteettinen demosääntö. Ei oikea kliininen diagnoosi- tai hoitosääntö."
+    },
+    {
+      "id": "RULE-LDLR-FAMHX-002",
+      "kind": "combination",
+      "name": "LDLR-löydös, viitealueen ylittävä LDL ja vahvistettu sukuhistoria",
+      "description": "JOS aktiivisessa seurannassa on vahvistetuksi merkitty LDLR-löydös JA seurannassa on viitealueen ylittävä LDL-tulos JA käyttäjä on vahvistanut, että lähisukulaisella (vanhempi, sisarus tai lapsi) on ollut alle 60-vuotiaana sydän- ja verisuonisairaus tai korkea kolesteroli, NIIN huomion tila on professional_review_recommended ja sen perustelut täydennetään.",
+      "gene": "LDLR",
+      "requiredConfirmationStatus": [
+        "synthetic_demo_confirmed",
+        "professionally_confirmed"
+      ],
+      "triggerEventTypes": [
+        "lab_result",
+        "family_history"
+      ],
+      "requires": {
+        "lab": {
+          "eventCode": "LDL",
+          "abnormalFlag": "high"
+        },
+        "familyHistory": {
+          "relations": [
+            "father",
+            "mother",
+            "brother",
+            "sister",
+            "son",
+            "daughter"
+          ],
+          "conditionCategories": [
+            "cardiovascular_disease",
+            "high_cholesterol"
+          ],
+          "maxAgeAtEvent": 59,
+          "confirmedByUser": true
+        }
+      },
+      "resultState": "professional_review_recommended",
+      "connection_fi": "Käyttäjän vahvistama tieto lähisukulaisen nuorella iällä todetusta sydän- ja verisuonisairaudesta täydentää LDLR-löydöksen ja viitealueen ylittävän LDL-tuloksen muodostamaa kokonaisuutta. Tiedot kannattaa käydä läpi terveydenhuollon ammattilaisen kanssa.",
+      "demoNotice_fi": "Synteettinen demosääntö. Ei oikea kliininen diagnoosi- tai hoitosääntö."
+    }
+  ],
+  "reference_ranges": {
+    "LDL": {
+      "unit": "mmol/l",
+      "high_above": 3.0,
+      "label_fi": "Synteettinen demoviitealue: alle 3,0 mmol/l"
+    }
+  }
+}

@@ -1,0 +1,1334 @@
+/* OmaGenomi Loop – seurantanäkymien tyylit LUVN-ilmeen päälle */
+
+/* Status badges: icon + text + colour, never colour alone */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.75rem 0.2rem 0.55rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 2px solid transparent;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tone-active { background: var(--color-success-soft); color: var(--color-success); border-color: var(--color-success-soft-border); }
+.tone-neutral { background: var(--color-surface-muted); color: var(--color-text-muted); border-color: var(--color-border); }
+.tone-attention { background: var(--color-info-soft); color: var(--color-info); border-color: var(--color-info-soft-border); }
+.tone-waiting { background: var(--color-warning-soft); color: var(--color-warning); border-color: var(--color-warning-soft-border); }
+.tone-done { background: var(--color-success-soft); color: var(--color-success); border-color: var(--color-success-soft-border); }
+
+.synthetic-tag {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  vertical-align: middle;
+}
+
+.synthetic-banner {
+  background: var(--color-warning-soft);
+  border: 2px solid var(--color-warning-soft-border);
+  color: var(--color-warning);
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+}
+
+.synthetic-banner.strong {
+  font-weight: 700;
+}
+
+.disclaimer-box {
+  background: var(--color-info-soft);
+  border: 2px solid var(--color-info-soft-border);
+  border-left: 6px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1rem;
+  color: var(--color-text);
+}
+
+.form-error {
+  background: var(--color-danger-soft);
+  border: 2px solid var(--color-danger-soft-border);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  padding: 0.65rem 0.9rem;
+  font-weight: 700;
+}
+
+.success-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-success-soft);
+  border: 2px solid var(--color-success-soft-border);
+  border-radius: var(--radius-md);
+  color: var(--color-success);
+  padding: 0.65rem 0.9rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Finding card additions in the DNA report */
+.finding-monitoring {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--color-border-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Layout */
+.loop-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.loop-main,
+/* Terveystiedot has no side column (the demo controls live on Tilanne nyt) */
+.loop-layout-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.loop-side {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.loop-side {
+  position: sticky;
+  top: 1rem;
+}
+
+.loop-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.live-message p {
+  margin: 0.25rem 0 0;
+  color: var(--color-info);
+  font-weight: 700;
+}
+
+/* Open observation: the highlighted card, like an important notice */
+.observation-alert {
+  background: var(--color-primary-soft);
+  border: 2px solid var(--color-heading);
+}
+
+.observation-alert .disclaimer-box {
+  background: var(--color-surface);
+}
+
+.observation-alert h2 {
+  margin-top: 0.6rem;
+}
+
+/* Follow-up question: needs the user's action */
+.follow-up {
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning-soft-border);
+}
+
+.follow-up h2 {
+  margin-top: 0.6rem;
+}
+
+.monitoring-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.monitoring-card {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.25rem;
+  background: var(--color-surface);
+}
+
+.monitoring-card.has-observation {
+  border-color: var(--color-heading);
+  background: var(--color-surface-blue);
+}
+
+.monitoring-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.monitoring-card-head h3 {
+  margin: 0;
+}
+
+.monitoring-status {
+  margin: 0.6rem 0;
+}
+
+.monitoring-details {
+  margin-top: 0.85rem;
+  border-top: 2px solid var(--color-border-light);
+  padding-top: 0.75rem;
+}
+
+.monitoring-details h4 {
+  margin-top: 0.75rem;
+}
+
+.fact-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+}
+
+.fact-list.two-col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1.25rem;
+}
+
+.fact-list dt {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fact-list dd {
+  margin: 0.15rem 0 0;
+}
+
+.fact-list dd ul {
+  margin: 0.2rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.chip-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.1rem 0.65rem;
+  font-size: 0.8125rem;
+  margin-left: 0.35rem;
+  line-height: 1.5;
+}
+
+.chip-list .chip {
+  margin-left: 0;
+}
+
+.chip-attention {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+  border-color: var(--color-info-soft-border);
+  font-weight: 700;
+}
+
+.plain-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.finding-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+
+/* Timeline */
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  border-left: 3px solid var(--color-primary-soft-border);
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.6rem 0 0.6rem 1.1rem;
+  position: relative;
+}
+
+.timeline li::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 1rem;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--color-primary-soft-border);
+}
+
+.timeline li.led-to-observation::before {
+  background: var(--color-heading);
+  box-shadow: 0 0 0 2px var(--color-heading);
+}
+
+.timeline-date {
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.timeline-title,
+.timeline-meta,
+.timeline-raw {
+  margin: 0;
+}
+
+.timeline-meta {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.timeline-raw {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Health records (Terveystiedot): visits, lab orders, measurements, diagnoses and medication */
+.record-category {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.record-flag {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--color-warning-soft-border);
+  border-radius: 999px;
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.record-sections {
+  margin: 0.4rem 0 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.record-sections dt {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.record-sections dd {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.record-results {
+  margin-top: 0.4rem;
+}
+
+.record-results summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.9375rem;
+}
+
+.record-results-wrap {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.record-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  overflow-wrap: normal;
+  hyphens: manual;
+}
+
+/* results and reference ranges stay on one line; the table scrolls inside its box on a phone */
+.record-results-table th,
+.record-results-table td:nth-child(2),
+.record-results-table td:nth-child(3) {
+  white-space: nowrap;
+}
+
+.record-results-table th,
+.record-results-table td {
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.record-results-table th {
+  color: var(--color-heading);
+  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.record-results-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.record-results-table td small {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.record-results-table tr.is-abnormal td {
+  background: var(--color-warning-soft);
+}
+
+.record-value {
+  white-space: nowrap;
+}
+
+.health-records .timeline-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.record-results-table .record-reference-inline {
+  display: none;
+}
+
+/* Linking health records to DNA-analysis findings */
+.dna-link-start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0.25rem;
+}
+
+.dna-link-start p {
+  margin: 0;
+  flex: 1 1 16rem;
+}
+
+.dna-links {
+  margin: 1rem 0 0.5rem;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--color-primary-soft-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-blue);
+}
+
+.dna-links-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.dna-links-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.dna-link-card {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.dna-link-card h4 {
+  margin: 0 0 0.2rem;
+}
+
+.dna-link-card h5 {
+  margin: 0.6rem 0 0.35rem;
+  font-size: 0.875rem;
+  color: var(--color-heading);
+}
+
+/* every card has the same layout: the finding in use (if any) on top, the health records below it */
+.dna-link-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.dna-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.dna-link-list li > small {
+  display: block;
+}
+
+.dna-link-list .chip {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0.2rem 0 0.1rem;
+  line-height: 1.35;
+  border-radius: var(--radius-md);
+}
+
+.dna-link-list .chip svg {
+  flex: none;
+}
+
+.dna-link-list .link-button {
+  text-align: left;
+}
+
+.chip-used {
+  background: var(--color-success-soft);
+  border-color: var(--color-success-soft-border);
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.chip-dna {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-soft-border);
+  color: var(--color-primary);
+}
+
+.dna-links-note {
+  margin: 0.85rem 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.health-records li.is-dna-linked::before {
+  background: var(--color-primary);
+}
+
+.health-records li.is-highlighted {
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-md);
+  transition: background 0.3s ease;
+}
+
+
+@media (max-width: 560px) {
+  /* phone: the date sits above the entry so long Finnish words fit */
+  .health-records li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+
+  /* phone: the reference range moves under the result instead of a third column */
+  .record-results-table .record-reference {
+    display: none;
+  }
+
+  .record-results-table .record-reference-inline {
+    display: block;
+  }
+
+  /* the flag may drop under the value; the value itself never breaks */
+  .record-results-table td:nth-child(2) {
+    white-space: normal;
+  }
+
+  .record-results-table .record-flag {
+    margin-left: 0;
+    margin-right: 0.3rem;
+  }
+}
+
+/* Demo controls: clearly a tool for the demonstration, not part of the service */
+.demo-controls {
+  background: var(--color-surface-muted);
+  border: 2px dashed var(--color-border);
+}
+
+.demo-controls-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-controls-head h2 {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.demo-buttons {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.demo-buttons button {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.demo-buttons button:not(.btn-secondary) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-soft-border);
+  color: var(--color-heading);
+}
+
+.demo-buttons button:not(.btn-secondary):hover:not(:disabled) {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-heading);
+}
+
+.demo-date {
+  margin: 0.75rem 0;
+}
+
+.free-text-form {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  border-top: 2px solid var(--color-border);
+  padding-top: 0.85rem;
+}
+
+.free-text-form textarea {
+  min-height: 3.5rem;
+}
+
+.free-text-form small {
+  color: var(--color-text-muted);
+}
+
+/* Why now */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  margin: 0.85rem 0;
+}
+
+.why-block {
+  background: var(--color-surface-blue);
+  border: 2px solid var(--color-primary-soft-border);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+}
+
+.why-block h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.why-block ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.why-facts {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+}
+
+.check-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.check-list li {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.check-list .icon {
+  margin-top: 0.2rem;
+}
+
+.check-list .icon-yes {
+  color: var(--color-success);
+}
+
+.check-list .icon-no {
+  color: var(--color-danger);
+}
+
+.explanation {
+  line-height: 1.6;
+}
+
+.back-button {
+  margin-bottom: 0.9rem;
+}
+
+.json {
+  margin: 0;
+  background: var(--color-surface-muted);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem;
+  font-size: 0.78rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .loop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .loop-side {
+    position: static;
+  }
+
+  .fact-list.two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Printing the professional summary */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .synthetic-banner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Hyvinvointikumppani: messaging like a secure health service inbox */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.chat-head p {
+  margin: 0.2rem 0;
+}
+
+.chat-list {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0.25rem 1rem 0;
+  display: grid;
+  gap: 1rem;
+  max-height: 62vh;
+  overflow-y: auto;
+  border-top: 2px solid var(--color-border-light);
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.chat-message {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem;
+  max-width: 88%;
+}
+
+.chat-message.from-user {
+  justify-self: end;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.chat-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  border: 2px solid var(--color-primary-soft-border);
+  color: var(--color-heading);
+  display: grid;
+  place-items: center;
+  margin-top: 1.4rem;
+}
+
+.chat-body {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.chat-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+}
+
+.from-user .chat-meta {
+  justify-content: flex-end;
+}
+
+.chat-author {
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.chat-meta .chip {
+  margin-left: 0;
+}
+
+.chat-bubble {
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+}
+
+.from-user .chat-bubble {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-soft-border);
+  color: var(--color-text);
+}
+
+.from-user.kind-action_choice .chat-bubble {
+  background: var(--color-surface-blue);
+  border-color: var(--color-primary-soft-border);
+  color: var(--color-info);
+  font-weight: 700;
+}
+
+.kind-proactive .chat-bubble,
+.kind-question .chat-bubble,
+.kind-rule_update .chat-bubble {
+  border-left: 6px solid var(--color-primary);
+  background: var(--color-surface-blue);
+}
+
+.kind-confirmation .chat-bubble {
+  border-left: 6px solid var(--color-warning);
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning-soft-border);
+  border-left-color: var(--color-warning);
+}
+
+.kind-safety .chat-bubble {
+  border-left: 6px solid var(--color-heading);
+}
+
+.kind-emergency .chat-bubble {
+  border: 2px solid var(--color-danger-soft-border);
+  border-left: 6px solid var(--color-danger);
+  background: var(--color-danger-soft);
+  color: var(--color-text);
+}
+
+.emergency-title {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chat-text {
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.ai-unavailable {
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.6rem;
+}
+
+.chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.chat-actions button {
+  padding: 0.5rem 1rem;
+}
+
+.basis-toggle {
+  margin-top: 0.65rem;
+  font-size: 0.875rem;
+}
+
+.basis-panel {
+  margin-top: 0.5rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.basis-panel ul {
+  margin: 0.1rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.basis-statement {
+  margin: 0 0 0.35rem;
+  color: var(--color-info);
+}
+
+.why-now-card {
+  margin-top: 0.75rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-soft-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9375rem;
+}
+
+.why-now-card > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.why-now-card ul {
+  margin: 0.1rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.why-now-card .check-list {
+  padding-left: 0;
+}
+
+.inline-form {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.85rem;
+}
+
+.inline-form input,
+.inline-form select {
+  padding: 0.55rem 0.7rem;
+}
+
+.chat-composer {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.composer-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+
+.composer-row textarea {
+  min-height: 3.4rem;
+  flex: 1;
+  resize: vertical;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip-button {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.chip-button:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary-active);
+}
+
+.chip-button:disabled {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.knowledge-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.knowledge-list > li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem;
+}
+
+.knowledge-list > li.is-attention {
+  background: var(--color-primary-soft);
+  border-color: var(--color-heading);
+}
+
+.knowledge-list ul {
+  margin: 0.15rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.knowledge-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-surface-blue);
+  border: 2px solid var(--color-primary-soft-border);
+  color: var(--color-heading);
+  display: grid;
+  place-items: center;
+}
+
+.knowledge-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
+}
+
+.context-details summary {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.demo-live {
+  margin: 0.4rem 0 0;
+  min-height: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .chat-list {
+    max-height: none;
+  }
+
+  .chat-message {
+    max-width: 100%;
+  }
+}
+
+/* --- Elämäntapatesti ---------------------------------------------------- */
+
+.quiz-panel {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.quiz-progress-wrap {
+  margin: 0.75rem 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.quiz-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  overflow: hidden;
+}
+
+.quiz-progress-bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  transition: width 0.25s ease;
+}
+
+.quiz-card {
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  animation: quiz-card-in 0.2s ease;
+}
+
+@keyframes quiz-card-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-card-icon {
+  margin: 0 auto 0.75rem;
+  color: var(--color-heading);
+  display: grid;
+  place-items: center;
+}
+
+.quiz-card h3 {
+  max-width: 32rem;
+  margin: 0 auto 0.75rem;
+  font-size: 1.25rem;
+}
+
+.quiz-card > p {
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 28rem;
+  margin: 1rem auto 0;
+}
+
+.quiz-option {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1rem;
+  font-weight: 400;
+  text-align: left;
+  justify-content: space-between;
+}
+
+.quiz-option::after {
+  content: '';
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 2px solid var(--color-heading);
+  border-bottom: 2px solid var(--color-heading);
+  transform: rotate(-45deg);
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+.quiz-option:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+.quiz-option.selected {
+  border-color: var(--color-heading);
+  background: var(--color-primary-soft);
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+.quiz-card .link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 1.25rem;
+}
+
+.quiz-results {
+  text-align: left;
+}
+
+.quiz-results h3, .quiz-results > p:first-of-type {
+  text-align: center;
+}
+
+.quiz-tip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.quiz-tip-card {
+  background: var(--color-surface-blue);
+  border: 2px solid var(--color-primary-soft-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.quiz-history {
+  margin-top: 1.25rem;
+  border-top: 2px solid var(--color-border-light);
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.quiz-history-toggle {
+  font-size: 0.9375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.quiz-history-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.quiz-history-list li {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* status of a linked DNA finding: one short line, used = green */
+.dna-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.dna-status svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.dna-status.is-used {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+/* Terveystiedot: the source files are a small note in the panel's top right corner */
+.timeline-panel {
+  position: relative;
+}
+
+
+/* Linkitys DNA-analyysiin: the specific measurements the DNA finding relates to */
+.dna-key-measurements {
+  margin: 0.75rem 0;
+}
+
+.dna-key-table th,
+.dna-key-table td {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.dna-key-table tbody th {
+  font-weight: 700;
+  text-align: left;
+}
+
+.dna-key-table td.is-flagged {
+  color: var(--color-warning);
+  font-weight: 700;
+}
+
+.dna-link-findings {
+  margin: 0.6rem 0;
+}
+
+.dna-finding-list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.875rem;
+}

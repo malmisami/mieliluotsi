@@ -1,0 +1,24 @@
+# XcodeGen project spec (https://github.com/yonaskolb/XcodeGen): `xcodegen generate` creates HyvinvointiBridge.xcodeproj.
+name: HyvinvointiBridge
+options:
+  bundleIdPrefix: fi.hyvinvointikumppani
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  HyvinvointiBridge:
+    type: application
+    platform: iOS
+    sources:
+      - HyvinvointiBridge/Sources
+    entitlements:
+      path: HyvinvointiBridge/HyvinvointiBridge.entitlements
+    dependencies:
+      - sdk: HealthKit.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fi.hyvinvointikumppani.bridge
+        INFOPLIST_FILE: HyvinvointiBridge/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: HyvinvointiBridge/HyvinvointiBridge.entitlements

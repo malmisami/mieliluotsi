@@ -1,0 +1,1285 @@
+{
+  "version": "1.0",
+  "demoPolicy": true,
+  "notice_fi": "Synteettiset demo-policyt. Raja-arvot, tavoitteet, yhteydenotto- ja kiireellisyyssäännöt sekä automaattisen hoidon tarpeen arvion säännöt ovat esimerkkejä, jotka vastuuammattilainen asettaa suunnitelmaan ja joita ammattilainen valvoo. Ne eivät ole hoitosuosituksia.",
+  "ownerRoles": {
+    "nurse": "Sairaanhoitaja",
+    "public_health_nurse": "Terveydenhoitaja",
+    "physician": "Lääkäri",
+    "genetics": "Perinnöllisyyslääkäri tai genetiikan asiantuntija",
+    "other": "Muu nimetty sote-ammattilainen"
+  },
+  "actions": {
+    "no_action": {
+      "label": "Ei toimenpidettä – tilanne vakaa",
+      "level": 0,
+      "contactsUser": false
+    },
+    "reminder": {
+      "label": "Ystävällinen muistutus",
+      "level": 1,
+      "contactsUser": true
+    },
+    "clarifying_question": {
+      "label": "Yksi tarkentava kysymys",
+      "level": 2,
+      "contactsUser": true
+    },
+    "offer_home_monitoring": {
+      "label": "Lyhyen kotiseurantajakson ehdottaminen",
+      "level": 2,
+      "contactsUser": true
+    },
+    "check_in": {
+      "label": "1–3 kysymyksen check-in",
+      "level": 3,
+      "contactsUser": true
+    },
+    "show_guide": {
+      "label": "Hyväksytyn omahoito-ohjeen näyttäminen",
+      "level": 4,
+      "contactsUser": true
+    },
+    "propose_small_goal": {
+      "label": "Pienen askeleen ehdottaminen (7 päivän kokeilu)",
+      "level": 5,
+      "contactsUser": true
+    },
+    "adjust_goal": {
+      "label": "Askeleen mukauttaminen ammattilaisen hyväksymissä rajoissa",
+      "level": 6,
+      "contactsUser": true
+    },
+    "schedule_check": {
+      "label": "Uuden tarkistusajankohdan sopiminen",
+      "level": 7,
+      "contactsUser": true
+    },
+    "show_service_contact": {
+      "label": "Palvelun tai ammattilaisen yhteystiedon näyttäminen",
+      "level": 8,
+      "contactsUser": true
+    },
+    "assess_care_need": {
+      "label": "Hoidon tarpeen ja kiireellisyyden automaattinen arvio (sääntöjen mukaan)",
+      "level": 8,
+      "contactsUser": false
+    },
+    "escalate": {
+      "label": "Ohjaus vastuuammattilaiselle arvion perusteella",
+      "level": 9,
+      "contactsUser": false
+    }
+  },
+  "forbiddenActions": {
+    "diagnose": "Diagnoosin tekeminen",
+    "infer_new_disease": "Uuden sairauden päätteleminen",
+    "change_medication": "Lääkityksen muuttaminen tai lääkeohjeiden antaminen",
+    "promise_outcome": "Hoidon tuloksen lupaaminen",
+    "override_safety_limits": "Määriteltyjen turvallisuusrajojen ohittaminen",
+    "generate_clinical_thresholds": "Kliinisten raja-arvojen generointi",
+    "llm_only_decisions": "Päätökset pelkän kielimallin vastauksen perusteella",
+    "treatment_decision": "Hoitopäätöksen tekeminen (kuuluu ammattilaiselle)"
+  },
+  "automation": {
+    "name": "Hyvinvointikumppanin automaattinen hoidon tarpeen arvio",
+    "legalBasis": "terveydenhuoltolaki 51 § 3 mom. (digitaalinen hoidon tarpeen arvio) – prototyyppi olettaa lakimuutoksen voimaan 2027",
+    "responsiblePerson": "Vastuuhenkilö: vastaava ylilääkäri (synteettinen demohenkilö)",
+    "version": "demo-1",
+    "principles": [
+      "Arvio perustuu dokumentoituihin, ammattilaisen hyväksymiin sääntöihin ja demo-policyyn – ei kielimalliin.",
+      "Asiakas saa aina tiedon, että arvio on tehty automaattisesti, ja perustelun (\"Näin arvio tehtiin\").",
+      "Asiakkaalla on aina oikeus ammattilaisen tekemään arvioon (Pyydä ammattilaisen arvio).",
+      "Automaatio edellyttää nimenomaista suostumusta; ilman sitä arvio on esiarvio, jonka ammattilainen tekee.",
+      "Hätätilanteet eivät kuulu automaattisen arvion piiriin: 112 tai Päivystysapu 116 117.",
+      "Ammattilainen valvoo arvioita: jokainen ohjaukseen johtanut arvio vahvistetaan tai muutetaan, ja kaikki arviot kirjataan.",
+      "Diagnoosit, hoitopäätökset ja lääkitys kuuluvat edelleen ammattilaiselle."
+    ],
+    "urgencyClasses": [
+      {
+        "id": "emergency",
+        "label": "Hätätilanne",
+        "careNeed": "emergency_services",
+        "careNeedLabel": "Soita hätänumeroon 112",
+        "handlingTime": "heti"
+      },
+      {
+        "id": "same_day",
+        "label": "Kiireellinen – samana päivänä",
+        "careNeed": "same_day_contact",
+        "careNeedLabel": "Yhteys terveysasemalle tänään, virka-ajan ulkopuolella Päivystysapu 116 117",
+        "handlingTime": "samana päivänä"
+      },
+      {
+        "id": "within_3_days",
+        "label": "Kiirevastaanotto 3 arkipäivän kuluessa",
+        "careNeed": "urgent_appointment",
+        "careNeedLabel": "Aika akuutti- tai kiirevastaanotolle 3 arkipäivän kuluessa",
+        "handlingTime": "3 arkipäivän kuluessa"
+      },
+      {
+        "id": "routine",
+        "label": "Kiireetön",
+        "careNeed": "nurse_contact",
+        "careNeedLabel": "Hoitajan yhteydenotto 5 arkipäivän kuluessa",
+        "handlingTime": "5 arkipäivän kuluessa"
+      },
+      {
+        "id": "self_care",
+        "label": "Omahoito riittää",
+        "careNeed": "self_care",
+        "careNeedLabel": "Jatka omahoitoa suunnitelman mukaan; uusi arvio, jos tilanne muuttuu",
+        "handlingTime": "ei yhteydenottoa"
+      }
+    ],
+    "symptomRules": [
+      {
+        "id": "TRI-EMERG-001",
+        "name": "Hätätilanteeseen viittaavat oireet",
+        "urgency": "emergency",
+        "patterns": [
+          "rintakipu",
+          "kipu(a)? rinnassa",
+          "puristaa rinnassa",
+          "puristava kipu",
+          "hengitysvaike",
+          "hengenahdistu",
+          "en saa henkeä",
+          "vaikea hengittää",
+          "tajuton",
+          "menetti tajun",
+          "tajunnan",
+          "pyörry",
+          "pyörtyi",
+          "halvausoire",
+          "halvaus",
+          "puhe puuroutu",
+          "puhe(vaikeu|häiri)",
+          "toispuolei",
+          "toispuol",
+          "kouristu",
+          "voimakas päänsärky",
+          "\\b112\\b",
+          "hätätilan",
+          "ambulanssi"
+        ],
+        "reason": "Oirekuvaus viittaa mahdolliseen hätätilanteeseen."
+      },
+      {
+        "id": "TRI-BP-002",
+        "name": "Oireet, jotka edellyttävät yhteyttä samana päivänä",
+        "urgency": "same_day",
+        "patterns": [
+          "kova päänsärky",
+          "näköhäiri",
+          "sekavu",
+          "nenäverenvuoto",
+          "pahoinvoin.*päänsärky"
+        ],
+        "reason": "Oireet yhdessä kohonneen verenpaineen seurannan kanssa edellyttävät yhteyttä samana päivänä."
+      },
+      {
+        "id": "TRI-BP-003",
+        "name": "Oireet, jotka arvioidaan kiirevastaanotolla",
+        "urgency": "within_3_days",
+        "patterns": [
+          "huimau",
+          "päänsärky",
+          "sydämentykyty",
+          "rytmihäiri",
+          "turvo",
+          "rintatuntemu"
+        ],
+        "reason": "Oire kannattaa arvioida kiirevastaanotolla."
+      },
+      {
+        "id": "TRI-GEN-004",
+        "name": "Kiireetöntä hoitoa edellyttävät oireet",
+        "urgency": "routine",
+        "patterns": [
+          "väsy",
+          "kipu",
+          "kipeä",
+          "kivu",
+          "särk",
+          "unettomu",
+          "stressi",
+          "niska",
+          "selkä",
+          "jaksamin",
+          "mieliala"
+        ],
+        "reason": "Oire voidaan hoitaa kiireettömästi; hoitaja ottaa yhteyttä."
+      },
+      {
+        "id": "TRI-SELF-005",
+        "name": "Omahoito riittää",
+        "urgency": "self_care",
+        "patterns": [],
+        "reason": "Kuvauksesta ei tunnistu hoidon tarvetta, joka vaatisi yhteydenottoa; omahoito riittää.",
+        "default": true
+      }
+    ],
+    "contextRules": [
+      {
+        "id": "TRI-CTX-BP-SAFETY",
+        "description": "Jos viimeisin kotimittaus 7 päivän sisällä ylittää turvarajan, luokka on vähintään same_day.",
+        "minUrgency": "same_day",
+        "withinDays": 7,
+        "reason": "Viimeisin kotimittaus ylittää suunnitelman turvarajan, joten tilanne on arvioitava samana päivänä."
+      },
+      {
+        "id": "TRI-CTX-BP-ABOVE",
+        "description": "Jos kotimittausten keskiarvo on tavoitetason yläpuolella, routine nostetaan luokkaan within_3_days oirekuvauksen yhteydessä.",
+        "from": "routine",
+        "to": "within_3_days",
+        "reason": "Kotimittausten keskiarvo on tavoitetason yläpuolella, joten oire arvioidaan kiirevastaanotolla."
+      }
+    ],
+    "sampling": {
+      "reviewShare": 0.2,
+      "description": "Ilman ohjausta jääneistä arvioista 20 % nostetaan ammattilaisen valvontajonoon (demo)."
+    },
+    "whatStaysHuman": [
+      "Diagnoosin tekeminen",
+      "Hoitopäätökset ja hoidon aloittaminen",
+      "Lääkitys ja lääkeohjeet",
+      "Kliinisten raja-arvojen asettaminen",
+      "Hätätilanteiden arviointi (112 tai Päivystysapu 116 117)"
+    ]
+  },
+  "guides": {
+    "GUIDE-BP-HOME": {
+      "title": "Näin mittaat verenpaineen kotona",
+      "text": "Mittaa istuen, kun olet levännyt viisi minuuttia. Tee kaksi mittausta noin minuutin välein ja kirjaa molemmat. Mittaa aamulla ja illalla suunnilleen samaan aikaan.",
+      "approvedBy": "Sairaanhoitaja (demo)",
+      "approvedAt": "2026-06-01"
+    },
+    "GUIDE-WALK-SMALL": {
+      "title": "Pienet liikuntahetket arjessa",
+      "text": "Lyhytkin kävely lasketaan. Kävelyn voi yhdistää työmatkaan, lounastaukoon tai puheluun. Valitse ajankohta, joka toistuu viikoittain.",
+      "approvedBy": "Sairaanhoitaja (demo)",
+      "approvedAt": "2026-06-01"
+    },
+    "GUIDE-DIET-FAT": {
+      "title": "Ruokavalion rasvojen laatu",
+      "text": "Suosi kasviöljyjä, pähkinöitä ja kalaa. Kasviksia, marjoja ja täysjyväviljaa kannattaa syödä päivittäin. Pienetkin pysyvät muutokset ovat hyödyllisiä.",
+      "approvedBy": "Lääkäri (demo)",
+      "approvedAt": "2026-05-20"
+    },
+    "GUIDE-SLEEP-ROUTINE": {
+      "title": "Säännöllinen unirytmi",
+      "text": "Mene nukkumaan ja herää suunnilleen samaan aikaan myös vapaapäivinä. Rauhoita viimeinen tunti ennen nukkumaanmenoa ja vältä kirkkaita näyttöjä. Pienetkin muutokset rytmissä näkyvät usein palautumisessa.",
+      "approvedBy": "Sairaanhoitaja (demo)",
+      "approvedAt": "2026-06-01"
+    },
+    "GUIDE-RECOVERY-LOAD": {
+      "title": "Palautuminen kuormittavana aikana",
+      "text": "Kuormittavana aikana lyhytkin rauhoittumishetki päivässä auttaa: esimerkiksi 10 minuutin kävely ulkona tai rauhallinen hengittely ennen nukkumaanmenoa. Kevennä liikuntaa hetkeksi, jos olo on väsynyt.",
+      "approvedBy": "Sairaanhoitaja (demo)",
+      "approvedAt": "2026-06-01"
+    }
+  },
+  "serviceContacts": {
+    "NURSE_LINE": {
+      "label": "Terveysaseman hoitajan puhelinpalvelu (synteettinen)",
+      "details": "Arkisin klo 8–15, puh. 000 000 000 (demo)"
+    },
+    "LAB_BOOKING": {
+      "label": "Laboratorion ajanvaraus (synteettinen)",
+      "details": "Digipalvelu tai puh. 000 000 001 (demo)"
+    },
+    "EMERGENCY": {
+      "label": "Hätänumero 112",
+      "details": "Akuutissa hätätilanteessa"
+    }
+  },
+  "themes": {
+    "blood_pressure": {
+      "name": "Verenpaineen omaseuranta",
+      "userTopic": "verenpainetta",
+      "objective": "Pitää omahoito käynnissä vastaanottojen välissä: kotimittausten säännöllisyys ja yksi pieni liikunta-askel kerrallaan hoitajan kanssa sovitun suunnitelman mukaisesti.",
+      "rationaleTemplate": "Terveystiedoissa on diagnoosi {diagnosis}, verenpainelääkitys ja hoitajan kirjaus sovituista kotimittauksista ja liikuntatavoitteesta.",
+      "triggerDiagnosisCodes": [
+        "I10"
+      ],
+      "measurementCode": "BP",
+      "topic": "verenpaine",
+      "defaultOwnerRole": "nurse",
+      "priority": "normal",
+      "reviewLabel": "Verenpaineen omaseurannan arvio hoitajan kanssa",
+      "defaults": {
+        "measurementsPerWeek": 2,
+        "checkInEveryDays": 7,
+        "reviewAfterDays": 90,
+        "demoTarget": {
+          "systolic": 135,
+          "diastolic": 85,
+          "label": "Kotimittausten keskiarvo alle 135/85 mmHg",
+          "setBy": "Ammattilaisen asettama demo-arvo, ei hoitosuositus"
+        },
+        "goal": {
+          "label": "kaksi 30 minuutin kävelyä viikossa",
+          "activity": "kävely",
+          "timesPerWeek": 2,
+          "minutes": 30,
+          "minTimesPerWeek": 1,
+          "maxTimesPerWeek": 3
+        }
+      },
+      "signals": [
+        {
+          "id": "SIG-BP-FREQ",
+          "kind": "measurement_frequency",
+          "label": "Sovitut kotimittaukset edellisen tarkistuksen jälkeen",
+          "params": {}
+        },
+        {
+          "id": "SIG-BP-AVG",
+          "kind": "measurement_average",
+          "label": "Viimeisimpien kotimittausten keskiarvo suhteessa sovittuun tavoitetasoon",
+          "params": {
+            "lookbackDays": 21,
+            "maxMeasurements": 4,
+            "minMeasurements": 2
+          }
+        },
+        {
+          "id": "SIG-BP-TREND",
+          "kind": "measurement_trend",
+          "label": "Keskiarvon muutos aiempiin mittauksiin",
+          "params": {
+            "riseMmHg": 3
+          }
+        },
+        {
+          "id": "SIG-GOAL",
+          "kind": "goal_completion",
+          "label": "Omahoitotavoitteen toteutuminen",
+          "params": {}
+        },
+        {
+          "id": "SIG-REVIEW",
+          "kind": "review_date",
+          "label": "Seurannan tarkistuspäivä lähestyy",
+          "params": {
+            "daysBefore": 7
+          }
+        },
+        {
+          "id": "SIG-STALE",
+          "kind": "data_freshness",
+          "label": "Kotimittausten ajantasaisuus",
+          "params": {
+            "maxAgeDays": 14
+          }
+        },
+        {
+          "id": "SIG-SELF",
+          "kind": "self_report",
+          "label": "Käyttäjän ilmoittama uusi huoli",
+          "params": {}
+        },
+        {
+          "id": "SIG-CONTACT",
+          "kind": "contact_pattern",
+          "label": "Toistuvat yhteydenotot samasta aiheesta",
+          "params": {
+            "windowDays": 60,
+            "minContacts": 2
+          }
+        },
+        {
+          "id": "SIG-SAFETY",
+          "kind": "safety_threshold",
+          "label": "Yksittäinen kotimittaus demo-turvarajan yläpuolella",
+          "params": {
+            "systolic": 180,
+            "diastolic": 110
+          }
+        }
+      ],
+      "allowedActions": [
+        "reminder",
+        "clarifying_question",
+        "offer_home_monitoring",
+        "check_in",
+        "show_guide",
+        "propose_small_goal",
+        "adjust_goal",
+        "schedule_check",
+        "show_service_contact",
+        "assess_care_need",
+        "escalate"
+      ],
+      "microInterventions": [
+        "goal_progress",
+        "measurement_status",
+        "barrier",
+        "smaller_goal",
+        "step_up",
+        "wellbeing",
+        "usefulness"
+      ],
+      "guides": [
+        "GUIDE-BP-HOME",
+        "GUIDE-WALK-SMALL"
+      ],
+      "serviceContact": "NURSE_LINE",
+      "escalationRules": [
+        {
+          "id": "ESC-BP-001",
+          "name": "Tavoite ei toteudu ja keskiarvo on tavoitetason yläpuolella",
+          "description": "JOS omahoitotavoite ei ole toteutunut kahdella peräkkäisellä viikkotarkistuksella JA viimeisimpien kotimittausten keskiarvo on suunnitelman tavoitetason yläpuolella, NIIN agentti tekee automaattisen hoidon tarpeen arvion (kiireetön) ja ohjaa tilanteen vastuuammattilaiselle.",
+          "kind": "goal_failures_and_above_target",
+          "params": {
+            "goalFailuresInRow": 2
+          },
+          "urgency": "routine",
+          "urgencyLabel": "Kiireetön",
+          "handlingTime": "5 arkipäivän kuluessa"
+        },
+        {
+          "id": "ESC-BP-002",
+          "name": "Yksittäinen kotimittaus demo-turvarajan yläpuolella",
+          "description": "JOS yksittäinen kotimittaus on vähintään 180/110 mmHg (demo-turvaraja), NIIN agentti tekee automaattisen hoidon tarpeen arvion (kiireellinen, samana päivänä), näyttää käyttäjälle ennalta määritellyn yhteydenotto-ohjeen ja ohjaa tilanteen vastuuammattilaiselle samana päivänä.",
+          "kind": "safety_threshold",
+          "params": {
+            "systolic": 180,
+            "diastolic": 110
+          },
+          "urgency": "same_day",
+          "urgencyLabel": "Kiireellinen – samana päivänä",
+          "handlingTime": "samana päivänä"
+        },
+        {
+          "id": "ESC-BP-003",
+          "name": "Seurannan tiedot puuttuvat",
+          "description": "JOS kotimittauksia ei ole kirjattu 21 päivään ja muistutuksia on lähetetty vähintään kaksi, NIIN agentti tekee automaattisen hoidon tarpeen arvion (kiireetön) ja ohjaa tilanteen vastuuammattilaiselle.",
+          "kind": "data_missing",
+          "params": {
+            "days": 21,
+            "minReminders": 2
+          },
+          "urgency": "routine",
+          "urgencyLabel": "Kiireetön",
+          "handlingTime": "5 arkipäivän kuluessa"
+        },
+        {
+          "id": "ESC-BP-004",
+          "name": "Kotiseurannan keskiarvo selvästi tavoitetason yläpuolella",
+          "description": "JOS kolmen päivän kotiseurannan keskiarvo on vähintään 145/90 mmHg (demo-raja), NIIN omahoito ei yksin riitä: agentti tekee automaattisen hoidon tarpeen arvion (kiireetön) ja ohjaa tilanteen vastuuammattilaiselle.",
+          "kind": "home_monitoring_above",
+          "params": {
+            "systolic": 145,
+            "diastolic": 90
+          },
+          "urgency": "routine",
+          "urgencyLabel": "Kiireetön",
+          "handlingTime": "5 arkipäivän kuluessa"
+        },
+        {
+          "id": "ESC-USER-001",
+          "name": "Käyttäjä pyytää ammattilaisen arviota tai yhteydenottoa",
+          "description": "JOS käyttäjä pyytää ammattilaisen tekemää arviota tai yhteydenottoa (esimerkiksi kivun tai vaivan vuoksi), NIIN automaattinen arvio jää taustatiedoksi ja tilanne ohjataan vastuuammattilaiselle, joka tekee hoidon tarpeen arvion.",
+          "kind": "user_request",
+          "params": {},
+          "urgency": "soon",
+          "urgencyLabel": "Kiirevastaanotto 3 arkipäivän kuluessa",
+          "handlingTime": "3 arkipäivän kuluessa"
+        }
+      ],
+      "outreachRules": [
+        {
+          "id": "OUT-BP-001",
+          "kind": "home_monitoring_offer",
+          "name": "Kotimittausten taso on noussut",
+          "description": "JOS kotimittausten keskiarvo on noussut aiempiin kotimittauksiin verrattuna (vähintään 3 mmHg, signaali SIG-BP-TREND) eikä kotiseurantaa ole ehdotettu 14 päivän aikana, NIIN agentti ottaa itse yhteyttä ja ehdottaa kolmen päivän kotiseurantaa (mittaus aamulla ja illalla). Käyttäjä päättää, aloitetaanko.",
+          "params": {
+            "signals": [
+              "trend_rising"
+            ],
+            "days": 3,
+            "perDay": 2,
+            "cooldownDays": 14,
+            "offerValidDays": 7,
+            "minReadings": 4
+          }
+        }
+      ],
+      "noteKeywords": [
+        "kotimittau",
+        "verenpain",
+        "kävely"
+      ],
+      "selfReportTopics": [
+        "liikunta",
+        "verenpaine"
+      ]
+    },
+    "lipids": {
+      "name": "Kolesteroliarvojen seuranta",
+      "userTopic": "kolesteroliarvoja",
+      "objective": "Pitää laboratoriokontrollit sovitussa aikataulussa ja tukea ruokavaliomuutosten ylläpitoa.",
+      "userGoal": "Ruokavaliomuutosten ylläpito ja LDL-kolesterolin laboratoriokontrollit sovitussa aikataulussa",
+      "rationaleTemplate": "Terveystiedoissa on diagnoosi {diagnosis} ja LDL-kolesterolin laboratoriotuloksia. Lääkäri on hyväksynyt perimätiedon havainnon seurannan taustatiedoksi.",
+      "triggerDiagnosisCodes": [
+        "E78.0"
+      ],
+      "measurementCode": "LDL",
+      "topic": "kolesteroli",
+      "defaultOwnerRole": "physician",
+      "priority": "low",
+      "reviewLabel": "LDL-kolesterolin laboratoriokontrolli",
+      "defaults": {
+        "measurementsPerWeek": 0,
+        "checkInEveryDays": 90,
+        "reviewAfterDays": 180
+      },
+      "signals": [
+        {
+          "id": "SIG-REVIEW",
+          "kind": "review_date",
+          "label": "Laboratoriokontrolli lähestyy",
+          "params": {
+            "daysBefore": 14
+          }
+        },
+        {
+          "id": "SIG-LAB-STALE",
+          "kind": "data_freshness",
+          "label": "Laboratoriotuloksen ajantasaisuus",
+          "params": {
+            "maxAgeDays": 365
+          }
+        },
+        {
+          "id": "SIG-RULE-OBS",
+          "kind": "rule_engine_observation",
+          "label": "Sääntömoottorin avoin huomio (perimähavainto ja LDL)",
+          "params": {}
+        }
+      ],
+      "allowedActions": [
+        "reminder",
+        "show_guide",
+        "schedule_check",
+        "show_service_contact",
+        "assess_care_need",
+        "escalate"
+      ],
+      "microInterventions": [],
+      "guides": [
+        "GUIDE-DIET-FAT"
+      ],
+      "serviceContact": "LAB_BOOKING",
+      "escalationRules": [
+        {
+          "id": "ESC-GEN-USER",
+          "name": "Käyttäjä pyytää ammattilaisen arviota",
+          "description": "JOS käyttäjä pyytää ammattilaisen tekemää arviota, NIIN automaattinen arvio jää taustatiedoksi ja tilanne ohjataan vastuuammattilaiselle, joka tekee hoidon tarpeen arvion.",
+          "kind": "user_request",
+          "params": {},
+          "urgency": "soon",
+          "urgencyLabel": "Kiirevastaanotto 3 arkipäivän kuluessa",
+          "handlingTime": "3 arkipäivän kuluessa"
+        }
+      ],
+      "noteKeywords": [
+        "ldl",
+        "kolesterol",
+        "perimä"
+      ],
+      "selfReportTopics": [
+        "ruokavalio",
+        "kolesteroli"
+      ]
+    },
+    "glucose": {
+      "name": "Verensokerin seuranta",
+      "userTopic": "verensokeria",
+      "objective": "Tukea verensokerin seurantaa sovitun suunnitelman mukaisesti.",
+      "rationaleTemplate": "Terveystiedoissa on diagnoosi {diagnosis}.",
+      "triggerDiagnosisCodes": [
+        "E11",
+        "R73.0"
+      ],
+      "measurementCode": "GLU",
+      "topic": "verensokeri",
+      "defaultOwnerRole": "nurse",
+      "priority": "normal",
+      "reviewLabel": "Verensokerin seurannan arvio",
+      "defaults": {
+        "measurementsPerWeek": 0,
+        "checkInEveryDays": 30,
+        "reviewAfterDays": 180
+      },
+      "signals": [],
+      "allowedActions": [
+        "reminder",
+        "check_in",
+        "show_guide",
+        "show_service_contact",
+        "assess_care_need",
+        "escalate"
+      ],
+      "microInterventions": [],
+      "guides": [],
+      "serviceContact": "NURSE_LINE",
+      "escalationRules": [
+        {
+          "id": "ESC-GEN-USER",
+          "name": "Käyttäjä pyytää ammattilaisen arviota",
+          "description": "JOS käyttäjä pyytää ammattilaisen tekemää arviota, NIIN automaattinen arvio jää taustatiedoksi ja tilanne ohjataan vastuuammattilaiselle, joka tekee hoidon tarpeen arvion.",
+          "kind": "user_request",
+          "params": {},
+          "urgency": "soon",
+          "urgencyLabel": "Kiirevastaanotto 3 arkipäivän kuluessa",
+          "handlingTime": "3 arkipäivän kuluessa"
+        }
+      ],
+      "noteKeywords": [
+        "sokeri",
+        "glukoosi"
+      ],
+      "selfReportTopics": []
+    }
+  },
+  "geneticLinking": {
+    "description": "Terveystietojen ja DNA-analyysin havaintojen linkitys terveysteemoittain käyttäjän pyynnöstä. Sääntöpohjainen: havainnon geeni (tai sen sairausmerkintä) yhdistetään teeman diagnooseihin, laboratoriotutkimuksiin, mittauksiin, lääkitykseen ja kirjauksiin. Jokainen DNA-analyysin havainto näytetään, myös ilman liittyviä terveystietoja. Linkitys ei ole diagnoosi eikä muuta seurantaa: vain ammattilaisen hyväksymä havainto voi olla seurannan taustatietona.",
+    "themes": [
+      {
+        "id": "cholesterol",
+        "label": "Kohonnut kolesteroli",
+        "healthThemeId": "lipids",
+        "genes": [
+          "LDLR",
+          "APOE",
+          "APOB",
+          "PCSK9",
+          "LDLRAP1"
+        ],
+        "conditionKeywords": [
+          "kolesteroli",
+          "hypercholesterol",
+          "hyperlipo",
+          "rasva-aineenvaihdun"
+        ],
+        "diagnosisPrefixes": [
+          "E78"
+        ],
+        "labCodes": [
+          "LDL",
+          "CHOL",
+          "HDL",
+          "TRIG",
+          "NONHDL",
+          "APOB",
+          "LPA"
+        ],
+        "medicationPurposes": [
+          "kolesteroli"
+        ],
+        "textKeywords": [
+          "kolesterol",
+          "ldl",
+          "lipid"
+        ],
+        "reason": "DNA-analyysin havainto liittyy rasva-aineenvaihduntaan ja LDL-kolesteroliin. Terveystiedoissa on kolesterolidiagnoosi, lipiditutkimuksia ja niihin liittyviä kirjauksia."
+      },
+      {
+        "id": "blood_pressure",
+        "label": "Kohonnut verenpaine",
+        "healthThemeId": "blood_pressure",
+        "genes": [],
+        "conditionKeywords": [
+          "hypertension",
+          "verenpaine"
+        ],
+        "diagnosisPrefixes": [
+          "I10",
+          "I11",
+          "I15"
+        ],
+        "vitalCodes": [
+          "BP"
+        ],
+        "medicationPurposes": [
+          "verenpaine"
+        ],
+        "textKeywords": [
+          "verenpaine",
+          "kotimittau"
+        ],
+        "reason": "DNA-analyysin havainto liittyy verenpaineeseen."
+      },
+      {
+        "id": "glucose",
+        "label": "Sokeriaineenvaihdunta",
+        "healthThemeId": "glucose",
+        "genes": [
+          "TCF7L2",
+          "HNF1A",
+          "HNF4A",
+          "GCK"
+        ],
+        "conditionKeywords": [
+          "diabetes",
+          "glukoosi"
+        ],
+        "diagnosisPrefixes": [
+          "E10",
+          "E11",
+          "R73"
+        ],
+        "labCodes": [
+          "GLU",
+          "HBA1C"
+        ],
+        "medicationPurposes": [
+          "verensokeri"
+        ],
+        "textKeywords": [
+          "verensokeri",
+          "diabetes"
+        ],
+        "reason": "DNA-analyysin havainto liittyy sokeriaineenvaihduntaan."
+      },
+      {
+        "id": "homocysteine",
+        "label": "Homokysteiini ja verisuonten terveys",
+        "genes": [
+          "MTHFR"
+        ],
+        "conditionKeywords": [
+          "homokysteiini",
+          "homocyst"
+        ],
+        "labCodes": [
+          "HCY"
+        ],
+        "textKeywords": [
+          "homokysteiini",
+          "verisuon"
+        ],
+        "reason": "Homokysteiini liittyy verisuonten terveyteen. Terveystiedoissa on sydän- ja verisuoniterveyteen liittyviä diagnooseja.",
+        "diagnosisPrefixes": [
+          "I10",
+          "I11",
+          "I20",
+          "I21",
+          "I25",
+          "I63",
+          "E78"
+        ]
+      },
+      {
+        "id": "coagulation",
+        "label": "Veren hyytyminen",
+        "genes": [
+          "F5",
+          "F2"
+        ],
+        "conditionKeywords": [
+          "tukos",
+          "thromb",
+          "hyytym"
+        ],
+        "diagnosisPrefixes": [
+          "I26",
+          "I80",
+          "I82"
+        ],
+        "medicationKeywords": [
+          "varfariini",
+          "hepariini",
+          "apiksabaani",
+          "rivaroksabaani"
+        ],
+        "textKeywords": [
+          "tukos"
+        ],
+        "reason": "DNA-analyysin havainto liittyy veren hyytymiseen."
+      },
+      {
+        "id": "drug_response",
+        "label": "Lääkeaineiden käsittely",
+        "genes": [
+          "CYP2C19",
+          "CYP2C9",
+          "CYP2D6",
+          "SLCO1B1",
+          "VKORC1"
+        ],
+        "conditionKeywords": [
+          "lääkevaste",
+          "response"
+        ],
+        "medicationKeywords": [
+          "klopidogreeli",
+          "varfariini"
+        ],
+        "reason": "Lääkevasteeseen liittyvä tieto huomioidaan, kun lääkitystä määrätään tai muutetaan. Havainto on linkitetty lääkityslistaan.",
+        "allMedications": true
+      },
+      {
+        "id": "hereditary_cancer",
+        "label": "Perinnöllinen syöpäalttius",
+        "genes": [
+          "TP53",
+          "BRCA1",
+          "BRCA2",
+          "MLH1",
+          "MSH2"
+        ],
+        "conditionKeywords": [
+          "syöpä",
+          "cancer",
+          "li-fraumeni"
+        ],
+        "diagnosisPrefixes": [
+          "C"
+        ],
+        "textKeywords": [
+          "syöpä"
+        ],
+        "reason": "DNA-analyysin havainto liittyy perinnölliseen syöpäalttiuteen."
+      }
+    ],
+    "other": {
+      "id": "other",
+      "label": "Muut DNA-analyysin havainnot",
+      "reason": "Havainnolle ei ole määritelty terveysaihetta, joten siihen ei liitetä terveystietoja."
+    },
+    "keyMeasurements": {
+      "_huom": "Mittaukset, joihin DNA-analyysin havainto suoraan liittyy (geeni → laboratorio- tai mittauskoodit). Nostetaan linkityksessä omaksi taulukokseen.",
+      "LDLR": [
+        "LDL"
+      ],
+      "APOB": [
+        "LDL",
+        "APOB"
+      ],
+      "PCSK9": [
+        "LDL"
+      ],
+      "LDLRAP1": [
+        "LDL"
+      ],
+      "APOE": [
+        "LDL",
+        "CHOL",
+        "TRIG"
+      ],
+      "MTHFR": [
+        "HCY"
+      ],
+      "TCF7L2": [
+        "GLU",
+        "HBA1C"
+      ],
+      "HNF1A": [
+        "GLU",
+        "HBA1C"
+      ],
+      "HNF4A": [
+        "GLU",
+        "HBA1C"
+      ],
+      "GCK": [
+        "GLU",
+        "HBA1C"
+      ]
+    }
+  },
+  "continuity": {
+    "name": "Omahoidon jatkuvuuden moottori",
+    "tagline": "Pitää omahoidon käynnissä arjessa myös vastaanottojen välissä.",
+    "coreTasks": [
+      {
+        "id": "remember",
+        "title": "Muistan puolestasi",
+        "text": "Tavoitteesi, ammattilaisen kanssa sovitut asiat, mitä seuraat, mitä olet jo kokeillut, mikä toimii sinulla ja milloin asia tarkistetaan uudelleen."
+      },
+      {
+        "id": "reach_out",
+        "title": "Otan itse yhteyttä",
+        "text": "Kun seurannassa tapahtuu jotain, kysyn ja ehdotan itse – sinun ei tarvitse muistaa kysyä."
+      },
+      {
+        "id": "one_step",
+        "title": "Yksi askel kerrallaan",
+        "text": "Yksi realistinen askel seitsemäksi päiväksi. Palautteesi perusteella askel mukautetaan: tavoite, teko, palaute, mukautus ja uusi teko."
+      },
+      {
+        "id": "notice",
+        "title": "Huomaan, milloin omahoito ei riitä",
+        "text": "Seuraan samalla, jatketaanko omahoitoa, muutetaanko suunnitelmaa vai tarvitaanko ammattilaista. Suunta tulee ammattilaisen hyväksymistä säännöistä."
+      }
+    ],
+    "loopStages": [
+      {
+        "id": "goal",
+        "label": "Tavoite"
+      },
+      {
+        "id": "action",
+        "label": "Teko"
+      },
+      {
+        "id": "feedback",
+        "label": "Palaute"
+      },
+      {
+        "id": "adaptation",
+        "label": "Mukautus"
+      },
+      {
+        "id": "next",
+        "label": "Uusi teko"
+      }
+    ],
+    "directions": {
+      "continue": {
+        "label": "Jatketaan omahoitoa",
+        "detail": "Omahoito etenee suunnitelman mukaan."
+      },
+      "adjust": {
+        "label": "Muutetaan suunnitelmaa",
+        "detail": "Mukautan askelta ja seurantaa ammattilaisen hyväksymissä rajoissa."
+      },
+      "professional": {
+        "label": "Tarvitaan ammattilaista",
+        "detail": "Omahoito ei yksin riitä, joten ammattilainen on otettu mukaan."
+      },
+      "pending": {
+        "label": "Odottaa ammattilaisen hyväksyntää",
+        "detail": "Seuranta alkaa, kun ammattilainen on hyväksynyt suunnitelman."
+      },
+      "paused": {
+        "label": "Tauolla",
+        "detail": "Seuranta on tauolla pyynnöstäsi."
+      }
+    },
+    "noteRules": [
+      {
+        "kind": "works",
+        "patterns": [
+          "laskenut",
+          "laski",
+          "parantunut",
+          "onnistu"
+        ]
+      },
+      {
+        "kind": "barrier",
+        "patterns": [
+          "kiirei",
+          "väsymy",
+          "ei ole ehtinyt"
+        ]
+      },
+      {
+        "kind": "agreed",
+        "patterns": [
+          "sovit",
+          "tavoitteeksi",
+          "toivoo muistutuksia"
+        ]
+      },
+      {
+        "kind": "tried",
+        "patterns": [
+          "ohjaus",
+          "ohjattu",
+          "keskusteltu",
+          "suositeltu",
+          "kokeil"
+        ]
+      },
+      {
+        "kind": "recheck",
+        "patterns": [
+          "kontrolli",
+          "tarkistus"
+        ]
+      }
+    ],
+    "noteExcludePatterns": [
+      "perimä",
+      "geeni",
+      "lääki",
+      "lääke",
+      "diagnoos",
+      "todettu"
+    ],
+    "notice": "Muisti kootaan sääntöjen perusteella suunnitelmista, ammattilaisten kirjauksista ja vastauksistasi. Kielimalli ei tee päätöksiä."
+  },
+  "wellbeingData": {
+    "description": "Hyvinvointidata: Apple Healthista (iPhone / Apple Watch) synkronoidut päivittäiset yhteenvedot. Yksi lisätietolähde samalle hyvinvointikumppanille, ei erillinen tuote. Muutoksia verrataan käyttäjän omaan tasoon (henkilökohtainen perustaso), ei väestön keskiarvoihin. Kynnysarvot ovat demo-policyja, jotka tunnistavat mahdollisesti merkityksellisen muutoksen – ne eivät ole hoitosuosituksia eivätkä tee diagnooseja.",
+    "sources": {
+      "apple_health": "Apple Health",
+      "synthetic_demo": "Synteettinen testidata (Apple Health -muotoinen)"
+    },
+    "permissionText": "Hyvinvointikumppani käyttää valitsemiasi terveystietoja henkilökohtaisten hyvinvointitrendien muodostamiseen ja sovittujen seurattavien asioiden seuraamiseen.",
+    "windows": {
+      "currentDays": 7,
+      "recentDays": 30,
+      "baselineDays": 90,
+      "baselineGapDays": 30,
+      "minBaselineValues": 14,
+      "minCurrentValues": 4,
+      "sparseLookbackDays": 21
+    },
+    "metrics": [
+      {
+        "id": "steps",
+        "label": "Askeleet",
+        "unit": "askelta",
+        "healthKit": "HKQuantityTypeIdentifierStepCount",
+        "aggregation": "sum",
+        "kind": "daily",
+        "format": "integer",
+        "favorable": "up",
+        "range": [
+          0,
+          100000
+        ],
+        "change": {
+          "relative": 0.15
+        }
+      },
+      {
+        "id": "sleepMinutes",
+        "label": "Uni",
+        "unit": "min",
+        "healthKit": "HKCategoryTypeIdentifierSleepAnalysis",
+        "aggregation": "sum",
+        "kind": "daily",
+        "format": "duration",
+        "favorable": "up",
+        "range": [
+          0,
+          1440
+        ],
+        "change": {
+          "absolute": 30
+        }
+      },
+      {
+        "id": "restingHeartRate",
+        "label": "Leposyke",
+        "unit": "bpm",
+        "healthKit": "HKQuantityTypeIdentifierRestingHeartRate",
+        "aggregation": "average",
+        "kind": "daily",
+        "format": "integer",
+        "favorable": "down",
+        "range": [
+          25,
+          150
+        ],
+        "change": {
+          "absolute": 3,
+          "relative": 0.05
+        }
+      },
+      {
+        "id": "hrvMs",
+        "label": "HRV",
+        "unit": "ms",
+        "healthKit": "HKQuantityTypeIdentifierHeartRateVariabilitySDNN",
+        "aggregation": "average",
+        "kind": "daily",
+        "format": "integer",
+        "favorable": "up",
+        "range": [
+          1,
+          400
+        ],
+        "change": {
+          "relative": 0.12
+        }
+      },
+      {
+        "id": "activeEnergyKcal",
+        "label": "Aktiivinen energia",
+        "unit": "kcal",
+        "healthKit": "HKQuantityTypeIdentifierActiveEnergyBurned",
+        "aggregation": "sum",
+        "kind": "daily",
+        "format": "integer",
+        "favorable": "up",
+        "range": [
+          0,
+          10000
+        ],
+        "change": {
+          "relative": 0.15
+        }
+      },
+      {
+        "id": "workoutMinutes",
+        "label": "Liikuntasuoritukset",
+        "unit": "min",
+        "healthKit": "HKWorkoutType",
+        "aggregation": "sum",
+        "kind": "daily",
+        "format": "integer",
+        "favorable": "up",
+        "range": [
+          0,
+          1440
+        ],
+        "zeroIsValue": true,
+        "change": {
+          "relative": 0.4,
+          "absolute": 5
+        }
+      },
+      {
+        "id": "weightKg",
+        "label": "Paino",
+        "unit": "kg",
+        "healthKit": "HKQuantityTypeIdentifierBodyMass",
+        "aggregation": "latest",
+        "kind": "sparse",
+        "format": "decimal1",
+        "favorable": "none",
+        "range": [
+          20,
+          400
+        ],
+        "change": {
+          "relative": 0.03
+        }
+      },
+      {
+        "id": "vo2Max",
+        "label": "VO2 max",
+        "unit": "ml/kg/min",
+        "healthKit": "HKQuantityTypeIdentifierVO2Max",
+        "aggregation": "latest",
+        "kind": "sparse",
+        "format": "decimal1",
+        "favorable": "up",
+        "range": [
+          10,
+          100
+        ],
+        "change": {
+          "relative": 0.04
+        }
+      }
+    ],
+    "futureMetrics": [
+      {
+        "id": "bloodPressureSystolic",
+        "healthKit": "HKQuantityTypeIdentifierBloodPressureSystolic"
+      },
+      {
+        "id": "bloodPressureDiastolic",
+        "healthKit": "HKQuantityTypeIdentifierBloodPressureDiastolic"
+      },
+      {
+        "id": "respiratoryRate",
+        "healthKit": "HKQuantityTypeIdentifierRespiratoryRate"
+      },
+      {
+        "id": "oxygenSaturation",
+        "healthKit": "HKQuantityTypeIdentifierOxygenSaturation"
+      },
+      {
+        "id": "walkingHeartRate",
+        "healthKit": "HKQuantityTypeIdentifierWalkingHeartRateAverage"
+      },
+      {
+        "id": "bloodGlucose",
+        "healthKit": "HKQuantityTypeIdentifierBloodGlucose"
+      },
+      {
+        "id": "bodyTemperature",
+        "healthKit": "HKQuantityTypeIdentifierBodyTemperature"
+      },
+      {
+        "id": "menstrualFlow",
+        "healthKit": "HKCategoryTypeIdentifierMenstrualFlow"
+      }
+    ],
+    "monitoringAreas": [
+      {
+        "id": "recovery",
+        "label": "Palautuminen",
+        "metrics": [
+          "restingHeartRate",
+          "hrvMs",
+          "sleepMinutes"
+        ],
+        "basis": "user",
+        "defaultOn": true,
+        "reason": "Seuraat palautumistasi hyvinvointikumppanin kanssa.",
+        "noteGenitive": "palautumisen",
+        "guides": [
+          "GUIDE-SLEEP-ROUTINE",
+          "GUIDE-RECOVERY-LOAD"
+        ]
+      },
+      {
+        "id": "activity",
+        "label": "Aktiivisuus ja kunto",
+        "metrics": [
+          "steps",
+          "activeEnergyKcal",
+          "workoutMinutes",
+          "vo2Max"
+        ],
+        "basis": "user",
+        "defaultOn": false,
+        "reason": "Seuraat aktiivisuuttasi ja kuntoasi hyvinvointikumppanin kanssa.",
+        "noteGenitive": "aktiivisuuden ja kunnon",
+        "guides": [
+          "GUIDE-WALK-SMALL"
+        ]
+      },
+      {
+        "id": "blood_pressure",
+        "label": "Verenpaine",
+        "planTheme": "blood_pressure",
+        "metrics": [
+          "steps",
+          "activeEnergyKcal",
+          "weightKg"
+        ],
+        "basis": "plan",
+        "reason": "Verenpaineen omaseurannassa on hoitajan kanssa sovittu liikunta-askel.",
+        "noteGenitive": "verenpaineen omaseurannan",
+        "guides": [
+          "GUIDE-WALK-SMALL"
+        ]
+      },
+      {
+        "id": "lipids",
+        "label": "Kolesteroli",
+        "planTheme": "lipids",
+        "metrics": [
+          "weightKg"
+        ],
+        "basis": "plan",
+        "reason": "Kolesteroliarvojen seurannassa tuetaan elintapamuutosten ylläpitoa.",
+        "noteGenitive": "kolesteroliseurannan",
+        "guides": [
+          "GUIDE-DIET-FAT"
+        ]
+      }
+    ],
+    "observations": {
+      "cooldownDays": 14,
+      "proactiveCooldownDays": 7,
+      "followUpDays": 7
+    },
+    "pairing": {
+      "codeTtlMinutes": 10,
+      "maxDaysPerSync": 400
+    }
+  }
+}

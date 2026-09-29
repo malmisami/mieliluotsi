@@ -1,0 +1,207 @@
+{
+  "_huom": "Täysin synteettinen demohenkilö. Rakenne jäljittelee hyvinvointialueen tietopoimintaa, mutta kentät eivät vastaa mitään todellista järjestelmää.",
+  "henkilo": {
+    "asiakasTunnus": "SYN-AINO-0046",
+    "nimi": "Aino Demo",
+    "syntymavuosi": 1980,
+    "sukupuoli": "nainen",
+    "alue": "Länsi-Uusimaa (synteettinen)"
+  },
+  "hoitojaksot": [
+    {
+      "tunnus": "HJ-2008-01",
+      "pvm": "2008-03-11",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Kurkkukipu ja kuume kolmen päivän ajan."
+    },
+    {
+      "tunnus": "HJ-2011-01",
+      "pvm": "2011-05-23",
+      "tyyppi": "Työhöntulotarkastus",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "terveydenhoitaja",
+      "kuvaus": "Työhöntulotarkastus uuden työsuhteen alkaessa."
+    },
+    {
+      "tunnus": "HJ-2013-01",
+      "pvm": "2013-10-02",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Alaselkäkipu nostamisen jälkeen."
+    },
+    {
+      "tunnus": "HJ-2013-02",
+      "pvm": "2013-10-09",
+      "tyyppi": "Fysioterapeutin vastaanotto",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "fysioterapeutti",
+      "kuvaus": "Alaselkäkivun ohjauskäynti."
+    },
+    {
+      "tunnus": "HJ-2014-01",
+      "pvm": "2014-11-18",
+      "tyyppi": "Määräaikainen terveystarkastus",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "terveydenhoitaja",
+      "kuvaus": "Työterveyshuollon määräaikainen terveystarkastus."
+    },
+    {
+      "tunnus": "HJ-2016-01",
+      "pvm": "2016-02-08",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Kuume, lihassärky ja yskä."
+    },
+    {
+      "tunnus": "HJ-2018-01",
+      "pvm": "2018-04-12",
+      "tyyppi": "Määräaikainen terveystarkastus",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "terveydenhoitaja",
+      "kuvaus": "Työterveyshuollon määräaikainen terveystarkastus."
+    },
+    {
+      "tunnus": "HJ-2019-01",
+      "pvm": "2019-09-03",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Oikean nilkan vääntyminen lenkillä."
+    },
+    {
+      "tunnus": "HJ-2022-01",
+      "pvm": "2022-05-10",
+      "tyyppi": "Määräaikainen terveystarkastus",
+      "yksikko": "Työterveyshuolto (synteettinen)",
+      "ammattilainen": "terveydenhoitaja",
+      "kuvaus": "Työterveyshuollon määräaikainen terveystarkastus."
+    },
+    {
+      "tunnus": "HJ-2024-01",
+      "pvm": "2024-11-12",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Kohonneiden verenpainearvojen arvio."
+    },
+    {
+      "tunnus": "HJ-01",
+      "pvm": "2025-01-10",
+      "tyyppi": "Lääkärin vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Verenpaineen arvio ja lääkityksen aloitus."
+    },
+    {
+      "tunnus": "HJ-02",
+      "pvm": "2026-05-20",
+      "tyyppi": "Lääkärin etävastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "lääkäri",
+      "kuvaus": "Kolesteroliarvojen seuranta ja perimätiedon havainnon läpikäynti."
+    },
+    {
+      "tunnus": "HJ-03",
+      "pvm": "2026-08-20",
+      "tyyppi": "Hoitajan vastaanotto",
+      "yksikko": "Terveysasema (synteettinen)",
+      "ammattilainen": "sairaanhoitaja",
+      "kuvaus": "Verenpaineen seurantakäynti."
+    }
+  ],
+  "kirjaukset": [
+    {
+      "tunnus": "KIR-2008-01",
+      "pvm": "2008-03-11",
+      "laatija": "lääkäri",
+      "teksti": "Nielu punoittava, peitteitä risoissa. Streptokokin pikatesti positiivinen. Aloitettu antibioottikuuri 10 vuorokaudeksi. Kontrolli tarvittaessa."
+    },
+    {
+      "tunnus": "KIR-2011-01",
+      "pvm": "2011-05-23",
+      "laatija": "terveydenhoitaja",
+      "teksti": "Terve, ei säännöllisiä lääkityksiä. Verenpaine 118/76 mmHg. Ei esteitä työhön."
+    },
+    {
+      "tunnus": "KIR-2013-01",
+      "pvm": "2013-10-02",
+      "laatija": "lääkäri",
+      "teksti": "Alaselkäkipu alkanut nostamisen jälkeen, ei hermojuurioireita. Ohjattu liikkumaan kivun sallimissa rajoissa. Lähete työterveysfysioterapeutille."
+    },
+    {
+      "tunnus": "KIR-2013-02",
+      "pvm": "2013-10-09",
+      "laatija": "fysioterapeutti",
+      "teksti": "Lannerangan liikkuvuus lievästi rajoittunut. Kotiharjoitteet ohjattu, kontrolli tarvittaessa."
+    },
+    {
+      "tunnus": "KIR-2014-01",
+      "pvm": "2014-11-18",
+      "laatija": "terveydenhoitaja",
+      "teksti": "Yleisvointi hyvä. Verenpaine 124/80 mmHg. Kolesteroli viitealueen ylärajalla; keskusteltu ruokavaliosta ja liikunnasta."
+    },
+    {
+      "tunnus": "KIR-2016-01",
+      "pvm": "2016-02-08",
+      "laatija": "lääkäri",
+      "teksti": "Kliinisesti influenssa. Oireenmukainen hoito ja lepo, sairausloma viikon ajan."
+    },
+    {
+      "tunnus": "KIR-2018-01",
+      "pvm": "2018-04-12",
+      "laatija": "terveydenhoitaja",
+      "teksti": "Verenpaine 128/82 mmHg. LDL-kolesteroli lievästi koholla. Ruokavalio-ohjaus, kontrolli seuraavassa tarkastuksessa."
+    },
+    {
+      "tunnus": "KIR-2019-01",
+      "pvm": "2019-09-03",
+      "laatija": "lääkäri",
+      "teksti": "Oikean nilkan ulkosyrjän nyrjähdys, ei murtumaepäilyä. Kylmä, kohoasento ja tukiside. Kuormitus kivun mukaan."
+    },
+    {
+      "tunnus": "KIR-2022-01",
+      "pvm": "2022-05-10",
+      "laatija": "terveydenhoitaja",
+      "teksti": "Verenpaine 132/85 mmHg ja LDL-kolesteroli koholla. Suositeltu kotimittauksia ja laboratoriokontrollia terveysasemalla."
+    },
+    {
+      "tunnus": "KIR-2024-01",
+      "pvm": "2024-11-12",
+      "laatija": "lääkäri",
+      "teksti": "Kotimittausten keskiarvo 142/91 mmHg, vastaanotolla 144/92 mmHg. Todettu kohonnut verenpaine. Elintapaohjaus; laboratoriotutkimukset ja lääkityksen tarpeen arvio seuraavalla käynnillä."
+    },
+    {
+      "tunnus": "KIR-01",
+      "pvm": "2026-05-20",
+      "laatija": "lääkäri",
+      "teksti": "LDL-arvo laskenut ruokavaliomuutosten jälkeen. Perimätiedon LDLR-havainto (vahvistamaton, synteettinen) käyty läpi ja kirjataan kolesteroliseurannan taustatiedoksi. Laboratoriokontrolli noin puolen vuoden kuluttua."
+    },
+    {
+      "tunnus": "KIR-02",
+      "pvm": "2026-08-20",
+      "laatija": "sairaanhoitaja",
+      "teksti": "Kotimittaukset sovittu tehtäväksi kahdesti viikossa. Omahoidon tavoitteeksi sovittiin kaksi 30 minuutin kävelyä viikossa. Asiakas kertoo työn olleen kiireistä. Asiakas toivoo muistutuksia sovelluksen kautta. Kontrolli noin kolmen kuukauden kuluttua."
+    }
+  ],
+  "omailmoitukset": [],
+  "suostumukset": [
+    {
+      "tunnus": "SUO-01",
+      "pvm": "2026-05-20",
+      "kohde": "Perimätiedon käyttö seurannan taustatietona",
+      "tila": "annettu",
+      "kanava": "lääkärin etävastaanotto"
+    },
+    {
+      "tunnus": "SUO-02",
+      "pvm": "2026-08-20",
+      "kohde": "Hyvinvointikumppanin seuranta ja muistutukset",
+      "tila": "annettu",
+      "kanava": "hoitajan vastaanotto"
+    }
+  ]
+}

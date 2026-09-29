@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "valituki",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "BACKEND_PORT=8034 FRONTEND_PORT=5200 exec ./start-macos.sh"],
+      "port": 5200
+    }
+  ]
+}

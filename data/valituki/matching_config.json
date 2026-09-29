@@ -1,0 +1,69 @@
+{
+  "version": "demo-2",
+  "note": "Deterministinen, läpinäkyvä täsmäytys. Painot ovat muokattavissa tässä tiedostossa. Pisteet ovat järjestysapu, eivät kliininen todennäköisyys, eikä niitä näytetä asiakkaalle numeroina. Painot vaativat validoinnin palautteen ja ammattilaisten arvion perusteella.",
+  "weights": {
+    "goalCompetence": 30,
+    "workingStyle": 20,
+    "userPreferences": 15,
+    "languageAccessibility": 15,
+    "availabilityContinuity": 15,
+    "logistics": 5
+  },
+  "labels": [
+    {
+      "key": "strong",
+      "min": 85,
+      "text": "Vahva yhteensopivuus"
+    },
+    {
+      "key": "good",
+      "min": 70,
+      "text": "Hyvä yhteensopivuus"
+    },
+    {
+      "key": "possible",
+      "min": 0,
+      "text": "Mahdollinen yhteensopivuus"
+    }
+  ],
+  "roleEligibility": {
+    "short_therapy": [
+      "psychotherapist",
+      "psychologist",
+      "short_therapist"
+    ],
+    "psychotherapy": [
+      "psychotherapist"
+    ]
+  },
+  "goalWeights": {
+    "primary": 2,
+    "secondary": 1
+  },
+  "neutralStyleScore": 0.7,
+  "shownCandidates": 3,
+  "maxCandidates": 6,
+  "slotHorizonDays": 45,
+  "availabilityScores": [
+    {
+      "maxDays": 7,
+      "score": 1.0
+    },
+    {
+      "maxDays": 14,
+      "score": 0.8
+    },
+    {
+      "maxDays": 30,
+      "score": 0.5
+    },
+    {
+      "maxDays": 100000,
+      "score": 0.2
+    }
+  ],
+  "preferenceWeights": {
+    "time": 0.6,
+    "day": 0.4
+  }
+}

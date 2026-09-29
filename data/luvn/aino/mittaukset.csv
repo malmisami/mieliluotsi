@@ -1,0 +1,12 @@
+asiakas_tunnus;pvm;mittaus;arvo;yksikko;systolinen;diastolinen;ymparisto;viite_lippu;lahde
+SYN-AINO-0046;2011-05-23;RR;;mmHg;118;76;vastaanotto;;Työterveyshuolto (synteettinen)
+SYN-AINO-0046;2014-11-18;RR;;mmHg;124;80;vastaanotto;;Työterveyshuolto (synteettinen)
+SYN-AINO-0046;2018-04-12;RR;;mmHg;128;82;vastaanotto;;Työterveyshuolto (synteettinen)
+SYN-AINO-0046;2022-05-10;RR;;mmHg;132;85;vastaanotto;;Työterveyshuolto (synteettinen)
+SYN-AINO-0046;2024-11-12;RR;;mmHg;144;92;vastaanotto;;Lääkärin vastaanotto (synteettinen)
+SYN-AINO-0046;2026-08-20;RR;;mmHg;134;86;vastaanotto;;Hoitajan vastaanotto (synteettinen)
+SYN-AINO-0046;2026-08-21;RR;;mmHg;131;84;koti;;Kotimittaus (synteettinen)
+SYN-AINO-0046;2026-08-24;RR;;mmHg;133;85;koti;;Kotimittaus (synteettinen)
+SYN-AINO-0046;2026-08-27;RR;;mmHg;134;86;koti;;Kotimittaus (synteettinen)
+SYN-AINO-0046;2026-08-30;RR;;mmHg;136;87;koti;;Kotimittaus (synteettinen)
+SYN-MUU-0001;2026-08-01;RR;;mmHg;148;92;vastaanotto;;Hoitajan vastaanotto (synteettinen)

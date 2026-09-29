@@ -1,0 +1,10 @@
+{
+  "_huom": "Synteettinen perimätieto. Vapaaehtoinen lisätietolähde, jota käytetään vain käyttäjän luvalla.",
+  "asiakasTunnus": "SYN-AINO-0046",
+  "tutkimus": {"pvm": "2026-04-02", "tyyppi": "Genotyypitys (synteettinen)", "lahde": "Synteettinen perimätietopalvelu"},
+  "havainnot": [
+    {"tunnus": "PT-01", "geeni": "LDLR", "variantti": "rs999000001 (chr19:11102786 A>G)", "luokitus": "Likely pathogenic", "liittyy": ["Hypercholesterolemia (synthetic demo)"], "vahvistus": "vahvistamaton", "evidenssiTunnus": "GF-001"},
+    {"tunnus": "PT-02", "geeni": "MTHFR", "variantti": "rs12777823", "luokitus": "Uncertain significance", "liittyy": ["Hyperhomocysteinemia"], "vahvistus": "vahvistamaton"},
+    {"tunnus": "PT-03", "geeni": "APOE", "variantti": "rs429358", "luokitus": "risk factor", "liittyy": ["Hyperlipoproteinemia type III", "Alzheimer disease, late onset"], "vahvistus": "vahvistamaton"}
+  ]
+}

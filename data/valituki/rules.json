@@ -1,0 +1,38 @@
+{
+  "version": "demo-2",
+  "note": "Agenttien deterministiset säännöt ja kynnysarvot. Demo-policy, joka vaatii kliinisen validoinnin ennen todellista käyttöä.",
+  "clock": {"dailyTickTime": "09:00", "defaultAnswerTime": "20:00"},
+  "checkins": {
+    "defaultDays": [0, 2, 5],
+    "frequencyOptions": {"1": [2], "2": [0, 3], "3": [0, 2, 5]},
+    "missedForEngagementReview": 3,
+    "engagementRuleId": "CHK-MISS-002",
+    "reminderRuleId": "CHK-MISS-001",
+    "extraRuleId": "CHK-EXTRA-001"
+  },
+  "trend": {
+    "baselineCheckIns": 3,
+    "belowBy": 1.0,
+    "window": 3,
+    "l1Count": 2,
+    "l2Count": 3,
+    "improveBy": 0.75,
+    "l1RuleId": "TREND-L1",
+    "l2RuleId": "TREND-L2",
+    "improveRuleId": "TREND-IMPROVE",
+    "improveCooldownDays": 14,
+    "domainWindow": 3,
+    "domainWorseMin": 2
+  },
+  "patterns": {
+    "ruleId": "PATTERN-WORKDAY-EVE-001",
+    "windowDays": 21,
+    "minCheckIns": 6,
+    "minPerGroup": 2,
+    "minShare": 0.6,
+    "minShareDiff": 0.5,
+    "cooldownDays": 21
+  },
+  "readiness": {"ruleId": "MATCH-READY-001", "minCheckIns": 2},
+  "matchFeedback": {"lowScore": 2, "ruleId": "MATCH-FEEDBACK-001"}
+}

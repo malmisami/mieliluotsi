@@ -1,0 +1,435 @@
+/* Hyvinvointidata (Apple Health): change against the user's own baseline, not a fitness dashboard */
+.wellbeing-view {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.wellbeing-view > .panel {
+  margin: 0;
+}
+
+.health-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid var(--color-primary-soft-border);
+  background: var(--color-surface-blue);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+}
+
+.health-source.is-not_connected,
+.health-source.is-disconnected {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.health-source-main {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.health-source-main p {
+  margin: 0.1rem 0;
+}
+
+.health-source-icon {
+  color: var(--color-primary);
+  margin-top: 0.15rem;
+}
+
+.health-source-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-heading);
+}
+
+.health-source-actions {
+  margin: 0;
+  align-items: center;
+}
+
+.pairing-box,
+.manage-box {
+  margin-top: 0.85rem;
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+}
+
+.pairing-box ol {
+  margin: 0.4rem 0;
+  padding-left: 1.25rem;
+}
+
+.pairing-code {
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  color: var(--color-primary-active);
+}
+
+.manage-box h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.permission-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.5rem;
+}
+
+/* each metric is a toggle card: checkbox left, name after it; checked = soft blue */
+.permission-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-weight: 400;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.permission-list label:hover {
+  border-color: var(--color-primary-soft-border);
+}
+
+.permission-list label:has(input:checked) {
+  border-color: var(--color-primary-soft-border);
+  background: var(--color-surface-blue);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.permission-list input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-primary);
+}
+
+.permission-list label:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.manage-box .row {
+  margin-top: 0.25rem;
+}
+
+.notice {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0.75rem 0 0;
+  color: var(--color-warning);
+}
+
+/* observations: what changed, why it matters for the monitoring, what next */
+.observation-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.health-observation {
+  border: 2px solid var(--color-primary-soft-border);
+  border-left-width: 6px;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+}
+
+.health-observation.kind-positive {
+  border-color: var(--color-success-soft-border);
+}
+
+.health-observation p {
+  margin: 0.25rem 0;
+}
+
+.health-observation .row {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.health-observation-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-heading);
+}
+
+.why-details summary {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.why-details[open] summary {
+  margin-bottom: 0.4rem;
+}
+
+.why-table th,
+.why-table td {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.monitoring-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.monitoring-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.8rem;
+}
+
+.monitoring-list li.is-active {
+  border-color: var(--color-primary-soft-border);
+}
+
+.monitoring-list li > div {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.switch-label input[type='checkbox'] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-primary);
+}
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.today-tile {
+  display: grid;
+  gap: 0.15rem;
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem;
+}
+
+.today-tile.is-changed {
+  border-color: var(--color-warning-soft-border);
+}
+
+.today-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.today-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.trends-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trends-head h2 {
+  margin: 0;
+}
+
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.segmented button {
+  border: 0;
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.875rem;
+  min-height: 0;
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.trend-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 0.85rem;
+  margin: 0.6rem 0;
+}
+
+.trend-card {
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.8rem 0.4rem;
+  min-width: 0;
+}
+
+.trend-card p {
+  margin: 0;
+}
+
+.trend-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.trend-chart {
+  position: relative;
+  margin-top: 0.3rem;
+}
+
+.trend-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+}
+
+.trend-grid {
+  stroke: var(--color-border-light);
+  stroke-width: 1;
+}
+
+.trend-tick,
+.trend-baseline-label {
+  font-size: 9px;
+  fill: var(--color-text-muted);
+}
+
+.trend-baseline {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.trend-line {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.trend-crosshair {
+  stroke: var(--color-border-strong);
+  stroke-width: 1;
+}
+
+.trend-dot {
+  fill: var(--color-primary);
+  stroke: var(--color-surface);
+  stroke-width: 2;
+}
+
+.trend-tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 0.05rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.75rem;
+  background: var(--color-heading);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.change-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.change-list li {
+  display: grid;
+  gap: 0.15rem;
+  border-left: 4px solid var(--color-border);
+  padding: 0.2rem 0 0.2rem 0.7rem;
+}
+
+.change-list li.kind-concern {
+  border-left-color: var(--color-warning);
+}
+
+.change-list li.kind-positive {
+  border-left-color: var(--color-success);
+}
+
+.agent-context > summary {
+  cursor: pointer;
+}
+
+.agent-context > summary h2 {
+  display: inline;
+  font-size: 1.05rem;
+}
+
+.agent-context .json {
+  max-height: 360px;
+  overflow: auto;
+}

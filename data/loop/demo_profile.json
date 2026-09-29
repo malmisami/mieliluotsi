@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "synthetic": true,
+  "profile": {
+    "id": "SYN-AINO-0046",
+    "name": "Aino Demo",
+    "birthYear": 1980,
+    "heightCm": 166,
+    "weightKg": 70,
+    "synthetic": true,
+    "notice_fi": "Aino Demo on keksitty henkilö. Kaikki hänen tietonsa ovat synteettisiä."
+  },
+  "startDate": "2026-09-01",
+  "findingIds": [
+    "GF-001"
+  ],
+  "initialEvents": [],
+  "eventTemplates": {
+    "irrelevant_bp": {
+      "label_fi": "Lisää verenpaineen kotimittaus (ei liity geneettiseen seurantaan)",
+      "type": "vital_sign",
+      "code": "BP",
+      "displayName": "Verenpaine (kotimittaus)",
+      "value": "128/82",
+      "unit": "mmHg",
+      "abnormalFlag": "normal",
+      "source": "Synteettinen kotimittaus",
+      "rawText": "Kotimittaus: verenpaine 128/82 mmHg, syke 71.",
+      "hiddenInUi": true
+    },
+    "high_ldl": {
+      "label_fi": "Lisää viitealueen ylittävä LDL-tulos",
+      "type": "lab_result",
+      "code": "LDL",
+      "displayName": "LDL-kolesteroli",
+      "value": 5.2,
+      "unit": "mmol/l",
+      "abnormalFlag": "high",
+      "source": "Synteettinen laboratoriotulos",
+      "rawText": "Laboratoriotulos: fP-LDL-kol 5,2 mmol/l (viitealue alle 3,0) H"
+    },
+    "new_medication": {
+      "label_fi": "Lisää uusi lääkitys",
+      "type": "medication",
+      "code": "MED_NEW",
+      "displayName": "Uusi lääkitys",
+      "value": "Demovalmiste A (keksitty valmiste)",
+      "unit": null,
+      "abnormalFlag": null,
+      "source": "Synteettinen lääkelista",
+      "rawText": "Lääkelista päivitetty: lisätty Demovalmiste A (keksitty valmiste)."
+    },
+    "research_update": {
+      "label_fi": "Lisää uusi tutkimustieto",
+      "type": "research_update",
+      "code": "EVIDENCE_REVIEW",
+      "gene": "LDLR",
+      "displayName": "Uusi tutkimustieto: LDLR-demolöydös",
+      "value": "Luokitus ennallaan",
+      "unit": null,
+      "abnormalFlag": null,
+      "source": "OmaGenomi Loop – synteettinen demoevidenssi v1.0",
+      "rawText": "Synteettinen evidenssikatsaus: LDLR-demovariantin luokitus tarkistettu, luokitus ennallaan."
+    }
+  },
+  "initialMonitoringFindingIds": [
+    "GF-001"
+  ],
+  "_huom": "Aikajanan tapahtumat luetaan data/luvn/aino -hakemistosta adapterien kautta (app/support/adapters)."
+}

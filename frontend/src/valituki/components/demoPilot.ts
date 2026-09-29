@@ -1,0 +1,546 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { api } from '../api';
+import type { ViewScope } from '../api';
+import { useValituki } from '../context';
+import type { ClientTab } from '../context';
+import type { GuidedView, IntakeView, Mutation, ValitukiView } from '../types';
+
+/* DEMO-OHJAIN – the presenter presses "Seuraava" (or →) and the demo takes the next step of the concept's story: it
+   types the demo text, presses the right button and opens the right view. Every step goes through the same API as a
+   click in the app. The stages follow the Konsepti page: avun haku → AI-alkukeskustelu → Mieliluotsi (KKT, seuranta
+   ja muutosten tunnistus, Therapy Fit Profile) → terapeutti ja handover → terapia → seuranta terapian jälkeen. */
+
+const AINO = 'cl-aino';
+const ANNA = 'th-anna';
+const SCOPE: ViewScope = { clientId: AINO, therapistId: ANNA };
+const STORAGE_KEY = 'vt-demo-pilot';
+const FALLBACK_MESSAGE = 'Tiistaina minun pitää esitellä projektin tilanne koko tiimille, ja jännittää jo nyt ihan hirveästi.';
+
+export type StageKey = 'intro' | 'haku' | 'alku' | 'seuranta' | 'kkt' | 'tfp' | 'terapeutti' | 'terapia' | 'jalkeen';
+
+/** The concept's stages in the order of the Konsepti page; `group` marks the four inside the "Mieliluotsi" box. */
+export const STAGES: { key: StageKey; label: string; group?: 'valituki' }[] = [
+  { key: 'haku', label: 'Avun haku' },
+  { key: 'alku', label: 'AI-alkukeskustelu' },
+  { key: 'kkt', label: 'Ohjattu KKT-harjoittelu chatissa', group: 'valituki' },
+  { key: 'seuranta', label: 'Mielialan ja ahdistuksen seuranta', group: 'valituki' },
+  { key: 'tfp', label: 'Havainto tarkentaa terapeuttiprofiilia', group: 'valituki' },
+  { key: 'terapeutti', label: 'Sopivin saatavilla oleva terapeutti' },
+  { key: 'terapia', label: 'Terapia + välitehtävät Mieliluotsissa' },
+  { key: 'jalkeen', label: 'Seuranta terapian jälkeen' },
+];
+
+type Where = { role: 'pitch' } | { role: 'client'; tab: ClientTab } | { role: 'professional'; client: string | null } | { role: 'therapist' };
+
+interface PilotCtx {
+  /** The newest view: the last mutation's result, or the rendered one. */
+  view: () => ValitukiView;
+  /** Run one API call for Aino/Anna; resolves to the new view, or null when it failed. */
+  mutate: <T>(call: (s: ViewScope) => Promise<Mutation<T>>) => Promise<ValitukiView | null>;
+  go: (where: Where) => void;
+  /** Scroll the first matching element into view and pulse it; resolves to the element. */
+  spot: (selectors: string | string[], block?: 'start' | 'center') => Promise<HTMLElement | null>;
+  /** Pauses between replayed answers – skipped when a jump rebuilds a step in the background. */
+  pause: (ms: number) => Promise<void>;
+}
+
+export interface Beat {
+  stage: StageKey;
+  /** What is on the screen after this step – the presenter's cue and the audience's subtitle. */
+  title: string;
+  say: string;
+  /** The state change (same API as the app's buttons). Returns false when it did not succeed. */
+  act?: (p: PilotCtx) => Promise<boolean>;
+  /** Where to look: role, tab, scroll position and the highlighted element. */
+  show: (p: PilotCtx) => Promise<void>;
+}
+
+const ok = (view: ValitukiView | null) => view !== null;
+
+/** The intake conversation: the rest of the scripted answers, one at a time. */
+async function playIntake(p: PilotCtx): Promise<boolean> {
+  let view: ValitukiView | null = p.view();
+  for (let i = 0; i < 12; i += 1) {
+    const intake: IntakeView | undefined = view?.client?.intake;
+    if (!intake || intake.status !== 'conversation') break;
+    const question: IntakeView['pendingQuestion'] = intake.pendingQuestion;
+    const answer: string | null = question ? intake.demoAnswers?.[question.key] ?? question.demoAnswer : null;
+    if (!answer) break;
+    await p.pause(i === 0 ? 250 : 900);
+    view = await p.mutate((s): Promise<Mutation> => api.intakeAnswer(s, AINO, answer));
+  }
+  if (view?.client?.intake.status === 'conversation' && view.client.intake.canFinish) {
+    view = await p.mutate((s) => api.intakeFinish(s, AINO));
+  }
+  return ok(view);
+}
+
+/** A guided CBT exercise in the chat: the rest of the scripted answers, one at a time. */
+async function playGuided(p: PilotCtx): Promise<boolean> {
+  let view: ValitukiView | null = p.view();
+  for (let i = 0; i < 30; i += 1) {
+    const guided: GuidedView | null | undefined = view?.client?.guided;
+    if (!guided || guided.demoAnswer === null || guided.demoAnswer === undefined) break;
+    await p.pause(i === 0 ? 400 : 1600);  // slow enough to read each question and answer
+    view = await p.mutate((s): Promise<Mutation> => api.answerPractice(s, AINO,
+      { sessionId: guided.id, stepKey: guided.stepKey, value: guided.demoAnswer }));
+  }
+  return ok(view);
+}
+
+export const BEATS: Beat[] = [
+  { stage: 'intro', title: 'Konsepti: passiivisesta jonosta aktiiviseksi hoitopoluksi',
+    say: 'Ennen: avun haku, jono ja kuukausien odotus. Mieliluotsilla tuki alkaa heti, kun asiakas liitetään jonoon.',
+    act: async (p) => ok(await p.mutate((s) => api.scene(s, 'start'))),
+    show: async (p) => { p.go({ role: 'pitch' }); window.scrollTo({ top: 0 }); } },
+
+  // 1 · Avun haku
+  { stage: 'haku', title: 'Aino on hakenut apua ja on terapiajonossa',
+    say: 'Työhön liittyvä ahdistus, lyhytterapia, arvioitu odotus 20–25 viikkoa. Normaalisti tästä alkaisi pelkkä odotus.',
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.wait-card'); } },
+
+  // 2 · AI-alkukeskustelu
+  { stage: 'alku', title: 'Alkukeskustelu alkaa – lomakkeen sijaan',
+    say: 'Aino päätti ensin itse, mitä Mieliluotsi saa tehdä. Mieliluotsi kysyy yhden asian kerrallaan: ”Kerro omin sanoin, miksi hait apua.”',
+    act: async (p) => ok(await p.mutate((s) => api.intakeStart(s, AINO, p.view().client?.intake.consentDefaults ?? {
+      proactiveCheckins: true, storeHistory: true, professionalMonitoring: true, sharePractice: true }))),
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
+  { stage: 'alku', title: 'Aino kertoo omin sanoin → ”Ymmärsinkö tilanteesi oikein?”',
+    say: 'Kuusi tarkentavaa kysymystä: tavoite, vaikeat hetket, mikä on auttanut ja toiveet terapialta. Tulkinnat ovat vasta ehdotuksia.',
+    act: playIntake,
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
+  { stage: 'alku', title: 'Aino hyväksyy tulkinnat → Therapy Fit Profile syntyy',
+    say: 'Vasta hyväksytyt tiedot siirtyvät terapeutin profiiliin ja matchingiin (oikealla). Viimeisenä rytmi ja tämän päivän vointi.',
+    act: async (p) => ok(await p.mutate((s) => api.intakeConfirm(s, AINO))),
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
+
+  { stage: 'alku', title: 'Check-in-rytmi ja oma lähtötaso – Mieliluotsi käynnistyy',
+    say: 'Mieliala ja ahdistus 1–5 kolmesti viikossa. Vointia verrataan Ainon omaan lähtötasoon, ei muihin ihmisiin.',
+    act: async (p) => {
+      const intake = p.view().client?.intake;
+      const rhythm = intake?.demoRhythm;
+      if (intake?.status === 'rhythm' && !ok(await p.mutate((s) => api.intakeComplete(s, AINO, {
+        checkInDays: rhythm?.checkInDays ?? [0, 2, 5], communicationStyle: rhythm?.communicationStyle ?? 'brief' })))) return false;
+      if (!p.view().client?.checkIn.needsBaseline) return true;
+      // "Miten voit tänään?" on the home screen: the card is on screen for a moment, then Aino answers.
+      p.go({ role: 'client', tab: 'koti' });
+      await p.spot('.cx-baseline', 'center');
+      await p.pause(1600);
+      return ok(await p.mutate((s) => api.recordBaseline(s, AINO, { mood: intake?.demoMood ?? 3, anxiety: 3 })));
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.cx-teaser', 'center'); } },
+
+  // 3 · Mieliluotsi: ohjattu KKT-harjoittelu chatissa
+  { stage: 'kkt', title: 'Aino kertoo jännittävästä tilanteesta',
+    say: '”Tiistaina pitää esitellä projekti koko tiimille…” Mieliluotsi tunnistaa tilanteen ja ehdottaa, että sitä tutkitaan yhdessä.',
+    act: async (p) => {
+      const text = p.view().client?.demoMessage ?? FALLBACK_MESSAGE;
+      p.go({ role: 'client', tab: 'keskustelu' });
+      await p.pause(500);
+      return ok(await p.mutate((s) => api.sendMessage(s, AINO, text)));
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
+  { stage: 'kkt', title: '”Kyllä, tutkitaan” – ohjattu harjoitus alkaa',
+    say: 'Ajatusten tutkiminen kysymys kerrallaan. Jokaisen kysymyksen voi ohittaa, ja harjoituksen voi lopettaa milloin tahansa.',
+    act: async (p) => {
+      const offer = [...(p.view().client?.chat ?? [])].reverse()
+        .find((m) => m.kind === 'offer' && m.actionable && m.widget?.options.some((o) => o.value.startsWith('start:')));
+      const option = offer?.widget?.options.find((o) => o.value.startsWith('start:'))?.value;
+      if (offer && option) return ok(await p.mutate((s) => api.chooseOffer(s, AINO, offer.id, option)));
+      return ok(await p.mutate((s) => api.startPractice(s, AINO, 'thought_record', {}, 'chat')));
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
+  { stage: 'kkt', title: 'Tilanne → ajatus → tunne → ajatusloukku → tasapainoisempi ajatus → askel',
+    say: 'Säännöt päättävät vaiheet, kielimalli vain muotoilee. Lopuksi sovitaan konkreettinen askel: altistusportaan ensimmäinen askel huomenna.',
+    act: playGuided,
+    show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
+
+  // 4 · Mieliluotsi: mielialan ja ahdistuksen seuranta – kun dataa on kertynyt
+  { stage: 'seuranta', title: 'Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä – vointi laskee alle oman lähtötason',
+    say: 'Check-init kolmesti viikossa ja harjoittelu kertyvät, ja jokaista check-iniä verrataan Ainon omaan lähtötasoon. Sitten '
+      + 'check-in jää väliin ja uni heikkenee: havaintoagentti tunnistaa muutoksen ja pyytää ammattilaista katsomaan.',
+    act: async (p) => {
+      const view = p.view();
+      if (daysBetween(view.meta.demoStartDate, view.meta.currentDate) < 14) {
+        if (!ok(await p.mutate((s) => api.advance(s, 14)))) return false;
+        // The two weeks on the chart first, then the decline.
+        p.go({ role: 'client', tab: 'edistyminen' });
+        await p.spot('.ma-chart');
+        await p.pause(1800);
+      }
+      return ok(await p.mutate((s) => api.deteriorate(s, AINO)));
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'edistyminen' }); await p.spot('.ma-chart'); } },
+  { stage: 'seuranta', title: '”Huomasimme jotain” – havainto on vain ehdotus',
+    say: 'Työpäiviä edeltävinä iltoina ahdistusta on ollut enemmän. Aino päättää itse, tallennetaanko havainto.',
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot(['.cx-insight', '.bp-doc']); } },
+  { stage: 'seuranta', title: 'Hoitotiimin terapiajono: Aino nousee tarkistettavaksi',
+    say: 'Avoimet tarkistuspyynnöt ensin. Mieliluotsi ei priorisoi asiakkaita eikä muuta hoidon kiireellisyyttä.',
+    show: async (p) => { p.go({ role: 'professional', client: null }); await p.spot('.queue-table tr.row-primary', 'center'); } },
+  { stage: 'seuranta', title: '”Miksi Aino nousi tarkistettavaksi?”',
+    say: 'Perustelut, sääntö ja itse raportoidut tiedot näkyvät – ei diagnoosia eikä mustaa laatikkoa.',
+    show: async (p) => { p.go({ role: 'professional', client: AINO }); await p.spot('.why-card'); } },
+  { stage: 'seuranta', title: 'Ammattilainen merkitsee tarkistetuksi – ihminen päättää',
+    say: 'Aino jatkaa jonossa Mieliluotsin tuella. Hoidon kiireellisyydestä päättää aina ammattilainen.',
+    act: async (p) => {
+      const review = p.view().professional.details[AINO]?.openReview;
+      return review ? ok(await p.mutate((s) => api.reviewObservation(s, review.id, 'mark_reviewed'))) : true;
+    },
+    show: async (p) => { p.go({ role: 'professional', client: AINO }); await p.spot(['.reviewed-card', '.review-main']); } },
+
+  // 6 · Mieliluotsi: Therapy Fit Profile
+  { stage: 'tfp', title: 'Aino hyväksyy – Therapy Fit Profile päivittyy',
+    say: 'Profiili terapeutille rakentuu vain hyväksytyistä tiedoista, ja jokaisella tiedolla on oma käyttöoikeus.',
+    act: async (p) => {
+      const pattern = p.view().client?.memory.pending.find((i) => i.kind === 'pattern');
+      return pattern ? ok(await p.mutate((s) => api.decideInsight(s, AINO, pattern.id, 'approve'))) : true;
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
+
+  // 7 · Sopivin saatavilla oleva terapeutti
+  { stage: 'terapeutti', title: 'Terapeutilta vapautuu paikka – matching ajetaan heti',
+    say: 'Ensin kovat ehdot, sitten läpinäkyvä pisteytys. Aino näkee kolme tilanteeseensa sopivinta terapeuttia.',
+    act: async (p) => ok(await p.mutate((s) => api.openSlot(s))),
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.matching'); } },
+  { stage: 'terapeutti', title: '”Miksi Anna?” – perustelut, vapaa aika ja täyttymättömät toiveet',
+    say: 'Ei todennäköisyyksiä: Aino näkee, mihin suositus perustuu ja mitä toiveita ei voitu täyttää.',
+    show: async (p) => {
+      p.go({ role: 'client', tab: 'polku' });
+      const card = await p.spot('.cand');
+      card?.querySelector('details.unmet')?.setAttribute('open', '');
+    } },
+  { stage: 'terapeutti', title: 'Aino valitsee Annan – ensimmäinen aika varataan',
+    say: 'Etävastaanotto tiistai-iltana, kuten Aino toivoi. Samalla syntyy luonnos yhteenvedosta ensimmäistä tapaamista varten.',
+    act: async (p) => {
+      const candidates = p.view().client?.matching.candidates ?? [];
+      const anna = candidates.find((c) => c.therapist.id === ANNA) ?? candidates[0];
+      return anna ? ok(await p.mutate((s) => api.selectCandidate(s, AINO, anna.id))) : false;
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.booking-card'); } },
+
+  // (terapeutti jatkuu: asiakkaan hyväksymä yhteenveto ensimmäistä tapaamista varten)
+  { stage: 'terapeutti', title: 'Yhteenveto ensimmäistä tapaamista varten',
+    say: 'Jokainen kohta on merkitty: omin sanoin, mitattu tai tekoälyn tiivistelmä. Aino voi muokata ja poistaa kohtia.',
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.handover-card'); } },
+  { stage: 'terapeutti', title: 'Aino hyväksyy yhteenvedon jaettavaksi',
+    say: 'Mitään ei jaeta ennen hyväksyntää, eikä keskusteluhistoriaa jaeta koskaan.',
+    act: async (p) => ok(await p.mutate((s) => api.approveHandover(s, AINO))),
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot(['.handover-card .banner-ok', '.handover-card']); } },
+
+  // 9 · Terapia + välitehtävät Mieliluotsissa
+  { stage: 'terapia', title: 'Terapia alkaa – Anna näkee vain hyväksytyn yhteenvedon',
+    say: 'Ensimmäinen tapaaminen ei ala tyhjästä: tavoitteet, voinnin suunta ja harjoittelu ovat valmiina. Harjoittelu näkyy '
+      + 'Annalle Ainon luvalla, ajatuspäiväkirjan merkinnät vain, jos Aino jakaa ne.',
+    act: async (p) => ok(await p.mutate((s) => api.firstSession(s, AINO))),
+    show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.doc-card'); } },
+  { stage: 'terapia', title: 'Terapeutti määrittää välituen ja välitehtävän',
+    say: 'Päätavoite, sallitut KKT-harjoitukset, viikoittainen välitehtävä ja check-in-tiheys – tekoäly toimii vain näissä rajoissa.',
+    show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.plan-card'); } },
+  { stage: 'terapia', title: 'Tallenna ja ota käyttöön',
+    say: 'Mieliluotsi siirtyy odotusajan protokollasta terapeutin ohjaamaksi välitueksi, ja Aino saa siitä ilmoituksen.',
+    act: async (p) => {
+      const row = p.view().therapist.selected?.clients.find((c) => c.clientId === AINO);
+      const plan = row?.therapy.suggestedPlan;
+      return plan ? ok(await p.mutate((s) => api.savePlan(s, ANNA, AINO, plan))) : false;
+    },
+    show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.plan-card'); } },
+  { stage: 'terapia', title: 'Aino näkee terapeutin määrittämän välituen',
+    say: 'Välitehtävä ja harjoitukset tapaamisten välillä – terapeutin rajaamina.',
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.cx-modecard'); } },
+
+  // 10 · Seuranta terapian jälkeen
+  { stage: 'jalkeen', title: 'Terapia päättyy – seuranta jatkuu',
+    say: 'Ylläpitosuunnitelma ja merkit, joihin reagoida. Mieliala ja ahdistus kerran viikossa, ja muutos palaa hoitotiimille.',
+    act: async (p) => ok(await p.mutate((s) => api.demoEndTherapy(s, AINO))),
+    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.cx-modecard'); } },
+];
+
+/** The first step of each stage – where a click on the stage takes the demo. */
+export function stageStart(stage: StageKey): number {
+  return Math.max(0, BEATS.findIndex((b) => b.stage === stage));
+}
+
+/* How far Aino's story has come, as the index of the last step whose change is in the state. It lets a step notice that
+   it was already done by hand (skip it) and that the state is behind (rebuild it first). */
+function progress(view: ValitukiView): number {
+  const client = view.client;
+  if (!client || client.id !== AINO) return -1;
+  const intake = client.intake.status;
+  if (intake === 'not_started' || intake === 'consent') return 1;
+  if (intake === 'conversation') return 2;
+  if (intake === 'review') return 3;
+  if (intake === 'rhythm' || client.checkIn.needsBaseline) return 4;
+  const row = view.therapist.selected?.clients.find((c) => c.clientId === AINO);
+  const stage = client.matching.stage;
+  if (stage === 'aftercare' || client.modeKey === 'aftercare_support') return 24;
+  if (row?.therapy.config) return 22;
+  if (row?.therapy.episodeStatus === 'active') return 20;
+  if (client.matching.handover?.status === 'approved') return 19;
+  if (stage === 'booked' || stage === 'therapy') return 17;
+  if (stage === 'choose') return 15;
+  const pro = view.professional.details[AINO];
+  if (pro?.observations.some((o) => o.kind === 'trend_decline')) {
+    if (pro.openReview) return 9;
+    return client.memory.pending.some((i) => i.kind === 'pattern') ? 13 : 14;
+  }
+  if (daysBetween(view.meta.demoStartDate, view.meta.currentDate) >= 14) return 8;  // the decline is still to come
+  if (client.practice.thoughtRecords.length > 0) return 8;
+  if (client.guided?.tool === 'thought_record') return 7;
+  if (client.chat.some((m) => m.role === 'client')) return 6;
+  return 5;
+}
+
+function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(to.slice(0, 10)) - Date.parse(from.slice(0, 10))) / 86_400_000);
+}
+
+/** The prepared scenes and the step whose state each one equals – a jump rebuilds the nearest one and replays the rest. */
+const SCENE_AFTER: [scene: string, beat: number][] = [
+  ['start', 1], ['intake', 5], ['cbt', 8], ['reviewed', 14], ['matches', 15], ['handover', 19], ['therapy', 22],
+  ['aftercare', 24],
+];
+
+const lastActBefore = (index: number) => {
+  for (let i = index - 1; i >= 0; i -= 1) if (BEATS[i].act) return i;
+  return -1;
+};
+
+const frame = () => new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+const sleep = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+
+function scrollParent(el: HTMLElement): HTMLElement | null {
+  for (let node = el.parentElement; node; node = node.parentElement) {
+    const overflow = getComputedStyle(node).overflowY;
+    if ((overflow === 'auto' || overflow === 'scroll') && node.scrollHeight > node.clientHeight + 2) return node;
+  }
+  return null;
+}
+
+async function findVisible(selectors: string[], timeout = 2500): Promise<HTMLElement | null> {
+  const until = Date.now() + timeout;
+  while (Date.now() < until) {
+    for (const selector of selectors) {
+      const el = Array.from(document.querySelectorAll<HTMLElement>(selector)).find((e) => e.getClientRects().length > 0);
+      if (el) return el;
+    }
+    await frame();
+  }
+  return null;
+}
+
+function scrollToElement(el: HTMLElement, block: 'start' | 'center') {
+  const container = scrollParent(el);
+  const rect = el.getBoundingClientRect();
+  if (container) {
+    const box = container.getBoundingClientRect();
+    // The phone is scaled with CSS zoom: screen pixels → the container's own pixels.
+    const scale = box.height / (container.offsetHeight || box.height) || 1;
+    const height = rect.height / scale;
+    const offset = (rect.top - box.top) / scale + container.scrollTop;
+    const top = block === 'center' ? offset - (container.clientHeight - height) / 2 : offset - 12;
+    container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    return;
+  }
+  // The page itself scrolls: keep the element below the sticky top bar and demo dock.
+  const covered = document.querySelector('.dock')?.getBoundingClientRect().bottom ?? 0;
+  const offset = rect.top + window.scrollY;
+  const top = block === 'center' ? offset - (window.innerHeight - covered - rect.height) / 2 - covered : offset - covered - 16;
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+}
+
+function readPointer(): number {
+  try {
+    const value = Number(window.sessionStorage.getItem(STORAGE_KEY));
+    return Number.isInteger(value) && value >= 0 && value <= BEATS.length ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export interface DemoPilot {
+  /** How many steps are done – BEATS[pointer] is the next one. */
+  pointer: number;
+  running: boolean;
+  failed: boolean;
+  next: () => Promise<void>;
+  prev: () => Promise<void>;
+  /** Go to step `index`: rebuild the demo to just before it and take it. */
+  enter: (index: number) => Promise<void>;
+  restart: () => void;
+  replay: () => Promise<void>;
+}
+
+export function useDemoPilot(): DemoPilot {
+  const ctx = useValituki();
+  const [stored, setPointerState] = useState(readPointer);
+  // Clicking ahead in the app by hand moves the demo along too: once the demo has started, the pointer never trails the state.
+  // It only follows steps that change the state, so a step that just shows something is never skipped or pulled back.
+  const pointer = stored > 0 ? Math.max(stored, lastActBefore(progress(ctx.view) + 1) + 1) : 0;
+  const [running, setRunning] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const latest = useRef(ctx.view);
+  const ctxRef = useRef(ctx);
+  const runningRef = useRef(false);
+  // The steps run in event handlers: they read the newest view and context through refs, synced after every render.
+  useEffect(() => {
+    latest.current = ctx.view;
+    ctxRef.current = ctx;
+  });
+
+  const setPointer = useCallback((value: number) => {
+    setPointerState(value);
+    try { window.sessionStorage.setItem(STORAGE_KEY, String(value)); } catch { /* the pointer just is not remembered */ }
+  }, []);
+
+  const pilot = useCallback((fast: boolean): PilotCtx => ({
+    view: () => latest.current,
+    mutate: async (call) => {
+      let fresh: ValitukiView | null = null;
+      await ctxRef.current.run(async () => {
+        const response = await call(SCOPE);
+        fresh = response.view;
+        return response;
+      });
+      if (!fresh) return null;  // the app already shows the error
+      latest.current = fresh;
+      return fresh;
+    },
+    go: (where) => {
+      if (fast) return;
+      const c = ctxRef.current;
+      c.setClientId(AINO);
+      c.setTherapistId(ANNA);
+      if (where.role === 'client') c.setClientTab(where.tab);
+      if (where.role === 'professional') { c.setProTab('jono'); c.setProClientId(where.client); }
+      if (c.role !== where.role) c.setRole(where.role);
+    },
+    spot: async (selectors, block = 'start') => {
+      if (fast) return null;
+      await frame();
+      await frame();
+      const el = await findVisible(Array.isArray(selectors) ? selectors : [selectors]);
+      if (!el) return null;
+      scrollToElement(el, block);
+      el.classList.remove('pilot-spot');
+      void el.offsetWidth;  // restart the pulse
+      el.classList.add('pilot-spot');
+      window.setTimeout(() => el.classList.remove('pilot-spot'), 2600);
+      return el;
+    },
+    pause: (ms) => (fast ? Promise.resolve() : sleep(ms)),
+  }), []);
+
+  /** Bring the state to "after step index − 1": the nearest prepared scene, then the remaining steps without pauses. */
+  const rebuild = useCallback(async (index: number): Promise<boolean> => {
+    const target = index - 1;
+    const [scene, after] = [...SCENE_AFTER].reverse().find(([, beat]) => beat <= target) ?? SCENE_AFTER[0];
+    const quiet = pilot(true);
+    if (!(await quiet.mutate((s) => api.scene(s, scene)))) return false;
+    for (let i = after + 1; i <= target; i += 1) {
+      const act = BEATS[i].act;
+      if (act && !(await act(quiet))) return false;
+    }
+    return true;
+  }, [pilot]);
+
+  const guard = useCallback(async (task: () => Promise<boolean>) => {
+    if (runningRef.current) return;
+    runningRef.current = true;
+    setRunning(true);
+    setFailed(false);
+    try {
+      if (!(await task())) setFailed(true);
+    } finally {
+      runningRef.current = false;
+      setRunning(false);
+    }
+  }, []);
+
+  /** The steps judge progress from Aino's and Anna's view – another demo client or therapist may be on screen. */
+  const ensureScope = useCallback(async () => {
+    const view = latest.current;
+    if (view.client?.id === AINO && view.therapist.selected?.id === ANNA) return;
+    try { latest.current = await api.view(SCOPE); } catch { /* judged from the view on screen */ }
+  }, []);
+
+  /** Take step `index` from the state it needs: the change (unless already made) and then the view. */
+  const perform = useCallback(async (index: number) => {
+    const beat = BEATS[index];
+    if (!beat) return true;
+    const live = pilot(false);
+    await ensureScope();
+    // The cue changes at once: the presenter talks while the step plays (a replayed conversation takes a few seconds).
+    setPointer(index + 1);
+    const done = (index === 0 || !(progress(latest.current) < lastActBefore(index)) || await rebuild(index))
+      && (!beat.act || (index > 0 && progress(latest.current) >= index) || await beat.act(live));
+    if (!done) {
+      setPointer(index);
+      return false;
+    }
+    await beat.show(live);
+    return true;
+  }, [ensureScope, pilot, rebuild, setPointer]);
+
+  const next = useCallback(() => guard(() => perform(pointer)), [guard, perform, pointer]);
+
+  // A stage on the rail: rebuild the demo to just before the stage's first step and take that step, so the stage is on
+  // the screen at once.
+  const enter = useCallback((index: number) => guard(async () => {
+    const target = Math.max(0, Math.min(BEATS.length - 1, index));
+    if (target > 0 && !(await rebuild(target))) return false;
+    return perform(target);
+  }), [guard, perform, rebuild]);
+
+  const back = useCallback((index: number) => guard(async () => {
+    const target = Math.max(1, Math.min(BEATS.length, index));
+    if (!(await rebuild(target))) return false;
+    setPointer(target);
+    await BEATS[target - 1].show(pilot(false));
+    return true;
+  }), [guard, pilot, rebuild, setPointer]);
+
+  const prev = useCallback(async () => {
+    if (pointer <= 1 || runningRef.current) return;
+    // A step that only showed something is undone by showing the one before it; a step that changed the state is rebuilt.
+    if (!BEATS[pointer - 1].act) {
+      await guard(async () => {
+        setPointer(pointer - 1);
+        await BEATS[pointer - 2].show(pilot(false));
+        return true;
+      });
+      return;
+    }
+    await back(pointer - 1);
+  }, [back, guard, pilot, pointer, setPointer]);
+
+  const restart = useCallback(() => setPointer(0), [setPointer]);
+
+  /** "Toista demokeskustelu": plays the rest of the intake or of the guided exercise that is open now. */
+  const replay = useCallback(() => guard(async () => {
+    await ensureScope();
+    const client = latest.current.client;
+    if (client?.intake.status === 'conversation') return playIntake(pilot(false));
+    if (client?.guided) return playGuided(pilot(false));
+    return true;
+  }), [ensureScope, guard, pilot]);
+
+  // Keyboard and presentation clickers: → / PageDown = next, ← / PageUp = back. Typing in a field is never hijacked.
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"], [role="radiogroup"], [role="tablist"]')) return;
+      if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+        event.preventDefault();
+        void next();
+      } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        void prev();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [next, prev]);
+
+  return { pointer, running, failed, next, prev, enter, restart, replay };
+}

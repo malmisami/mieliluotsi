@@ -1,0 +1,173 @@
+import { useEffect, useRef, useState } from 'react';
+import { api } from '../api';
+import { useValituki } from '../context';
+import { fmtNum } from '../format';
+import { AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PresentIcon, ResetIcon, SparkleIcon } from '../icons';
+import { useDemoActions } from './demoActions';
+import { BEATS, STAGES, stageStart, useDemoPilot } from './demoPilot';
+import type { AICheck, AIStatus } from '../types';
+
+const seconds = (ms: number | null) => (ms === null ? '' : `${fmtNum(ms / 1000)} s`);
+
+/** The toast after switching the AI mode or testing the connection. */
+function describeAI(result: AIStatus & { check: AICheck | null }): string {
+  if (result.configuredMode === 'DEMO_AI_MODE') return 'Tekoäly: demotila – ennalta hyväksytyt tekstit, ei kutsuja Claudeen.';
+  const check = result.check;
+  if (check?.ok) return `Claude vastasi (${seconds(check.ms)}): "${check.reply ?? ''}" Keskustelu käyttää nyt Claudea.`;
+  if (!result.keyPresent) {
+    return 'API-avain puuttuu: lisää se projektin .env-tiedoston riville ANTHROPIC_API_KEY= ja paina Testaa. Siihen asti käytetään demotekstejä.';
+  }
+  return `Claude ei vastannut (${check?.failure ?? 'tuntematon virhe'}). Käytetään demotekstejä.`;
+}
+
+/** Demo ↔ Claude. The model only phrases: rules, safety levels and matching stay deterministic in both modes. */
+export function AISwitch() {
+  const { view, run, busy } = useValituki();
+  const ai = view.meta.ai;
+  const wantsLive = ai.configuredMode === 'LIVE_AI_MODE';
+  const live = ai.effectiveMode === 'LIVE_AI_MODE';
+  const failed = live && ai.lastCall.ok === false;
+  const tone = !wantsLive ? '' : live && !failed ? 'is-live' : 'is-warn';
+  const status = !wantsLive ? 'valmiit tekstit'
+    : !ai.keyPresent ? 'API-avain puuttuu'
+      : failed ? (ai.lastCall.failure ?? 'virhe')
+        : [ai.lastCall.model ?? ai.model, ai.lastCall.ok ? seconds(ai.lastCall.ms) : ''].filter(Boolean).join(' · ');
+
+  function setMode(mode: AIStatus['configuredMode']) {
+    if (mode === ai.configuredMode && mode === 'DEMO_AI_MODE') return;
+    void run((s) => api.aiMode(s, mode), describeAI);
+  }
+
+  return (
+    <div className={`dock-ai ${tone}`} role="group" aria-label="Tekoäly" title={ai.note}>
+      <span className="dock-ai-label"><SparkleIcon size={13} /> <span className="dock-ai-text">Tekoäly</span></span>
+      <span className="dock-seg">
+        <button type="button" aria-pressed={!wantsLive} disabled={busy} onClick={() => setMode('DEMO_AI_MODE')}>Demo</button>
+        <button type="button" aria-pressed={wantsLive} disabled={busy} onClick={() => setMode('LIVE_AI_MODE')}>Claude</button>
+      </span>
+      <span className="dock-ai-status" title={status}><i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-text">{status}</span></span>
+      {wantsLive && (
+        <button type="button" className="dock-ai-test" disabled={busy} onClick={() => run((s) => api.aiCheck(s), describeAI)}>Testaa</button>
+      )}
+    </div>
+  );
+}
+
+type Stage = (typeof STAGES)[number];
+
+const lastBeat = (stage: string) => BEATS.reduce((last, beat, i) => (beat.stage === stage ? i : last), -1);
+
+/** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: the concept's
+    stages (click one to jump there), the step number and Seuraava; everything else (time, scenarios, other clients) opens
+    from the chevron. The AI switch sits in the top bar. → / PageDown = Seuraava, ← / PageUp = back. */
+export default function DemoDock() {
+  const { view, run, busy, scope, role, setRole, setClientId, setProClientId } = useValituki();
+  const [more, setMore] = useState(false);
+  const demo = view.demo;
+  const clientId = scope.clientId ?? 'cl-aino';
+  const { weeks, deteriorate, crisis, jump: jumpScene } = useDemoActions();
+  const pilot = useDemoPilot();
+  const current = pilot.pointer > 0 ? BEATS[pilot.pointer - 1] : null;
+  const upcoming = BEATS[pilot.pointer] ?? null;
+  const stageKey = current?.stage ?? 'intro';
+  // Keep the current stage in view when the row is too narrow for all of them.
+  const railRef = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    railRef.current?.querySelector('.current')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [stageKey]);
+
+  // The rail: the stages of the Konsepti page, the four inside the "Mieliluotsi" box grouped together.
+  const rail: (Stage | Stage[])[] = [];
+  STAGES.forEach((stage) => {
+    const last = rail[rail.length - 1];
+    if (stage.group && Array.isArray(last)) last.push(stage);
+    else rail.push(stage.group ? [stage] : stage);
+  });
+  const pill = (stage: Stage) => {
+    const n = STAGES.indexOf(stage) + 1;
+    const isCurrent = stage.key === stageKey;
+    const done = !isCurrent && lastBeat(stage.key) < pilot.pointer;
+    return (
+      <li key={stage.key} className={isCurrent ? 'current' : done ? 'done' : ''}>
+        <button type="button" disabled={pilot.running} aria-current={isCurrent ? 'step' : undefined} aria-label={`${n}. ${stage.label}`}
+          title={`${n}. ${stage.label}${isCurrent ? '' : ' – siirry tähän vaiheeseen'}`}
+          onClick={() => (isCurrent ? undefined : pilot.enter(stageStart(stage.key)))}>
+          <span className="dock-step-n">{done ? <CheckIcon size={11} /> : n}</span>
+          {isCurrent && <span className="dock-step-t">{stage.label}</span>}
+        </button>
+      </li>
+    );
+  };
+
+  return (
+    <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
+      <div className="dock-row">
+        <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
+          {rail.map((item) => (Array.isArray(item) ? (
+            <li key="valituki" className="pilot-group">
+              <span className="pilot-group-label">Mieliluotsi</span>
+              <ol>{item.map(pill)}</ol>
+            </li>
+          ) : pill(item)))}
+        </ol>
+        <div className="pilot-buttons">
+          {pilot.failed && <span className="pilot-warn" role="alert">Ei onnistunut – paina uudelleen</span>}
+          <span className="pilot-count" aria-live="polite"
+            title={current ? `Nyt: ${current.title} – ${current.say}` : 'Demo alkaa Konsepti-sivulta: paina Seuraava tai →'}>
+            {pilot.pointer}/{BEATS.length}
+          </span>
+          <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
+            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={15} /></button>
+          <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
+            title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
+            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={15} />
+          </button>
+        </div>
+        <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"
+          onClick={() => setMore(!more)}>
+          <ChevronDownIcon size={14} />
+        </button>
+      </div>
+      {more && (
+        <div className="dock-row dock-actions">
+          <label className="dock-select">
+            <span className="visually-hidden">Demoasiakas</span>
+            <select value={clientId} onChange={(e) => { setClientId(e.target.value); setProClientId(null); }} disabled={busy}>
+              {demo.clients.map((c) => <option key={c.id} value={c.id}>{c.displayName} – {c.persona}</option>)}
+            </select>
+          </label>
+          <div className="dock-group" role="group" aria-label="Aika">
+            <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 1), (r) => `+1 päivä – ${r.agentActions} agenttitoimintoa.`)}>+1 pv</button>
+            <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 7), (r) => `+7 päivää – ${r.agentActions} agenttitoimintoa.`)}>+7 pv</button>
+            <button type="button" className="dock-btn" disabled={busy} onClick={weeks}>+14 pv</button>
+          </div>
+          <div className="dock-group" role="group" aria-label="Keskustelu">
+            <button type="button" className="dock-btn" disabled={pilot.running || !(view.client?.intake.status === 'conversation' || view.client?.guided)}
+              title="Toistaa auki olevan alkukeskustelun tai harjoituksen loppuun demovastauksilla" onClick={() => void pilot.replay()}>
+              <ForwardIcon size={14} /> Toista demokeskustelu
+            </button>
+          </div>
+          <div className="dock-group" role="group" aria-label="Skenaariot">
+            <button type="button" className="dock-btn" disabled={busy} onClick={() => deteriorate(clientId)}>Vointi heikkenee</button>
+            <button type="button" className="dock-btn" disabled={busy}
+              onClick={() => run((s) => api.stabilize(s, clientId), (r) => `Vakaa tilanne: ${r.checkIns} check-iniä omalla tasolla.`)}>Vakaa tilanne</button>
+            <button type="button" className="dock-btn dock-warn" disabled={busy} onClick={crisis}><AlertIcon size={14} /> Kriisipolku</button>
+          </div>
+          <div className="dock-group dock-end" role="group" aria-label="Demon tila">
+            <button type="button" className="dock-btn" aria-pressed={role === 'pitch'} title="Näytä Konsepti-sivu (demon tila ei muutu)"
+              onClick={() => setRole('pitch')}>
+              <PresentIcon size={14} /> Konsepti
+            </button>
+            <button type="button" className="dock-btn" disabled={pilot.running} title="Demo alkuun ja Konsepti-sivulle"
+              onClick={() => void pilot.enter(0)}>
+              <PresentIcon size={14} /> Konsepti – aloita alusta
+            </button>
+            <button type="button" className="dock-btn" disabled={busy} onClick={() => { pilot.restart(); void jumpScene('start'); }}>
+              <ResetIcon size={14} /> Alkutilaan
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

@@ -1,0 +1,151 @@
+{
+  "_huom": "Demotapauksen alkutila. Kaikki tiedot synteettisiä.",
+  "personSourceDir": "data/luvn/aino",
+  "personId": "SYN-AINO-0046",
+  "consent": {
+    "proactiveContact": true,
+    "maxContactsPerWeek": 3,
+    "quietHours": {
+      "start": "21:00",
+      "end": "08:00"
+    },
+    "channel": "app",
+    "showGeneticDetails": false,
+    "automatedAssessment": true
+  },
+  "plans": [
+    {
+      "theme": "lipids",
+      "status": "active",
+      "approvedByRole": "physician",
+      "approvedAt": "2026-05-20",
+      "approvalNote": "Laboratoriokontrolli noin puolen vuoden välein. Perimätiedon havainto kirjataan taustatiedoksi.",
+      "userConsentAt": "2026-05-20",
+      "userConsentHow": "Lääkärin etävastaanotto (synteettinen)",
+      "nextReviewAt": "2026-11-12",
+      "nextCheckInAt": "2026-10-29",
+      "linkedFindingIds": [
+        "GF-001"
+      ]
+    },
+    {
+      "theme": "blood_pressure",
+      "status": "pending_professional_review",
+      "userConsentAt": "2026-08-20",
+      "userConsentHow": "Hoitajan vastaanotto (synteettinen)"
+    }
+  ],
+  "geneticApprovals": [
+    {
+      "findingId": "GF-001",
+      "byRole": "physician",
+      "at": "2026-05-20",
+      "note": "Kirjataan kolesteroliseurannan taustatiedoksi. Kliininen vahvistus puuttuu, havainto on merkitty vahvistamattomaksi.",
+      "planTheme": "lipids"
+    }
+  ],
+  "script": {
+    "measurements": [
+      [
+        138,
+        88
+      ],
+      [
+        140,
+        89
+      ],
+      [
+        137,
+        87
+      ],
+      [
+        141,
+        90
+      ],
+      [
+        139,
+        88
+      ],
+      [
+        136,
+        86
+      ]
+    ],
+    "homeMonitoring": [
+      [
+        139,
+        88
+      ],
+      [
+        141,
+        90
+      ],
+      [
+        137,
+        87
+      ],
+      [
+        140,
+        89
+      ],
+      [
+        138,
+        88
+      ],
+      [
+        142,
+        90
+      ]
+    ],
+    "userAnswers": {
+      "goal_progress": "none",
+      "measurement_status": "no_time",
+      "barrier": "time",
+      "smaller_goal": "accept",
+      "wellbeing": "ok",
+      "usefulness": "4",
+      "step_up": "accept"
+    },
+    "approveDecision": {
+      "decision": "approve",
+      "note": "Suunnitelma hyväksytty ehdotetuin asetuksin. Agentti saa muistuttaa ja kysyä viikoittain."
+    },
+    "escalationDecision": {
+      "decision": "edit",
+      "note": "Sovitaan viikon tehostettu kotimittausjakso. Soitan asiakkaalle ja sovimme vastaanottoajan.",
+      "changes": {
+        "measurementsPerWeek": 14,
+        "goal": {
+          "label": "kolme 10 minuutin taukoliikuntahetkeä viikossa",
+          "activity": "taukoliikunta",
+          "timesPerWeek": 3,
+          "minutes": 10,
+          "minTimesPerWeek": 2,
+          "maxTimesPerWeek": 5
+        },
+        "reviewInDays": 14,
+        "instructions": [
+          "Tee kotimittaus aamulla ja illalla seuraavan 7 päivän ajan.",
+          "Kokeile kolmea lyhyttä taukoliikuntahetkeä viikossa, esimerkiksi työpäivän lomassa."
+        ]
+      },
+      "contactUser": true,
+      "escalationAppropriate": true
+    },
+    "geneticReviewDecision": {
+      "decision": "refer",
+      "ownerRole": "genetics",
+      "note": "Ohjataan perinnöllisyyslääkärin arvioon. Ei vaikuta omahoidon seurantaan ennen arviota."
+    },
+    "symptomReport": "Minulla on ollut pari päivää päänsärkyä ja huimausta, pitäisikö mennä lääkäriin?"
+  },
+  "automatedAssessmentConsent": {
+    "_huom": "Nimenomainen suostumus automaattiseen hoidon tarpeen arvioon (terveydenhuoltolaki 51 § 3 mom., oletettu voimaantulo 2027). Synteettinen.",
+    "recordId": "SUO-03",
+    "target": "Automaattinen hoidon tarpeen arvio (terveydenhuoltolaki 51 § 3 mom.)",
+    "status": "annettu",
+    "date": "2026-08-20",
+    "channel": "hoitajan vastaanotto",
+    "historyLine": "Nimenomainen suostumus automaattiseen hoidon tarpeen arvioon annettu vastaanotolla (synteettinen)."
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "note": "Demon synteettisiä esimerkkilukuja. Terapiajonon kokonaisluvut koostuvat kuvitteellisesta taustakohortista ja demon asiakkaista, jotka lisätään lukuihin reaaliajassa.",
+  "baseBuckets": {
+    "stable": 646,
+    "changeDetected": 163,
+    "contactRequested": 30,
+    "matchingPossible": 116,
+    "missedCheckIns": 39
+  },
+  "impactLabel": "Demon synteettinen esimerkkiluku – ei todellinen vaikuttavuustulos.",
+  "impact": [
+    {
+      "key": "timeToSupport",
+      "label": "Aika ensimmäiseen tukeen",
+      "before": "28 pv",
+      "after": "< 1 pv",
+      "detail": "Ennen: tuki alkoi vasta ensimmäisellä terapiakäynnillä. Mieliluotsilla: tuki alkaa samana päivänä, kun asiakas liitetään jonoon."
+    },
+    {
+      "key": "activeSupport",
+      "label": "Jonottajat aktiivisen tuen piirissä",
+      "before": "0 %",
+      "after": "86 %",
+      "detail": "Osuus terapiaa odottavista, jotka ovat ottaneet Mieliluotsin käyttöön."
+    },
+    {
+      "key": "checkInCompletion",
+      "label": "Check-inien vastausaste",
+      "value": "78 %",
+      "detail": "Vastatut check-init / lähetetyt check-init odotusaikana."
+    },
+    {
+      "key": "changesSurfaced",
+      "label": "Ammattilaiselle nostetut muutokset",
+      "value": "164 / kk",
+      "detail": "Sääntöpohjaiset muutokset omaan lähtötasoon, jotka ammattilainen tarkisti. Mieliluotsi ei muuttanut kiireellisyyttä yhdessäkään."
+    },
+    {
+      "key": "humanContacts",
+      "label": "Asiakkaiden pyytämät yhteydenotot",
+      "value": "31 / kk",
+      "detail": "”Haluan keskustella ammattilaisen kanssa” -pyynnöt."
+    },
+    {
+      "key": "matchAcceptance",
+      "label": "Terapeuttiehdotuksen hyväksyntä",
+      "value": "82 %",
+      "detail": "Asiakkaat, jotka valitsivat jonkin kolmesta ensimmäisestä ehdotuksesta."
+    },
+    {
+      "key": "rematch",
+      "label": "Uudelleen-matching-pyynnöt",
+      "value": "6 %",
+      "detail": "Ensimmäisten tapaamisten jälkeinen palaute, joka johti ammattilaisen tarkistukseen."
+    },
+    {
+      "key": "handovers",
+      "label": "Valmiit, asiakkaan hyväksymät yhteenvedot",
+      "value": "214",
+      "detail": "Terapeutti sai yhteenvedon ennen ensimmäistä tapaamista."
+    },
+    {
+      "key": "prepTime",
+      "label": "Arvioitu säästetty valmisteluaika",
+      "value": "≈ 25 min / asiakas",
+      "detail": "Havainnollistava oletus: rakenteinen yhteenveto korvaa osan alkukartoituksesta."
+    },
+    {
+      "key": "engagement",
+      "label": "Sitoutuminen odotusaikana",
+      "value": "71 %",
+      "detail": "Asiakkaat, jotka vastasivat vähintään kerran viikossa neljän viikon jälkeen."
+    }
+  ],
+  "samplesNote": "Kuvitteellisia esimerkkiprofiileja taustakohortista – havainnollistavat ryhmää, eivät ole demon asiakkaita.",
+  "samples": [
+    {
+      "bucket": "stable",
+      "name": "Antti Vainio",
+      "age": 34,
+      "waitingDays": 41,
+      "lastCheckInDaysAgo": 1,
+      "trend": "stable",
+      "latestObservation": null,
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Ei toimenpiteitä"
+    },
+    {
+      "bucket": "stable",
+      "name": "Emilia Laaksonen",
+      "age": 27,
+      "waitingDays": 22,
+      "lastCheckInDaysAgo": 0,
+      "trend": "improving",
+      "latestObservation": "Vointi hieman lähtötasoa parempi",
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Ei toimenpiteitä"
+    },
+    {
+      "bucket": "stable",
+      "name": "Kari Heinonen",
+      "age": 52,
+      "waitingDays": 67,
+      "lastCheckInDaysAgo": 2,
+      "trend": "stable",
+      "latestObservation": null,
+      "reviewKey": "reviewed",
+      "reviewLabel": "Tarkistettu",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Ei toimenpiteitä"
+    },
+    {
+      "bucket": "changeDetected",
+      "name": "Satu Rantala",
+      "age": 45,
+      "waitingDays": 58,
+      "lastCheckInDaysAgo": 0,
+      "trend": "declining",
+      "latestObservation": "Kolme check-iniä oman lähtötason alapuolella",
+      "reviewKey": "requested",
+      "reviewLabel": "Tarkistus pyydetty",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Tarkista muutos"
+    },
+    {
+      "bucket": "changeDetected",
+      "name": "Joonas Harju",
+      "age": 23,
+      "waitingDays": 33,
+      "lastCheckInDaysAgo": 1,
+      "trend": "declining",
+      "latestObservation": "Uni heikentynyt kahden viikon ajan",
+      "reviewKey": "requested",
+      "reviewLabel": "Tarkistus pyydetty",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Tarkista muutos"
+    },
+    {
+      "bucket": "changeDetected",
+      "name": "Minna Koskela",
+      "age": 38,
+      "waitingDays": 76,
+      "lastCheckInDaysAgo": 0,
+      "trend": "declining",
+      "latestObservation": "Ahdistus noussut työpäivien alla",
+      "reviewKey": "requested",
+      "reviewLabel": "Tarkistus pyydetty",
+      "matchingStatus": "Matching valmis",
+      "nextAction": "Tarkista muutos"
+    },
+    {
+      "bucket": "contactRequested",
+      "name": "Ville Nurmi",
+      "age": 31,
+      "waitingDays": 49,
+      "lastCheckInDaysAgo": 0,
+      "trend": "stable",
+      "latestObservation": "Pyysi soittoa jonotilanteesta",
+      "reviewKey": "contact",
+      "reviewLabel": "Yhteydenottopyyntö",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Soita asiakkaalle"
+    },
+    {
+      "bucket": "contactRequested",
+      "name": "Anni Peltonen",
+      "age": 29,
+      "waitingDays": 15,
+      "lastCheckInDaysAgo": 1,
+      "trend": "insufficient",
+      "latestObservation": "Haluaa keskustella hoitovaihtoehdoista",
+      "reviewKey": "contact",
+      "reviewLabel": "Yhteydenottopyyntö",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Soita asiakkaalle"
+    },
+    {
+      "bucket": "contactRequested",
+      "name": "Markku Salminen",
+      "age": 61,
+      "waitingDays": 88,
+      "lastCheckInDaysAgo": 3,
+      "trend": "declining",
+      "latestObservation": "Pyysi yhteydenottoa voinnin takia",
+      "reviewKey": "contact",
+      "reviewLabel": "Yhteydenottopyyntö",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Soita asiakkaalle"
+    },
+    {
+      "bucket": "matchingPossible",
+      "name": "Oona Hiltunen",
+      "age": 26,
+      "waitingDays": 102,
+      "lastCheckInDaysAgo": 1,
+      "trend": "stable",
+      "latestObservation": null,
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Matching valmis – odottaa terapeuttia",
+      "nextAction": "Aja matching"
+    },
+    {
+      "bucket": "matchingPossible",
+      "name": "Petri Mattila",
+      "age": 40,
+      "waitingDays": 95,
+      "lastCheckInDaysAgo": 2,
+      "trend": "stable",
+      "latestObservation": null,
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Ehdotukset asiakkaalla",
+      "nextAction": "Odota asiakkaan valintaa"
+    },
+    {
+      "bucket": "matchingPossible",
+      "name": "Kaisa Honkanen",
+      "age": 35,
+      "waitingDays": 110,
+      "lastCheckInDaysAgo": 0,
+      "trend": "improving",
+      "latestObservation": null,
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Matching valmis – odottaa terapeuttia",
+      "nextAction": "Aja matching"
+    },
+    {
+      "bucket": "missedCheckIns",
+      "name": "Jussi Karjalainen",
+      "age": 44,
+      "waitingDays": 37,
+      "lastCheckInDaysAgo": 9,
+      "trend": "insufficient",
+      "latestObservation": "Kolme check-iniä jäänyt väliin",
+      "reviewKey": "task",
+      "reviewLabel": "Avoin tehtävä",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Tarkista osallistuminen"
+    },
+    {
+      "bucket": "missedCheckIns",
+      "name": "Henna Ojala",
+      "age": 22,
+      "waitingDays": 28,
+      "lastCheckInDaysAgo": 12,
+      "trend": "insufficient",
+      "latestObservation": "Ei check-inejä 12 päivään",
+      "reviewKey": "task",
+      "reviewLabel": "Avoin tehtävä",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Tarkista osallistuminen"
+    },
+    {
+      "bucket": "missedCheckIns",
+      "name": "Timo Lindholm",
+      "age": 57,
+      "waitingDays": 64,
+      "lastCheckInDaysAgo": 7,
+      "trend": "stable",
+      "latestObservation": "Muistutus lähetetty",
+      "reviewKey": "none",
+      "reviewLabel": "–",
+      "matchingStatus": "Jonossa",
+      "nextAction": "Seuraa"
+    }
+  ]
+}
