@@ -124,11 +124,11 @@ def test_a_model_can_only_add_caution_during_an_exercise(state):
 
 def test_the_check_in_runs_as_a_conversation_with_mood_and_anxiety(state):
     client = run_intake(state)
-    client.simulationProfile = 'none'  # nobody answers for Aino – the question waits in the chat
+    client.simulationProfile = 'none'  # nobody answers for Sami – the question waits in the chat
     simulation.advance(state, 1)  # Saturday: the agent opens the due check-in in the chat
     session = practice.active_session(state, client.id)
     assert session.tool == 'checkin' and session.startedFrom == 'agent' and session.step == 'mood'
-    assert _chat(state)[-2].text.startswith('Hei Aino! On lyhyen check-inin aika')
+    assert _chat(state)[-2].text.startswith('Hei Sami! On lyhyen check-inin aika')
     provider = DemoAIProvider()
     practice.answer(state, client, 3, provider, 'client:cl-aino')
     with pytest.raises(PracticeError):

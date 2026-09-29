@@ -53,7 +53,7 @@ export default function AgentLog() {
           </div>
         )}
       </section>
-      <button type="button" className="link-btn" onClick={() => setProClientId('cl-aino')}>Avaa Ainon tarkistusnäkymä →</button>
+      <button type="button" className="link-btn" onClick={() => setProClientId('cl-aino')}>Avaa Samin tarkistusnäkymä →</button>
     </div>
   );
 }

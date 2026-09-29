@@ -95,7 +95,7 @@ export function partitive(name: string): string {
 
 const GENITIVE: Record<string, string> = { Mikko: 'Mikon', Pekka: 'Pekan' };
 
-/** 'Ainon', 'Mikon' – genitive of a demo first name. */
+/** 'Samin', 'Mikon' – genitive of a demo first name. */
 export function genitive(name: string): string {
   return GENITIVE[name] ?? `${name}n`;
 }

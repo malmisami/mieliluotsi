@@ -38,7 +38,7 @@ DISCLAIMERS = [
 ]
 CLIENT_ORDER = ['cl-aino', 'cl-mikko', 'cl-sara', 'cl-crisis', 'cl-juha', 'cl-maria', 'cl-pekka', 'cl-leena', 'cl-noora']
 SCENES = [
-    {'key': 'start', 'label': '1. Aino jonossa – alkutila'},
+    {'key': 'start', 'label': '1. Sami jonossa – alkutila'},
     {'key': 'intake', 'label': '2. Alkukeskustelu tehty'},
     {'key': 'cbt', 'label': '3. Ajatusten tutkiminen chatissa'},
     {'key': 'weeks', 'label': '4. 14 päivää tukea ja harjoittelua'},
@@ -127,7 +127,7 @@ def presenter_steps(state: ValitukiState) -> dict[str, Any]:
     practiced = any(r.clientId == aino.id for r in state.thoughtRecords)
     configured = config is not None or any(c.clientId == aino.id for c in state.therapistConfigs)
     steps = [
-        {'n': 1, 'key': 'start', 'title': 'Aino on jonossa terapiaan', 'done': aino.journeyState != 'INVITED',
+        {'n': 1, 'key': 'start', 'title': 'Sami on jonossa terapiaan', 'done': aino.journeyState != 'INVITED',
          'hint': 'Asiakas → Aloita alkukeskustelu'},
         {'n': 2, 'key': 'intake', 'title': 'Alkukeskustelu ja hyväksytyt tulkinnat',
          'done': bool(session and session.status == 'completed'),
@@ -138,11 +138,11 @@ def presenter_steps(state: ValitukiState) -> dict[str, Any]:
          'hint': 'Demo-ohjaus → Simuloi 14 päivää → Edistyminen'},
         {'n': 5, 'key': 'change', 'title': 'Voinnin muutos ja ammattilaisen tarkistus',
          'done': bool(decline) and all(o.status != 'open' for o in decline),
-         'hint': 'Simuloi voinnin heikkeneminen → Ammattilainen → Aino → Merkitse tarkistetuksi'},
+         'hint': 'Simuloi voinnin heikkeneminen → Ammattilainen → Sami → Merkitse tarkistetuksi'},
         {'n': 6, 'key': 'matches', 'title': 'Terapeutin vapaa aika ja matching',
          'done': bool(decision and decision.status in ('proposed_to_client', 'client_selected')),
          'hint': 'Demo-ohjaus → Avaa terapeutin vapaa aika → Asiakas → Hoitopolku'},
-        {'n': 7, 'key': 'handover', 'title': 'Aino valitsee Annan ja hyväksyy yhteenvedon',
+        {'n': 7, 'key': 'handover', 'title': 'Sami valitsee Annan ja hyväksyy yhteenvedon',
          'done': bool(record and record.status == 'approved'),
          'hint': 'Valitse Anna → Hyväksy jaettavaksi'},
         {'n': 8, 'key': 'firstSession', 'title': 'Terapeutti näkee yhteenvedon', 'done': phase in ('THERAPY_ACTIVE', 'AFTERCARE'),
@@ -160,7 +160,7 @@ def presenter_steps(state: ValitukiState) -> dict[str, Any]:
     if upcoming and upcoming['key'] == 'weeks' and pattern and pattern.status == 'proposed':
         hint = 'Näytä Kodin "Huomasimme jotain" ja hyväksy havainto'
     if upcoming and upcoming['key'] == 'change' and decline and any(o.status == 'open' for o in decline):
-        hint = 'Vaihda Ammattilainen-näkymään → Aino → Merkitse tarkistetuksi'
+        hint = 'Vaihda Ammattilainen-näkymään → Sami → Merkitse tarkistetuksi'
     return {'steps': steps, 'next': upcoming['n'] if upcoming else None, 'nextKey': upcoming['key'] if upcoming else None,
             'hint': hint}
 

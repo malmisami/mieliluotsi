@@ -26,13 +26,13 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
 | Konseptin vaihe | Painallus | Mitä ruudulla tapahtuu | Aika |
 |---|---|---|---|
 | Konsepti | 1 | Konsepti-sivu: ennen ja Mieliluotsilla | 0:00–0:20 |
-| 1 · Avun haku | 2 | Aino on terapiajonossa, jonotiedot korostettuna | 0:20–0:35 |
-| 2 · AI-alkukeskustelu | 3–6 | Keskustelu alkaa → vastaukset toistuvat (noin 6 s) → ”Ymmärsinkö tilanteesi oikein?” → Aino hyväksyy, ja profiili täyttyy → check-in-rytmi → kotinäkymässä ”Miten voit tänään?” (oma lähtötaso) | 0:35–1:35 |
+| 1 · Avun haku | 2 | Sami on terapiajonossa, jonotiedot korostettuna | 0:20–0:35 |
+| 2 · AI-alkukeskustelu | 3–6 | Keskustelu alkaa → vastaukset toistuvat (noin 6 s) → ”Ymmärsinkö tilanteesi oikein?” → Sami hyväksyy, ja profiili täyttyy → check-in-rytmi → kotinäkymässä ”Miten voit tänään?” (oma lähtötaso) | 0:35–1:35 |
 | 3 · Mieliluotsi: KKT | 7–9 | Demoviesti → ”Kyllä, tutkitaan” → harjoitus toistuu (noin 20 s) → altistusporras | 1:35–2:20 |
-| 4 · Mieliluotsi: seuranta ja muutosten tunnistus | 10–14 | Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä, ja vointi heikkenee → ”Huomasimme jotain” (havainto on vain ehdotus) → Ammattilainen: jono → ”Miksi Aino nousi tarkistettavaksi?” → merkitään tarkistetuksi | 2:20–3:10 |
-| 5 · Mieliluotsi: havainto tarkentaa terapeuttiprofiilia | 15 | Aino hyväksyy havainnon, ja profiili päivittyy | 3:10–3:30 |
+| 4 · Mieliluotsi: seuranta ja muutosten tunnistus | 10–14 | Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä, ja vointi heikkenee → ”Huomasimme jotain” (havainto on vain ehdotus) → Ammattilainen: jono → ”Miksi Sami nousi tarkistettavaksi?” → merkitään tarkistetuksi | 2:20–3:10 |
+| 5 · Mieliluotsi: havainto tarkentaa terapeuttiprofiilia | 15 | Sami hyväksyy havainnon, ja profiili päivittyy | 3:10–3:30 |
 | 6 · Sopivin terapeutti ja handover | 16–20 | Vapaa paikka → matching → ”Miksi Anna?” → valinta ja ensimmäinen aika → yhteenveto → hyväksytään jaettavaksi | 3:30–4:15 |
-| 7 · Terapia + välitehtävät | 21–24 | Terapia alkaa: Anna näkee hyväksytyn yhteenvedon → välituen määritys → tallennus → Aino näkee suunnitelman | 4:15–4:50 |
+| 7 · Terapia + välitehtävät | 21–24 | Terapia alkaa: Anna näkee hyväksytyn yhteenvedon → välituen määritys → tallennus → Sami näkee suunnitelman | 4:15–4:50 |
 | 8 · Seuranta terapian jälkeen | 25 | Terapia päättyy – seuranta jatkuu | 4:50–5:00 |
 
 Kun toisto on käynnissä, painike näyttää tekstiä **Odota…**. Tänä aikana ylimääräiset painallukset eivät tee mitään.
@@ -47,7 +47,7 @@ Kun toisto on käynnissä, painike näyttää tekstiä **Odota…**. Tänä aika
 ## Kysymyksiin (ei kuulu viiteen minuuttiin)
 
 - **Turvallisuus:** demopalkin **Lisää → Kriisipolku** avaa kiinteän näkymän *Tarvitsetko apua juuri nyt?* (112,
-  Päivystysapu 116117, MIELI Kriisipuhelin 09 2525 0111). Näkymässä ei käytetä tekoälyä. Seuraava → palaa Ainon demoon.
+  Päivystysapu 116117, MIELI Kriisipuhelin 09 2525 0111). Näkymässä ei käytetä tekoälyä. Seuraava → palaa Samin demoon.
 - **Mitä agentit tekivät:** Ammattilainen → **Mitä Mieliluotsi teki?** näyttää jokaisen toimenpiteen ja sen säännön.
 - **Tietojen hallinta:** asiakkaan avatar → **Tietoni** näyttää käyttöoikeudet tietokohtaisesti.
 - **Vaikuttavuus:** Ammattilainen → **Vaikuttavuus** (synteettiset luvut).

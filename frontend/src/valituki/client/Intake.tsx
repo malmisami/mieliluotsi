@@ -169,7 +169,7 @@ function Review() {
   const intake = client.intake;
   const [editing, setEditing] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  // Practical wishes (format, language, times) are saved with the rest but not shown here – the card stays about Aino.
+  // Practical wishes (format, language, times) are saved with the rest but not shown here – the card stays about Sami.
   const main = intake.proposals.filter((p) => ['goal', 'working_style'].includes(p.category));
   const more = intake.proposals.filter((p) => !['goal', 'working_style', 'practical'].includes(p.category));
 

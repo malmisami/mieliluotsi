@@ -51,7 +51,7 @@ the matching permission reach the matcher; the agent has no code path that chang
 
 1. Backend domain: models, journey, insights + fit profile, intake, check-ins/trends/patterns, activities.
 2. Agents + orchestrator, safety interrupt, therapy mode; matching + handover adapted to the fit profile.
-3. Seed (Aino pre-intake on 16.10.2026; Mikko, Sara, Demo-kriisikäyttäjä and background clients with ~30 days of
+3. Seed (Sami pre-intake on 16.10.2026; Mikko, Sara, Demo-kriisikäyttäjä and background clients with ~30 days of
    history; 10 synthetic therapists), time machine, API.
 4. Frontend: shell + demo dock → intake → Tänään/Matkani → pro queue + review → matching → handover → therapist
    view + configuration → Tietoni → pitch + impact.

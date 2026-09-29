@@ -35,7 +35,7 @@ type Where = { role: 'pitch' } | { role: 'client'; tab: ClientTab } | { role: 'p
 interface PilotCtx {
   /** The newest view: the last mutation's result, or the rendered one. */
   view: () => ValitukiView;
-  /** Run one API call for Aino/Anna; resolves to the new view, or null when it failed. */
+  /** Run one API call for Sami/Anna; resolves to the new view, or null when it failed. */
   mutate: <T>(call: (s: ViewScope) => Promise<Mutation<T>>) => Promise<ValitukiView | null>;
   go: (where: Where) => void;
   /** Scroll the first matching element into view and pulse it; resolves to the element. */
@@ -95,34 +95,34 @@ export const BEATS: Beat[] = [
     show: async (p) => { p.go({ role: 'pitch' }); window.scrollTo({ top: 0 }); } },
 
   // 1 · Avun haku
-  { stage: 'haku', title: 'Aino on hakenut apua ja on terapiajonossa',
+  { stage: 'haku', title: 'Sami on hakenut apua ja on terapiajonossa',
     say: 'Työhön liittyvä ahdistus, lyhytterapia, arvioitu odotus 20–25 viikkoa. Normaalisti tästä alkaisi pelkkä odotus.',
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.wait-card'); } },
 
   // 2 · AI-alkukeskustelu
   { stage: 'alku', title: 'Alkukeskustelu alkaa – lomakkeen sijaan',
-    say: 'Aino päätti ensin itse, mitä Mieliluotsi saa tehdä. Mieliluotsi kysyy yhden asian kerrallaan: ”Kerro omin sanoin, miksi hait apua.”',
+    say: 'Sami päätti ensin itse, mitä Mieliluotsi saa tehdä. Mieliluotsi kysyy yhden asian kerrallaan: ”Kerro omin sanoin, miksi hait apua.”',
     act: async (p) => ok(await p.mutate((s) => api.intakeStart(s, AINO, p.view().client?.intake.consentDefaults ?? {
       proactiveCheckins: true, storeHistory: true, professionalMonitoring: true, sharePractice: true }))),
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
-  { stage: 'alku', title: 'Aino kertoo omin sanoin → ”Ymmärsinkö tilanteesi oikein?”',
+  { stage: 'alku', title: 'Sami kertoo omin sanoin → ”Ymmärsinkö tilanteesi oikein?”',
     say: 'Kuusi tarkentavaa kysymystä: tavoite, vaikeat hetket, mikä on auttanut ja toiveet terapialta. Tulkinnat ovat vasta ehdotuksia.',
     act: playIntake,
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
-  { stage: 'alku', title: 'Aino hyväksyy tulkinnat → Therapy Fit Profile syntyy',
+  { stage: 'alku', title: 'Sami hyväksyy tulkinnat → Therapy Fit Profile syntyy',
     say: 'Vasta hyväksytyt tiedot siirtyvät terapeutin profiiliin ja matchingiin (oikealla). Viimeisenä rytmi ja tämän päivän vointi.',
     act: async (p) => ok(await p.mutate((s) => api.intakeConfirm(s, AINO))),
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
 
   { stage: 'alku', title: 'Check-in-rytmi ja oma lähtötaso – Mieliluotsi käynnistyy',
-    say: 'Mieliala ja ahdistus 1–5 kolmesti viikossa. Vointia verrataan Ainon omaan lähtötasoon, ei muihin ihmisiin.',
+    say: 'Mieliala ja ahdistus 1–5 kolmesti viikossa. Vointia verrataan Samin omaan lähtötasoon, ei muihin ihmisiin.',
     act: async (p) => {
       const intake = p.view().client?.intake;
       const rhythm = intake?.demoRhythm;
       if (intake?.status === 'rhythm' && !ok(await p.mutate((s) => api.intakeComplete(s, AINO, {
         checkInDays: rhythm?.checkInDays ?? [0, 2, 5], communicationStyle: rhythm?.communicationStyle ?? 'brief' })))) return false;
       if (!p.view().client?.checkIn.needsBaseline) return true;
-      // "Miten voit tänään?" on the home screen: the card is on screen for a moment, then Aino answers.
+      // "Miten voit tänään?" on the home screen: the card is on screen for a moment, then Sami answers.
       p.go({ role: 'client', tab: 'koti' });
       await p.spot('.cx-baseline', 'center');
       await p.pause(1600);
@@ -131,7 +131,7 @@ export const BEATS: Beat[] = [
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.cx-teaser', 'center'); } },
 
   // 3 · Mieliluotsi: ohjattu KKT-harjoittelu chatissa
-  { stage: 'kkt', title: 'Aino kertoo jännittävästä tilanteesta',
+  { stage: 'kkt', title: 'Sami kertoo jännittävästä tilanteesta',
     say: '”Tiistaina pitää esitellä projekti koko tiimille…” Mieliluotsi tunnistaa tilanteen ja ehdottaa, että sitä tutkitaan yhdessä.',
     act: async (p) => {
       const text = p.view().client?.demoMessage ?? FALLBACK_MESSAGE;
@@ -157,7 +157,7 @@ export const BEATS: Beat[] = [
 
   // 4 · Mieliluotsi: mielialan ja ahdistuksen seuranta – kun dataa on kertynyt
   { stage: 'seuranta', title: 'Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä – vointi laskee alle oman lähtötason',
-    say: 'Check-init kolmesti viikossa ja harjoittelu kertyvät, ja jokaista check-iniä verrataan Ainon omaan lähtötasoon. Sitten '
+    say: 'Check-init kolmesti viikossa ja harjoittelu kertyvät, ja jokaista check-iniä verrataan Samin omaan lähtötasoon. Sitten '
       + 'check-in jää väliin ja uni heikkenee: havaintoagentti tunnistaa muutoksen ja pyytää ammattilaista katsomaan.',
     act: async (p) => {
       const view = p.view();
@@ -172,16 +172,16 @@ export const BEATS: Beat[] = [
     },
     show: async (p) => { p.go({ role: 'client', tab: 'edistyminen' }); await p.spot('.ma-chart'); } },
   { stage: 'seuranta', title: '”Huomasimme jotain” – havainto on vain ehdotus',
-    say: 'Työpäiviä edeltävinä iltoina ahdistusta on ollut enemmän. Aino päättää itse, tallennetaanko havainto.',
+    say: 'Työpäiviä edeltävinä iltoina ahdistusta on ollut enemmän. Sami päättää itse, tallennetaanko havainto.',
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot(['.cx-insight', '.bp-doc']); } },
-  { stage: 'seuranta', title: 'Hoitotiimin terapiajono: Aino nousee tarkistettavaksi',
+  { stage: 'seuranta', title: 'Hoitotiimin terapiajono: Sami nousee tarkistettavaksi',
     say: 'Avoimet tarkistuspyynnöt ensin. Mieliluotsi ei priorisoi asiakkaita eikä muuta hoidon kiireellisyyttä.',
     show: async (p) => { p.go({ role: 'professional', client: null }); await p.spot('.queue-table tr.row-primary', 'center'); } },
-  { stage: 'seuranta', title: '”Miksi Aino nousi tarkistettavaksi?”',
+  { stage: 'seuranta', title: '”Miksi Sami nousi tarkistettavaksi?”',
     say: 'Perustelut, sääntö ja itse raportoidut tiedot näkyvät – ei diagnoosia eikä mustaa laatikkoa.',
     show: async (p) => { p.go({ role: 'professional', client: AINO }); await p.spot('.why-card'); } },
   { stage: 'seuranta', title: 'Ammattilainen merkitsee tarkistetuksi – ihminen päättää',
-    say: 'Aino jatkaa jonossa Mieliluotsin tuella. Hoidon kiireellisyydestä päättää aina ammattilainen.',
+    say: 'Sami jatkaa jonossa Mieliluotsin tuella. Hoidon kiireellisyydestä päättää aina ammattilainen.',
     act: async (p) => {
       const review = p.view().professional.details[AINO]?.openReview;
       return review ? ok(await p.mutate((s) => api.reviewObservation(s, review.id, 'mark_reviewed'))) : true;
@@ -189,7 +189,7 @@ export const BEATS: Beat[] = [
     show: async (p) => { p.go({ role: 'professional', client: AINO }); await p.spot(['.reviewed-card', '.review-main']); } },
 
   // 6 · Mieliluotsi: Therapy Fit Profile
-  { stage: 'tfp', title: 'Aino hyväksyy – Therapy Fit Profile päivittyy',
+  { stage: 'tfp', title: 'Sami hyväksyy – Therapy Fit Profile päivittyy',
     say: 'Profiili terapeutille rakentuu vain hyväksytyistä tiedoista, ja jokaisella tiedolla on oma käyttöoikeus.',
     act: async (p) => {
       const pattern = p.view().client?.memory.pending.find((i) => i.kind === 'pattern');
@@ -199,18 +199,18 @@ export const BEATS: Beat[] = [
 
   // 7 · Sopivin saatavilla oleva terapeutti
   { stage: 'terapeutti', title: 'Terapeutilta vapautuu paikka – matching ajetaan heti',
-    say: 'Ensin kovat ehdot, sitten läpinäkyvä pisteytys. Aino näkee kolme tilanteeseensa sopivinta terapeuttia.',
+    say: 'Ensin kovat ehdot, sitten läpinäkyvä pisteytys. Sami näkee kolme tilanteeseensa sopivinta terapeuttia.',
     act: async (p) => ok(await p.mutate((s) => api.openSlot(s))),
     show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.matching'); } },
   { stage: 'terapeutti', title: '”Miksi Anna?” – perustelut, vapaa aika ja täyttymättömät toiveet',
-    say: 'Ei todennäköisyyksiä: Aino näkee, mihin suositus perustuu ja mitä toiveita ei voitu täyttää.',
+    say: 'Ei todennäköisyyksiä: Sami näkee, mihin suositus perustuu ja mitä toiveita ei voitu täyttää.',
     show: async (p) => {
       p.go({ role: 'client', tab: 'polku' });
       const card = await p.spot('.cand');
       card?.querySelector('details.unmet')?.setAttribute('open', '');
     } },
-  { stage: 'terapeutti', title: 'Aino valitsee Annan – ensimmäinen aika varataan',
-    say: 'Etävastaanotto tiistai-iltana, kuten Aino toivoi. Samalla syntyy luonnos yhteenvedosta ensimmäistä tapaamista varten.',
+  { stage: 'terapeutti', title: 'Sami valitsee Annan – ensimmäinen aika varataan',
+    say: 'Etävastaanotto tiistai-iltana, kuten Sami toivoi. Samalla syntyy luonnos yhteenvedosta ensimmäistä tapaamista varten.',
     act: async (p) => {
       const candidates = p.view().client?.matching.candidates ?? [];
       const anna = candidates.find((c) => c.therapist.id === ANNA) ?? candidates[0];
@@ -220,9 +220,9 @@ export const BEATS: Beat[] = [
 
   // (terapeutti jatkuu: asiakkaan hyväksymä yhteenveto ensimmäistä tapaamista varten)
   { stage: 'terapeutti', title: 'Yhteenveto ensimmäistä tapaamista varten',
-    say: 'Jokainen kohta on merkitty: omin sanoin, mitattu tai tekoälyn tiivistelmä. Aino voi muokata ja poistaa kohtia.',
+    say: 'Jokainen kohta on merkitty: omin sanoin, mitattu tai tekoälyn tiivistelmä. Sami voi muokata ja poistaa kohtia.',
     show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.handover-card'); } },
-  { stage: 'terapeutti', title: 'Aino hyväksyy yhteenvedon jaettavaksi',
+  { stage: 'terapeutti', title: 'Sami hyväksyy yhteenvedon jaettavaksi',
     say: 'Mitään ei jaeta ennen hyväksyntää, eikä keskusteluhistoriaa jaeta koskaan.',
     act: async (p) => ok(await p.mutate((s) => api.approveHandover(s, AINO))),
     show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot(['.handover-card .banner-ok', '.handover-card']); } },
@@ -230,21 +230,21 @@ export const BEATS: Beat[] = [
   // 9 · Terapia + välitehtävät Mieliluotsissa
   { stage: 'terapia', title: 'Terapia alkaa – Anna näkee vain hyväksytyn yhteenvedon',
     say: 'Ensimmäinen tapaaminen ei ala tyhjästä: tavoitteet, voinnin suunta ja harjoittelu ovat valmiina. Harjoittelu näkyy '
-      + 'Annalle Ainon luvalla, ajatuspäiväkirjan merkinnät vain, jos Aino jakaa ne.',
+      + 'Annalle Samin luvalla, ajatuspäiväkirjan merkinnät vain, jos Sami jakaa ne.',
     act: async (p) => ok(await p.mutate((s) => api.firstSession(s, AINO))),
     show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.doc-card'); } },
   { stage: 'terapia', title: 'Terapeutti määrittää välituen ja välitehtävän',
     say: 'Päätavoite, sallitut KKT-harjoitukset, viikoittainen välitehtävä ja check-in-tiheys – tekoäly toimii vain näissä rajoissa.',
     show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.plan-card'); } },
   { stage: 'terapia', title: 'Tallenna ja ota käyttöön',
-    say: 'Mieliluotsi siirtyy odotusajan protokollasta terapeutin ohjaamaksi välitueksi, ja Aino saa siitä ilmoituksen.',
+    say: 'Mieliluotsi siirtyy odotusajan protokollasta terapeutin ohjaamaksi välitueksi, ja Sami saa siitä ilmoituksen.',
     act: async (p) => {
       const row = p.view().therapist.selected?.clients.find((c) => c.clientId === AINO);
       const plan = row?.therapy.suggestedPlan;
       return plan ? ok(await p.mutate((s) => api.savePlan(s, ANNA, AINO, plan))) : false;
     },
     show: async (p) => { p.go({ role: 'therapist' }); await p.spot('.plan-card'); } },
-  { stage: 'terapia', title: 'Aino näkee terapeutin määrittämän välituen',
+  { stage: 'terapia', title: 'Sami näkee terapeutin määrittämän välituen',
     say: 'Välitehtävä ja harjoitukset tapaamisten välillä – terapeutin rajaamina.',
     show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.cx-modecard'); } },
 
@@ -260,7 +260,7 @@ export function stageStart(stage: StageKey): number {
   return Math.max(0, BEATS.findIndex((b) => b.stage === stage));
 }
 
-/* How far Aino's story has come, as the index of the last step whose change is in the state. It lets a step notice that
+/* How far Sami's story has come, as the index of the last step whose change is in the state. It lets a step notice that
    it was already done by hand (skip it) and that the state is behind (rebuild it first). */
 function progress(view: ValitukiView): number {
   const client = view.client;
@@ -456,7 +456,7 @@ export function useDemoPilot(): DemoPilot {
     }
   }, []);
 
-  /** The steps judge progress from Aino's and Anna's view – another demo client or therapist may be on screen. */
+  /** The steps judge progress from Sami's and Anna's view – another demo client or therapist may be on screen. */
   const ensureScope = useCallback(async () => {
     const view = latest.current;
     if (view.client?.id === AINO && view.therapist.selected?.id === ANNA) return;

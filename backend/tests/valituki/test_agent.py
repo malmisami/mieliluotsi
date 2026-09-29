@@ -44,7 +44,7 @@ def test_worsening_wellbeing_generates_an_explainable_human_review_task(state):
     assert observation.suggestedAction == 'Ehdotus: ammattilaisen tarkistus.'
     titles = [a.title for a in state.actions if a.clientId == client.id]
     assert 'Mieliluotsi huomasi, että check-in puuttuu' in titles
-    assert 'Lähetimme Ainolle muistutuksen' in titles
+    assert 'Lähetimme Samille muistutuksen' in titles
     assert 'Vointi oli kolmatta kertaa peräkkäin oman lähtötason alapuolella' in titles
     assert 'Mieliluotsi loi ammattilaiselle tarkistuspyynnön' in titles
     note = next(n for n in state.notifications if n.clientId == client.id and n.title == 'Mieliluotsi huomasi muutoksen')

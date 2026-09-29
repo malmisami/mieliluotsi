@@ -1,4 +1,4 @@
-"""Demo scenes: jump to a stage of Aino's journey. Each scene rebuilds the seed and replays the same steps the presenter
+"""Demo scenes: jump to a stage of Sami's journey. Each scene rebuilds the seed and replays the same steps the presenter
 would click, through the same engine – so a jump gives exactly the state the live demo would have reached."""
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def build_scene(name: str) -> ValitukiState:
     for observation in [o for o in state.wellbeingObservations
                         if o.clientId == aino.id and o.status == 'open' and o.kind == 'trend_decline']:
         professional.review_observation(state, observation.id, 'mark_reviewed',
-                                        'Soitettu Ainolle – jatketaan jonossa Mieliluotsin tuella.')
+                                        'Soitettu Samille – jatketaan jonossa Mieliluotsin tuella.')
     if reached('matches'):
         return state
     simulation.open_next_pending(state)

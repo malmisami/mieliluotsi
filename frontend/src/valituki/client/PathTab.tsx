@@ -45,7 +45,7 @@ function ModeCard() {
   const mode = client.mode;
   const therapy = mode.mode === 'therapy_support';
   const aftercare = mode.mode === 'aftercare_support';
-  // While waiting there is nothing for Aino to act on here; the card appears once the therapist sets the support.
+  // While waiting there is nothing for Sami to act on here; the card appears once the therapist sets the support.
   if (!therapy && !aftercare) return null;
   return (
     <section className={`cx-modecard ${therapy ? 'is-therapy' : 'is-aftercare'}`}>

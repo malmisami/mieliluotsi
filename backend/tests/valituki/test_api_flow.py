@@ -62,7 +62,7 @@ def test_full_demo_journey():
     assert [c['therapist']['name'] for c in candidates] == ['Anna Laine', 'Laura Koski', 'Katja Salmi']
     assert candidates[0]['labelText'] == 'Vahva yhteensopivuus' and candidates[0]['reasons']
 
-    # 6: Aino chooses Anna and approves the handover
+    # 6: Sami chooses Anna and approves the handover
     view = ok(client.post(f'{API}/clients/cl-aino/matches/select', params=Q, json={'candidateId': candidates[0]['id']}))['view']
     assert view['client']['matching']['booking']['startText'] == 'Ti 17.11. klo 18.00'
     ok(client.post(f'{API}/clients/cl-aino/handover/approve', params=Q))

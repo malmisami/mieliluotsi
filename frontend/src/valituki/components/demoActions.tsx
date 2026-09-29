@@ -42,7 +42,7 @@ export function useDemoActions() {
     await run((s) => api.crisis({ ...s, clientId: 'cl-crisis' }), () => 'Kriisipolku: turvallisuusnäkymä keskeytti tavallisen tuen.');
   }
 
-  /** Rebuild the demo at a prepared scene (Aino's journey). */
+  /** Rebuild the demo at a prepared scene (Sami's journey). */
   async function jump(key: string) {
     if (!key) return;
     await run((s) => api.scene(s, key), () => `Demo siirrettiin vaiheeseen: ${demo.scenes.find((sc) => sc.key === key)?.label ?? key}`);
@@ -51,7 +51,7 @@ export function useDemoActions() {
     setProTab('jono');
   }
 
-  // The script follows Aino, so its next action always targets her.
+  // The script follows Sami, so its next action always targets Sami.
   const NEXT: Record<string, DemoAction> = {
     weeks: { label: 'Simuloi 14 päivää', icon: <ForwardIcon size={15} />, action: weeks },
     change: { label: 'Simuloi voinnin heikkeneminen', icon: <PulseIcon size={15} />, action: () => deteriorate('cl-aino') },

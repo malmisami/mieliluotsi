@@ -102,7 +102,7 @@ export default function PitchScreen() {
         <p className="pitch-quote">Mieliluotsi ei korvaa terapeuttia.</p>
         <p className="pitch-quote-2">Se tekee ajasta ennen terapiaa, tapaamisten välillä ja niiden jälkeen jatkuvan osan hoitopolkua.</p>
         <button type="button" className="btn btn-primary btn-lg" onClick={() => { setClientId('cl-aino'); setClientTab('koti'); setRole('client'); }}>
-          Aloita demo: Aino on jonossa terapiaan <ArrowRightIcon size={18} />
+          Aloita demo: Sami on jonossa terapiaan <ArrowRightIcon size={18} />
         </button>
         <p className="muted small">Kaikki demon henkilöt ja terveystiedot ovat täysin kuvitteellisia.</p>
       </section>

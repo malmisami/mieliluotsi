@@ -36,7 +36,7 @@ def client_of(state, client_id='cl-aino'):
 
 
 def run_intake(state, client_id='cl-aino'):
-    """Aino's scripted intake through the same functions the UI calls."""
+    """Sami's scripted intake through the same functions the UI calls."""
     client = client_of(state, client_id)
     intake.run_scripted(state, client, content.client_spec(client_id)['intake'], records.client_actor(client_id))
     return client

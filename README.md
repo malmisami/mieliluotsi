@@ -83,8 +83,8 @@ Three demo roles, switched from the view selector on the stage – beside the ph
 
 | Role | What it is |
 |---|---|
-| **Asiakas** (client, mobile-first) | A phone-sized, chat-first app: conversational intake, then five tabs – **Koti** ("Hei Aino, miten voit tänään?", the day's plan, a guided exercise), **Keskustelu** (the AI chat with guided CBT exercises and check-ins), **Harjoitukset** (agreed tasks, CBT tools, exposure ladders, the approved self-care library), **Edistyminen** (mood and anxiety over time, the week in review, completed practice, the private thought journal) and **Hoitopolku** (waiting → therapist → therapy → follow-up, matching, handover, milestones). **Tietoni** (my data and consents) opens from the avatar and **Viestit** from the bell. **Apua nyt** is always visible. On wide screens a live **"Mieliluotsi taustalla"** panel shows the agents' steps as they happen. |
-| **Ammattilainen** (care coordinator, desktop) | **Terapiajono** (synthetic cohort KPIs + sortable queue), client review ("Miksi Aino nousi tarkistettavaksi?"), **Mitä Mieliluotsi teki?** (all agent actions + audit log), **Terapeutit** (directory, capacity, matching weights, integration points) and **Vaikuttavuus** (synthetic impact). |
+| **Asiakas** (client, mobile-first) | A phone-sized, chat-first app: conversational intake, then five tabs – **Koti** ("Hei Sami, miten voit tänään?", the day's plan, a guided exercise), **Keskustelu** (the AI chat with guided CBT exercises and check-ins), **Harjoitukset** (agreed tasks, CBT tools, exposure ladders, the approved self-care library), **Edistyminen** (mood and anxiety over time, the week in review, completed practice, the private thought journal) and **Hoitopolku** (waiting → therapist → therapy → follow-up, matching, handover, milestones). **Tietoni** (my data and consents) opens from the avatar and **Viestit** from the bell. **Apua nyt** is always visible. On wide screens a live **"Mieliluotsi taustalla"** panel shows the agents' steps as they happen. |
+| **Ammattilainen** (care coordinator, desktop) | **Terapiajono** (synthetic cohort KPIs + sortable queue), client review ("Miksi Sami nousi tarkistettavaksi?"), **Mitä Mieliluotsi teki?** (all agent actions + audit log), **Terapeutit** (directory, capacity, matching weights, integration points) and **Vaikuttavuus** (synthetic impact). |
 | **Terapeutti** (therapist, desktop) | Only the summary the client approved, the first session, the configuration of **Mieliluotsi tapaamisten välillä** (allowed activities and CBT tools, a weekly between-session task), a between-session practice summary (with the client's permission; journal entries only if the client shares them) and **ending therapy** with a maintenance plan. |
 
 A fourth view, **Konsepti**, is the pitch screen: *Passiivisesta jonosta aktiiviseksi hoitopoluksi*.
@@ -296,7 +296,7 @@ included by default. The therapist sees nothing until the client approves, and w
 
 | Client | Situation at the start (Fri 16.10.2026) |
 |---|---|
-| **Aino Lehtinen** (31, Espoo) | Main demo client: anxiety and work stress, eligible for short-term therapy, just joined the waiting list, prefers a structured and practical approach, Finnish, remote, Tuesday/Thursday evenings |
+| **Sami Lehtinen** (31, Espoo) | Main demo client: anxiety and work stress, eligible for short-term therapy, just joined the waiting list, prefers a structured and practical approach, Finnish, remote, Tuesday/Thursday evenings |
 | Mikko Salonen | Stable waiting client – matching possible |
 | Sara Nieminen | Check-ins repeatedly missed → low-priority engagement task |
 | Demo-kriisikäyttäjä | Used only for the safety path |
@@ -326,7 +326,7 @@ client and **Alkutilaan** (reset). In the chat, **Demovastaus** answers the curr
 
 Start at **Konsepti** (0:00–0:15): *passive queue → active pathway*, then **Aloita demo**.
 
-1. **Aino on the waiting list (0:15–0:30).** *Asiakas* → "Hei Aino – Olet terapian jonossa." Consents → **Aloita
+1. **Sami on the waiting list (0:15–0:30).** *Asiakas* → "Hei Sami – Olet terapian jonossa." Consents → **Aloita
    keskustelu**.
 2. **Conversational intake (0:30–0:55).** "Kerro omin sanoin, miksi hait apua." → **Toista demokeskustelu** (six
    focused follow-ups, one at a time). "**Ymmärsinkö tilanteesi oikein?**" – TAVOITE, TYÖSKENTELYTAPA, KÄYTÄNNÖN
@@ -341,18 +341,18 @@ Start at **Konsepti** (0:00–0:15): *passive queue → active pathway*, then **
    jotain** – perustuu 6 check-iniin, ei diagnoosi" → **Tämä tuntuu oikealta**.
 5. **A change → human review (1:40–2:05).** **Simuloi voinnin heikkeneminen**. Timeline: *09.00 check-in puuttuu ·
    09.01 muistutus · 14.40 check-in · 14.41 kolmatta kertaa oman lähtötason alapuolella · 14.41 tarkistuspyyntö*.
-   **Ammattilainen**: TERAPIAJONO 1 000 / 647 / 164 / 31 / 118 / 40 (synthetic) → Aino → "**MIKSI AINO NOUSI
+   **Ammattilainen**: TERAPIAJONO 1 000 / 647 / 164 / 31 / 118 / 40 (synthetic) → Sami → "**MIKSI AINO NOUSI
    TARKISTETTAVAKSI?**" → "Mieliluotsi ei ole muuttanut hoidon kiireellisyyttä." → **Merkitse tarkistetuksi**.
 6. **A slot opens → matching (2:05–2:25).** **Avaa terapeutin vapaa aika** (Anna Laine). *Asiakas → Hoitopolku*:
    "Löysimme kolme tilanteeseesi sopivaa terapeuttia." – "Miksi Anna?", "Ti 17.11. klo 18.00", "Mitä toiveita ei
    pystytty täyttämään?".
 7. **Choice and handover (2:25–2:40).** **Valitse** → first session booked → "Yhteenveto ensimmäistä tapaamista
    varten" (typed sections incl. *Mitä olen harjoitellut*, *Muokkaa* / *Poista kohta*) → **Hyväksy jaettavaksi**.
-8. **Therapist (2:40–2:50).** **Terapeutti** → "Ensimmäinen tapaaminen 17.11. klo 18.00" and "Ainon hyväksymä
+8. **Therapist (2:40–2:50).** **Terapeutti** → "Ensimmäinen tapaaminen 17.11. klo 18.00" and "Samin hyväksymä
    yhteenveto" → **Merkitse ensimmäinen tapaaminen pidetyksi (demo)**.
 9. **Therapist-guided support (2:50–3:00).** Päätavoite, KKT-harjoitukset, välitehtävä (*Ajatusten tutkiminen*), sallitut
    omahoitoharjoitukset, check-in-tiheys, seurataan, älä käsittele → **Tallenna ja ota käyttöön**. *Harjoittelu
-   tapaamisten välillä* shows the ladder's progress. Aino's *Hoitopolku*: "Terapeutti Anna on määrittänyt tämän
+   tapaamisten välillä* shows the ladder's progress. Sami's *Hoitopolku*: "Terapeutti Anna on määrittänyt tämän
    suunnitelman."
 10. **After therapy (optional).** **Terapia päättyy** (or *Terapeutti → Laadi ylläpitosuunnitelma → Päätä terapia*):
     *Hoitopolku* → *Seuranta terapian jälkeen* with the maintenance plan; mood and anxiety weekly. Close: "Mieliluotsi ei

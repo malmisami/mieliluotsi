@@ -128,12 +128,12 @@ _GENITIVE = {'Mikko': 'Mikon', 'Pekka': 'Pekan'}
 
 
 def allative(name: str) -> str:
-    """'Ainolle', 'Mikolle' – Finnish allative of a first name (small exception list for consonant gradation)."""
+    """'Samille', 'Mikolle' – Finnish allative of a first name (small exception list for consonant gradation)."""
     return _ALLATIVE.get(name, f'{name}lle')
 
 
 def genitive(name: str) -> str:
-    """'Ainon', 'Mikon'."""
+    """'Samin', 'Mikon'."""
     return _GENITIVE.get(name, f'{name}n')
 
 
