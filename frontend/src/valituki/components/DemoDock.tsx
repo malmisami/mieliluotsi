@@ -57,7 +57,7 @@ export function AISwitch() {
   );
 }
 
-/** Whose view is on the screen – client, care coordinator or therapist; small, in the demo dock. */
+/** Whose view is on the screen – client, care coordinator or therapist; in the demo dock's extra controls. */
 function ViewSwitch() {
   const { view, role, setRole, scope } = useValituki();
   const clientName = view.demo.clients.find((c) => c.id === scope.clientId)?.firstName;
@@ -129,7 +129,6 @@ export default function DemoDock({ brand }: { brand?: ReactNode }) {
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
         {brand}
-        <ViewSwitch />
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
             <li key="valituki" className="pilot-group">
@@ -158,6 +157,7 @@ export default function DemoDock({ brand }: { brand?: ReactNode }) {
       </div>
       {more && (
         <div className="dock-row dock-actions">
+          <ViewSwitch />
           <label className="dock-select">
             <span className="visually-hidden">Demoasiakas</span>
             <select value={clientId} onChange={(e) => { setClientId(e.target.value); setProClientId(null); }} disabled={busy}>

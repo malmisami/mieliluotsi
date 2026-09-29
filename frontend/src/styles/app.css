@@ -1181,12 +1181,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 9px;
+  padding: 4px 11px;
   border: 0;
   border-radius: 6px;
   background: transparent;
   color: #b9c7cd;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1198,13 +1198,6 @@ body {
 .vt .dock-views button[aria-pressed='true'] {
   background: #eef4f6;
   color: #13222b;
-}
-
-@media (max-width: 1400px) {
-  /* Icons only; the names are in the tooltips. */
-  .vt .dock-view-t {
-    display: none;
-  }
 }
 
 .vt .dock-ai {

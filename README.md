@@ -79,7 +79,7 @@ stores no API key. Everyone who opens the address shares one demo state, which s
 
 ## PRODUCT
 
-Three demo roles, switched from the small view selector in the demo dock (no login in the demo):
+Three demo roles, switched from the view selector in the demo dock's extra controls (the chevron) – the demo steps switch views by themselves (no login in the demo):
 
 | Role | What it is |
 |---|---|
