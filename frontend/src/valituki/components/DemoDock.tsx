@@ -118,7 +118,7 @@ export default function DemoDock({ brand }: { brand?: ReactNode }) {
         <button type="button" disabled={pilot.running} aria-current={isCurrent ? 'step' : undefined} aria-label={`${n}. ${stage.label}`}
           title={`${n}. ${stage.label}${isCurrent ? '' : ' – siirry tähän vaiheeseen'}`}
           onClick={() => (isCurrent ? undefined : pilot.enter(stageStart(stage.key)))}>
-          <span className="dock-step-n">{done ? <CheckIcon size={11} /> : n}</span>
+          <span className="dock-step-n">{done ? <CheckIcon size={13} /> : n}</span>
           {isCurrent && <span className="dock-step-t">{stage.label}</span>}
         </button>
       </li>
@@ -144,15 +144,15 @@ export default function DemoDock({ brand }: { brand?: ReactNode }) {
             {pilot.pointer}/{BEATS.length}
           </span>
           <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
-            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={15} /></button>
+            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={17} /></button>
           <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
             title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
-            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={15} />
+            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={17} />
           </button>
         </div>
         <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"
           onClick={() => setMore(!more)}>
-          <ChevronDownIcon size={14} />
+          <ChevronDownIcon size={16} />
         </button>
       </div>
       {more && (
