@@ -127,9 +127,18 @@ export default function DemoDock() {
   return (
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
-        <span className="dock-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
-          <PresentIcon size={17} /> Demo-ohjaus
-        </span>
+        {/* Demo-ohjaus: back and Seuraava in one control at the start of the bar. */}
+        <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
+          <span className="dock-pilot-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
+            <PresentIcon size={17} /> Demo-ohjaus
+          </span>
+          <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
+            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={18} /></button>
+          <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
+            title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
+            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={18} />
+          </button>
+        </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
             <li key="valituki" className="pilot-group">
@@ -144,12 +153,6 @@ export default function DemoDock() {
             title={current ? `Nyt: ${current.title} – ${current.say}` : 'Demo alkaa Konsepti-sivulta: paina Seuraava tai →'}>
             {pilot.pointer}/{BEATS.length}
           </span>
-          <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
-            aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={18} /></button>
-          <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
-            title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
-            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={18} />
-          </button>
         </div>
         <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"
           onClick={() => setMore(!more)}>

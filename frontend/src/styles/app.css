@@ -1140,16 +1140,22 @@ body {
 }
 
 
-.vt .dock-label {
+.vt .dock-pilot {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 7px;
-  height: 36px;
-  margin-right: 6px;
-  padding: 0 13px 0 11px;
+  gap: 6px;
+  margin-right: 10px;
+  padding: 3px 3px 3px 12px;
   border: 1px dashed rgba(243, 195, 91, 0.55);
-  border-radius: 10px;
+  border-radius: 13px;
+}
+
+.vt .dock-pilot-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 4px;
   color: #f3c35b;
   font-size: 15px;
   font-weight: 700;
