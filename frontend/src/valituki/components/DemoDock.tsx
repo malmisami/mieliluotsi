@@ -127,6 +127,9 @@ export default function DemoDock() {
   return (
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
+        <span className="dock-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
+          <PresentIcon size={17} /> Demo-ohjaus
+        </span>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
             <li key="valituki" className="pilot-group">

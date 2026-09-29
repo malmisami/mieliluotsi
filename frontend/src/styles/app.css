@@ -1140,6 +1140,22 @@ body {
 }
 
 
+.vt .dock-label {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  margin-right: 6px;
+  padding: 0 13px 0 11px;
+  border: 1px dashed rgba(243, 195, 91, 0.55);
+  border-radius: 10px;
+  color: #f3c35b;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .vt .dock-views {
   display: inline-flex;
   flex: none;
