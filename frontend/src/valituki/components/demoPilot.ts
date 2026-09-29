@@ -89,14 +89,10 @@ async function playGuided(p: PilotCtx): Promise<boolean> {
 }
 
 export const BEATS: Beat[] = [
-  { stage: 'intro', title: 'Konsepti: passiivisesta jonosta aktiiviseksi hoitopoluksi',
-    say: 'Ennen: avun haku, jono ja kuukausien odotus. Mieliluotsilla tuki alkaa heti, kun asiakas liitetään jonoon.',
-    act: async (p) => ok(await p.mutate((s) => api.scene(s, 'start'))),
-    show: async (p) => { p.go({ role: 'pitch' }); window.scrollTo({ top: 0 }); } },
-
-  // 1 · Avun haku
+  // 1 · Avun haku – the demo starts here, from the prepared start state
   { stage: 'haku', title: 'Sami on hakenut apua ja on terapiajonossa',
-    say: 'Työhön liittyvä ahdistus, lyhytterapia, arvioitu odotus 20–25 viikkoa. Normaalisti tästä alkaisi pelkkä odotus.',
+    say: 'Työhön liittyvä ahdistus, lyhytterapia, arvioitu odotus 20–25 viikkoa. Normaalisti tästä alkaisi pelkkä odotus – Mieliluotsilla tuki alkaa heti.',
+    act: async (p) => ok(await p.mutate((s) => api.scene(s, 'start'))),
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.wait-card'); } },
 
   // 2 · AI-alkukeskustelu
@@ -266,28 +262,28 @@ function progress(view: ValitukiView): number {
   const client = view.client;
   if (!client || client.id !== AINO) return -1;
   const intake = client.intake.status;
-  if (intake === 'not_started' || intake === 'consent') return 1;
-  if (intake === 'conversation') return 2;
-  if (intake === 'review') return 3;
-  if (intake === 'rhythm' || client.checkIn.needsBaseline) return 4;
+  if (intake === 'not_started' || intake === 'consent') return 0;
+  if (intake === 'conversation') return 1;
+  if (intake === 'review') return 2;
+  if (intake === 'rhythm' || client.checkIn.needsBaseline) return 3;
   const row = view.therapist.selected?.clients.find((c) => c.clientId === AINO);
   const stage = client.matching.stage;
-  if (stage === 'aftercare' || client.modeKey === 'aftercare_support') return 24;
-  if (row?.therapy.config) return 22;
-  if (row?.therapy.episodeStatus === 'active') return 20;
-  if (client.matching.handover?.status === 'approved') return 19;
-  if (stage === 'booked' || stage === 'therapy') return 17;
-  if (stage === 'choose') return 15;
+  if (stage === 'aftercare' || client.modeKey === 'aftercare_support') return 23;
+  if (row?.therapy.config) return 21;
+  if (row?.therapy.episodeStatus === 'active') return 19;
+  if (client.matching.handover?.status === 'approved') return 18;
+  if (stage === 'booked' || stage === 'therapy') return 16;
+  if (stage === 'choose') return 14;
   const pro = view.professional.details[AINO];
   if (pro?.observations.some((o) => o.kind === 'trend_decline')) {
-    if (pro.openReview) return 9;
-    return client.memory.pending.some((i) => i.kind === 'pattern') ? 13 : 14;
+    if (pro.openReview) return 8;
+    return client.memory.pending.some((i) => i.kind === 'pattern') ? 12 : 13;
   }
-  if (daysBetween(view.meta.demoStartDate, view.meta.currentDate) >= 14) return 8;  // the decline is still to come
-  if (client.practice.thoughtRecords.length > 0) return 8;
-  if (client.guided?.tool === 'thought_record') return 7;
-  if (client.chat.some((m) => m.role === 'client')) return 6;
-  return 5;
+  if (daysBetween(view.meta.demoStartDate, view.meta.currentDate) >= 14) return 7;  // the decline is still to come
+  if (client.practice.thoughtRecords.length > 0) return 7;
+  if (client.guided?.tool === 'thought_record') return 6;
+  if (client.chat.some((m) => m.role === 'client')) return 5;
+  return 4;
 }
 
 function daysBetween(from: string, to: string): number {
@@ -296,8 +292,8 @@ function daysBetween(from: string, to: string): number {
 
 /** The prepared scenes and the step whose state each one equals – a jump rebuilds the nearest one and replays the rest. */
 const SCENE_AFTER: [scene: string, beat: number][] = [
-  ['start', 1], ['intake', 5], ['cbt', 8], ['reviewed', 14], ['matches', 15], ['handover', 19], ['therapy', 22],
-  ['aftercare', 24],
+  ['start', 0], ['intake', 4], ['cbt', 7], ['reviewed', 13], ['matches', 14], ['handover', 18], ['therapy', 21],
+  ['aftercare', 23],
 ];
 
 const lastActBefore = (index: number) => {

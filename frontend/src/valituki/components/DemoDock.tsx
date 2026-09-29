@@ -86,7 +86,7 @@ const lastBeat = (stage: string) => BEATS.reduce((last, beat, i) => (beat.stage 
     stages (click one to jump there), the step number and Seuraava; everything else (time, scenarios, other clients) opens
     from the chevron. The AI switch sits in the top bar. → / PageDown = Seuraava, ← / PageUp = back. */
 export default function DemoDock() {
-  const { view, run, busy, scope, role, setRole, setClientId, setProClientId } = useValituki();
+  const { view, run, busy, scope, setClientId, setProClientId } = useValituki();
   const [more, setMore] = useState(false);
   const demo = view.demo;
   const clientId = scope.clientId ?? 'cl-aino';
@@ -101,7 +101,7 @@ export default function DemoDock() {
     railRef.current?.querySelector('.current')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [stageKey]);
 
-  // The rail: the stages of the Konsepti page, the four inside the "Mieliluotsi" box grouped together.
+  // The rail: the concept's stages, the four inside the "Mieliluotsi" box grouped together.
   const rail: (Stage | Stage[])[] = [];
   STAGES.forEach((stage) => {
     const last = rail[rail.length - 1];
@@ -150,7 +150,7 @@ export default function DemoDock() {
         <div className="pilot-buttons">
           {pilot.failed && <span className="pilot-warn" role="alert">Ei onnistunut – paina uudelleen</span>}
           <span className="pilot-count" aria-live="polite"
-            title={current ? `Nyt: ${current.title} – ${current.say}` : 'Demo alkaa Konsepti-sivulta: paina Seuraava tai →'}>
+            title={current ? `Nyt: ${current.title} – ${current.say}` : 'Paina Aloita demo tai →'}>
             {pilot.pointer}/{BEATS.length}
           </span>
         </div>
@@ -186,13 +186,9 @@ export default function DemoDock() {
             <button type="button" className="dock-btn dock-warn" disabled={busy} onClick={crisis}><AlertIcon size={14} /> Kriisipolku</button>
           </div>
           <div className="dock-group dock-end" role="group" aria-label="Demon tila">
-            <button type="button" className="dock-btn" aria-pressed={role === 'pitch'} title="Näytä Konsepti-sivu (demon tila ei muutu)"
-              onClick={() => setRole('pitch')}>
-              <PresentIcon size={14} /> Konsepti
-            </button>
-            <button type="button" className="dock-btn" disabled={pilot.running} title="Demo alkuun ja Konsepti-sivulle"
+            <button type="button" className="dock-btn" disabled={pilot.running} title="Demo alkuun: Sami on terapiajonossa"
               onClick={() => void pilot.enter(0)}>
-              <PresentIcon size={14} /> Konsepti – aloita alusta
+              <PresentIcon size={14} /> Aloita demo alusta
             </button>
             <button type="button" className="dock-btn" disabled={busy} onClick={() => { pilot.restart(); void jumpScene('start'); }}>
               <ResetIcon size={14} /> Alkutilaan

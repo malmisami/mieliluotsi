@@ -311,11 +311,11 @@ the same engine day by day (`seed.py`), so every observation and timeline row co
 
 ### Demo dock (dark strip – not part of the product)
 
-Shown on every view, the Konsepti page included, as the only (sticky) bar, with the brand at its left. **Seuraava** (or → / PageDown; ← / PageUp
-goes back) drives the whole demo in 25 steps that follow the Konsepti page: avun haku → AI-alkukeskustelu → Mieliluotsi
+Shown on every view as the only (sticky) bar. **Seuraava** (or → / PageDown; ← / PageUp
+goes back) drives the whole demo in 24 steps that follow the concept: avun haku → AI-alkukeskustelu → Mieliluotsi
 (KKT, seuranta ja muutosten tunnistus, Therapy Fit Profile) → sopivin terapeutti ja handover → terapia + välitehtävät →
 seuranta terapian jälkeen. Each step types the demo text, presses the right button through the same API, opens the right
-view and highlights what to look at; the step number (e.g. 5/25) sits next to Seuraava, with what is on the screen in its
+view and highlights what to look at; the step number (e.g. 5/24) sits next to Seuraava, with what is on the screen in its
 tooltip. Clicking a stage opens it
 directly: the demo is rebuilt from the prepared scenes and the stage's first step is taken (`components/demoPilot.ts`). Script: [docs/DEMO_5MIN.md](docs/DEMO_5MIN.md).
 **Lisää** holds the date controls (+1 / +7 / +14 pv), **Vointi heikkenee**, **Vakaa tilanne**, **Kriisipolku**, the demo
@@ -324,7 +324,7 @@ client and **Alkutilaan** (reset). In the chat, **Demovastaus** answers the curr
 
 ### The 3-minute demo
 
-Start at **Konsepti** (0:00–0:15): *passive queue → active pathway*, then **Aloita demo**.
+Press **Aloita demo** – the demo starts in Sami's home view (the Konsepti page is not part of the demo).
 
 1. **Sami on the waiting list (0:15–0:30).** *Asiakas* → "Hei Sami – Olet terapian jonossa." Consents → **Aloita
    keskustelu**.
