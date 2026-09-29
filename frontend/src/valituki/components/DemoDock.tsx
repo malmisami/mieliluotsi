@@ -3,7 +3,10 @@ import type { ReactNode } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtNum } from '../format';
-import { AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PresentIcon, ResetIcon, SparkleIcon } from '../icons';
+import {
+  AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PersonIcon, PresentIcon, ResetIcon, SparkleIcon,
+  StethoscopeIcon, UsersIcon,
+} from '../icons';
 import { useDemoActions } from './demoActions';
 import { BEATS, STAGES, stageStart, useDemoPilot } from './demoPilot';
 import type { AICheck, AIStatus } from '../types';
@@ -51,6 +54,28 @@ export function AISwitch() {
         <button type="button" className="dock-ai-test" disabled={busy} onClick={() => run((s) => api.aiCheck(s), describeAI)}>Testaa</button>
       )}
     </div>
+  );
+}
+
+/** Whose view is on the screen – client, care coordinator or therapist; small, in the demo dock. */
+function ViewSwitch() {
+  const { view, role, setRole, scope } = useValituki();
+  const clientName = view.demo.clients.find((c) => c.id === scope.clientId)?.firstName;
+  const therapistName = view.demo.therapists.find((t) => t.id === scope.therapistId)?.name.split(' ')[0];
+  const views = [
+    { key: 'client' as const, icon: <PersonIcon size={14} />, label: 'Asiakas', who: clientName },
+    { key: 'professional' as const, icon: <StethoscopeIcon size={14} />, label: 'Ammattilainen', who: undefined },
+    { key: 'therapist' as const, icon: <UsersIcon size={14} />, label: 'Terapeutti', who: therapistName },
+  ];
+  return (
+    <nav className="dock-views" aria-label="Demo: näkymä">
+      {views.map((v) => (
+        <button key={v.key} type="button" aria-pressed={role === v.key} title={v.who ? `${v.label} – ${v.who}` : v.label}
+          aria-label={v.label} onClick={() => setRole(v.key)}>
+          {v.icon}<span className="dock-view-t">{v.label}</span>
+        </button>
+      ))}
+    </nav>
   );
 }
 
@@ -104,6 +129,7 @@ export default function DemoDock({ brand }: { brand?: ReactNode }) {
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
         {brand}
+        <ViewSwitch />
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
             <li key="valituki" className="pilot-group">

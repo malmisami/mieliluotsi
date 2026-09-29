@@ -1117,70 +1117,21 @@ body {
   display: none;
 }
 
-.vt .roles {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
-}
 
-.vt .roles-label {
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
 
-.vt .roles-group {
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  border-radius: 12px;
-  background: var(--surface-2);
-}
 
-.vt .roles-group button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 650;
-  white-space: nowrap;
-}
 
-.vt .roles-group button:hover {
-  color: var(--ink);
-}
 
-.vt .roles-group button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--brand-ink);
-  box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--brand-200);
-}
 
-.vt .role-who {
-  padding: 1px 7px;
-  border-radius: 999px;
-  background: var(--brand-50);
-  color: var(--brand-ink);
-  font-size: 11.5px;
-  font-weight: 750;
-}
 
 /* Demo controls on the stage: whose view and which AI – a row above a view, a column beside the phone. */
 .vt .stage-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 10px 16px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .vt .stage-controls.is-side {
@@ -1200,24 +1151,9 @@ body {
   display: none;
 }
 
-.vt .stage-controls.is-side .roles {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-}
 
-.vt .stage-controls.is-side .roles-group {
-  flex-direction: column;
-}
 
-.vt .stage-controls.is-side .roles-group button {
-  justify-content: flex-start;
-  padding: 8px 10px;
-}
 
-.vt .stage-controls.is-side .role-who {
-  margin-left: auto;
-}
 
 .vt .stage-controls.is-side .dock-ai {
   align-self: flex-start;
@@ -1245,6 +1181,45 @@ body {
   gap: 8px 16px;
 }
 
+
+.vt .dock-views {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.vt .dock-views button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #b9c7cd;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.vt .dock-views button:hover {
+  color: #fff;
+}
+
+.vt .dock-views button[aria-pressed='true'] {
+  background: #eef4f6;
+  color: #13222b;
+}
+
+@media (max-width: 1400px) {
+  /* Icons only; the names are in the tooltips. */
+  .vt .dock-view-t {
+    display: none;
+  }
+}
 
 .vt .dock-ai {
   display: inline-flex;
@@ -6140,11 +6115,6 @@ body {
     margin: 0;
   }
 
-  .vt .stage-controls.is-side .roles,
-  .vt .stage-controls.is-side .roles-group {
-    flex-direction: row;
-  }
-
   .vt .backstage {
     flex: none;
     width: 100%;
@@ -6192,26 +6162,6 @@ body {
 }
 
 @media (max-width: 640px) {
-  .vt .roles {
-    width: 100%;
-  }
-
-  .vt .roles-label,
-  .vt .role-who {
-    display: none;
-  }
-
-  .vt .roles-group {
-    flex: 1;
-  }
-
-  .vt .roles-group button {
-    flex: 1;
-    justify-content: center;
-    padding: 7px 6px;
-    font-size: 13px;
-  }
-
   .vt .dock-row {
     padding: 8px 16px;
   }
@@ -6297,10 +6247,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .vt .roles-group button .ico {
-    display: none;
-  }
-
   .vt .agent-ring,
   .vt .pitch-principles {
     grid-template-columns: minmax(0, 1fr);
