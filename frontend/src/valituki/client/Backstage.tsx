@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { fmtNum } from '../format';
 import { AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, TargetIcon } from '../icons';
+import { AISwitch } from '../components/DemoDock';
 import { AgentTimeline } from '../components/Timeline';
 import type { BackstageMatch, ClientView, InsightRow } from '../types';
 import { DataFlow } from './DataFlow';
@@ -76,8 +77,8 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
-  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the matching, the profile and
-  // the log's heading fit under the demo dock (an opened log scrolls inside).
+  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the AI switch, the matching,
+  // the profile and the log's heading fit under the demo dock (an opened log scrolls inside).
   useLayoutEffect(() => {
     const aside = asideRef.current;
     if (!aside) return undefined;
@@ -87,8 +88,9 @@ export default function Backstage({ client }: { client: ClientView }) {
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const parts = [aside.querySelector('.bm-card'), aside.querySelector('.bp-doc'), aside.querySelector('.bs-log summary')];
-      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0) + 2 * 12 + 8;
+      const parts = [aside.querySelector('.bs-ai'), aside.querySelector('.bm-card'), aside.querySelector('.bp-doc'),
+        aside.querySelector('.bs-log summary')];
+      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0) + 3 * 12 + 8;
       const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
       const next = Math.max(0.55, Math.min(1, room / natural));
@@ -106,6 +108,7 @@ export default function Backstage({ client }: { client: ClientView }) {
 
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
+      <div className="stage-ai bs-ai"><AISwitch /></div>
       <MatchCard match={match} fresh={fresh.has('match')} />
       <ProfileCard client={client} rows={rows} fresh={fresh} />
       <details className="bs-log">

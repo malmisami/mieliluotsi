@@ -1124,7 +1124,11 @@ body {
 
 
 
-/* Demo controls on the stage: whose view and which AI – a row above a view, a column beside the phone. */
+/* The AI switch on the stage: top right of a view; in the client view at the top of the panel beside the phone. */
+.vt .bs-ai {
+  justify-content: flex-end;
+}
+
 .vt .stage-controls {
   display: flex;
   flex-wrap: wrap;
@@ -1134,30 +1138,12 @@ body {
   margin-bottom: 14px;
 }
 
-.vt .stage-controls.is-side {
-  position: sticky;
-  top: calc(var(--stage-top, 58px) + 4px);
-  z-index: 2;
-  flex: none;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 18px;
-  width: max-content;
-  margin: 0 40px 0 0;
-}
-
-.vt .stage-controls.is-side .dock-ai-status .dock-ai-text {
-  display: none;
-}
 
 
 
 
 
-.vt .stage-controls.is-side .dock-ai {
-  align-self: flex-start;
-}
+
 
 /* Demo dock – visibly NOT part of the product */
 
@@ -6104,15 +6090,6 @@ body {
 
   .vt .client-stage > .phone {
     margin-right: 0;
-  }
-
-  .vt .stage-controls.is-side {
-    position: static;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    max-width: 560px;
-    margin: 0;
   }
 
   .vt .backstage {
