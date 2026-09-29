@@ -140,15 +140,10 @@ export default function ValitukiApp() {
 
   return (
     <div className={`vt role-${role}`}>
-      {/* The demo dock is the only bar: the brand, the concept's stages and Seuraava (→) – on every view. */}
+      {/* The demo dock is the only bar: the concept's stages and Seuraava (→) – on every view. */}
       {ctx && (
         <ValitukiContext.Provider value={ctx}>
-          <DemoDock brand={(
-            <a className="brand" href="#/konsepti" title="Konsepti" onClick={(e) => { e.preventDefault(); setRole('pitch'); }}>
-              <BrandMark />
-              <span className="brand-name">Mieliluotsi</span>
-            </a>
-          )} />
+          <DemoDock />
         </ValitukiContext.Provider>
       )}
 
@@ -169,26 +164,5 @@ export default function ValitukiApp() {
       <div className={`toast ${message ? 'toast-on' : ''}`} role="status" aria-live="polite">{message}</div>
 
     </div>
-  );
-}
-
-/** A pilot's compass: a ring and a needle that shows the way – white towards the goal, mint behind – on a teal-to-green tile. */
-function BrandMark() {
-  return (
-    <svg className="brand-mark" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
-      <defs>
-        <linearGradient id="brand-tile" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#0d5f6f" />
-          <stop offset="1" stopColor="#2a9d82" />
-        </linearGradient>
-      </defs>
-      <rect width="34" height="34" rx="10" fill="url(#brand-tile)" />
-      <circle cx="17" cy="17" r="10" fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="1.6" />
-      <g transform="rotate(40 17 17)">
-        <path d="M17 8.2 20.2 17h-6.4Z" fill="#fff" />
-        <path d="M13.8 17h6.4L17 25.8Z" fill="#bff0de" />
-      </g>
-      <circle cx="17" cy="17" r="1.5" fill="#0d5f6f" />
-    </svg>
   );
 }

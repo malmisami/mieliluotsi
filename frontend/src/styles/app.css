@@ -1084,38 +1084,10 @@ body {
 
 /* ---------- Shell: demo dock, stage ---------- */
 
-.vt .brand {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  margin-right: 6px;
-  color: #fff;
-  text-decoration: none;
-}
 
-.vt .brand-mark {
-  flex: none;
-  width: 32px;
-  height: 32px;
-}
 
-.vt .brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.15;
-}
 
-.vt .brand-name {
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
 
-.vt .brand-tag {
-  display: none;
-}
 
 
 
@@ -6124,10 +6096,6 @@ body {
   .vt .impact-hero,
   .vt .pitch-compare {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .vt .brand-tag {
-    display: none;
   }
 }
 
