@@ -1770,7 +1770,9 @@ body {
 @media (min-width: 1101px) {
   /* Beside the phone the backstage is as tall as the phone and scrolls inside. */
   .vt .client-stage .backstage {
-    max-height: clamp(540px, calc(100dvh - var(--stage-top, 110px) - 28px), 860px);
+    /* --bs-zoom is measured in Backstage: the cards fit the screen height; lengths inside scale with the zoom. */
+    zoom: var(--bs-zoom, 1);
+    max-height: calc(max(360px, 100dvh - var(--stage-top, 110px) - 28px) / var(--bs-zoom, 1));
     padding-right: 4px;
     overflow-y: auto;
     scrollbar-width: thin;

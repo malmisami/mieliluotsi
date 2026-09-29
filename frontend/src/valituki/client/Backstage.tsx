@@ -76,10 +76,38 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
+  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the matching, the profile and
+  // the log's heading fit under the demo dock (an opened log scrolls inside).
+  useLayoutEffect(() => {
+    const aside = asideRef.current;
+    if (!aside) return undefined;
+    const fit = () => {
+      if (window.innerWidth <= 1100) {
+        aside.style.removeProperty('--bs-zoom');
+        return;
+      }
+      const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
+      const parts = [aside.querySelector('.bm-card'), aside.querySelector('.bp-doc'), aside.querySelector('.bs-log summary')];
+      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0) + 2 * 12 + 8;
+      const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
+      const room = Math.max(360, window.innerHeight - stageTop - 28);
+      const next = Math.max(0.55, Math.min(1, room / natural));
+      if (Math.abs(next - zoom) > 0.01) aside.style.setProperty('--bs-zoom', next.toFixed(3));
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    aside.querySelectorAll('.bm-card, .bp-doc').forEach((el) => observer.observe(el));
+    window.addEventListener('resize', fit);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', fit);
+    };
+  }, []);
+
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
-      <ProfileCard client={client} rows={rows} fresh={fresh} />
       <MatchCard match={match} fresh={fresh.has('match')} />
+      <ProfileCard client={client} rows={rows} fresh={fresh} />
       <details className="bs-log">
         <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
         <Log client={client} />
