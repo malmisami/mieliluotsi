@@ -5,7 +5,7 @@ import { useValituki } from '../context';
 import { fmtWeekday } from '../format';
 import { InfoIcon, LifebuoyIcon, SendIcon, SparkleIcon } from '../icons';
 import type { ChatMessage, GuidedView, SummaryData, ValitukiView } from '../types';
-import { Examples, SummaryCard, WidgetPanel, describeValue } from './ChatWidgets';
+import { Examples, SummaryCard, TrapHint, WidgetPanel, describeValue } from './ChatWidgets';
 import { useClientUI } from './ClientApp';
 import { BotFace, toolIcon } from './HomeTab';
 
@@ -33,10 +33,9 @@ export default function ChatTab() {
   // already typed in it: press send or edit it first.
   const demoMode = view.meta.ai.configuredMode === 'DEMO_AI_MODE';
   const demoText = demoMode && widget?.type === 'text' && typeof guided?.demoAnswer === 'string' ? guided.demoAnswer : '';
-  // A multiple choice (what changed, emotions, thinking traps) is answered with the send button: the picked options are kept
-  // per question.
+  // A multiple choice (what changed, emotions) is answered with the send button: the picked options are kept per question.
   const [picked, setPicked] = useState<{ question: string | null; values: string[] }>({ question: null, values: [] });
-  const picking = widget?.type === 'multi' || widget?.type === 'traps';
+  const picking = widget?.type === 'multi';
   const multi = picking && picked.question === questionId ? picked.values : [];
   const draftKey = `${questionId ?? ''}|${demoMode}`;
   const [draftFor, setDraftFor] = useState<string | null>(null);
@@ -101,6 +100,7 @@ export default function ChatTab() {
               onChoose={(option) => run((s) => api.chooseOffer(s, client.id, m.id, option))} onHelp={() => openSheet({ type: 'help' })} />
           </Fragment>
         ))}
+        {guided && widget?.type === 'traps' && !pending && <TrapHint widget={widget} />}
         {pending && <div className="cx-msg-me is-pending"><p>{pending}</p></div>}
         {busy && <div className="cx-typing" aria-label="Mieliluotsi kirjoittaa"><i /><i /><i /></div>}
       </div>

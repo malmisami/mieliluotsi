@@ -91,42 +91,45 @@ function MultiWidget({ widget, busy, onSkip, selected = [], onSelect }: WidgetPr
   );
 }
 
-function TrapWidget({ widget, busy, onSkip, selected = [], onSelect }: WidgetProps) {
-  const toggle = (value: string) => onSelect?.(selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value]);
+/** Thinking traps as quick replies, like a chat: one tap answers. Mieliluotsi's proposals (explained in the chat just above,
+    see TrapHint) come first; the rest of the list opens with "Jokin muu…". */
+function TrapWidget({ widget, busy, onAnswer, onSkip }: WidgetProps) {
+  const [others, setOthers] = useState(false);
   const suggested = widget.options.filter((o) => widget.suggested.includes(o.value));
-  const explain = widget.options.filter((o) => selected.includes(o.value) || widget.suggested.includes(o.value));
+  const rest = suggested.length ? widget.options.filter((o) => !widget.suggested.includes(o.value)) : widget.options;
   return (
-    <div className="cw cw-traps">
-      {suggested.length > 0 && (
-        <p className="cw-proposal">
-          <SparkleIcon size={13} /> Mieliluotsi ehdottaa: {suggested.map((o) => o.label).join(' ja ')}.{' '}
-          {selected.length === 0 && (
-            <button type="button" className="cw-inline" disabled={busy} onClick={() => onSelect?.(suggested.map((o) => o.value))}>Valitse ehdotukset</button>
-          )}
-        </p>
+    <div className="cw cw-quick" role="group" aria-label="Vastausvaihtoehdot">
+      {suggested.map((o) => (
+        <button key={o.value} type="button" className="cw-reply" disabled={busy} onClick={() => onAnswer([o.value])}>{o.label}</button>
+      ))}
+      {suggested.length > 1 && (
+        <button type="button" className="cw-reply" disabled={busy} onClick={() => onAnswer(suggested.map((o) => o.value))}>
+          {suggested.length === 2 ? 'Molemmat' : 'Kaikki nämä'}
+        </button>
       )}
-      {/* The whole list only when Mieliluotsi has nothing to suggest – otherwise the suggestions and their explanations. */}
-      {suggested.length === 0 && <div className="cw-chips">
-        {widget.options.map((o) => (
-          <button key={o.value} type="button" className={`cw-chip ${widget.suggested.includes(o.value) ? 'cw-chip-suggested' : ''}`} title={o.hint ?? undefined}
-            aria-pressed={selected.includes(o.value)} disabled={busy} onClick={() => toggle(o.value)}>
-            {selected.includes(o.value) && <CheckIcon size={13} />}{o.label}
-          </button>
-        ))}
-      </div>}
-      {explain.length > 0 && (
-        <ul className="cw-trap-help">
-          {explain.map((o) => (
-            <li key={o.value}>
-              <button type="button" className="cw-trap-pick" aria-pressed={selected.includes(o.value)} disabled={busy} onClick={() => toggle(o.value)}>
-                <span className="cw-trap-box" aria-hidden="true">{selected.includes(o.value) && <CheckIcon size={13} />}</span>
-                <span><strong>{o.label}:</strong> {o.hint}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+      {(others || !suggested.length) ? rest.map((o) => (
+        <button key={o.value} type="button" className="cw-reply cw-reply-soft" title={o.hint ?? undefined} disabled={busy}
+          onClick={() => onAnswer([o.value])}>{o.label}</button>
+      )) : (
+        <button type="button" className="cw-reply cw-reply-soft" disabled={busy} onClick={() => setOthers(true)}>Jokin muu…</button>
       )}
-      {widget.skippable && <div className="cw-actions"><Skip widget={widget} busy={busy} onSkip={onSkip} /></div>}
+      {widget.skippable && (
+        <button type="button" className="cw-reply cw-reply-soft" disabled={busy} onClick={onSkip}>{widget.skipLabel || 'En tunnista'}</button>
+      )}
+    </div>
+  );
+}
+
+/** Mieliluotsi's proposal as its own chat message under the question: which traps and what they mean. */
+export function TrapHint({ widget }: { widget: ChatWidget }) {
+  const suggested = widget.options.filter((o) => widget.suggested.includes(o.value));
+  if (!suggested.length) return null;
+  return (
+    <div className="cx-msg-bot is-grouped cx-trap-hint">
+      <p>{suggested.length === 1 ? 'Tällaisessa ajatuksessa näkyy usein tämä:' : 'Tällaisessa ajatuksessa näkyy usein nämä:'}</p>
+      <ul>
+        {suggested.map((o) => <li key={o.value}><strong>{o.label}</strong> – {o.hint?.replace(/^./, (c) => c.toLowerCase())}</li>)}
+      </ul>
     </div>
   );
 }

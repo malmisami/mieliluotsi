@@ -7578,6 +7578,44 @@ body {
   gap: 6px;
 }
 
+.vt .cw-quick {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+/* A quick reply: one tap sends it, like a message of your own. */
+.vt .cw-reply {
+  padding: 8px 14px;
+  border: 1.5px solid var(--cx-ink);
+  border-radius: 999px;
+  background: var(--cx-surface);
+  color: var(--cx-ink);
+  font-size: 14px;
+  font-weight: 700;
+  animation: vt-rise 0.2s ease-out both;
+}
+
+.vt .cw-reply:hover:not(:disabled) {
+  background: var(--cx-ink);
+  color: #fff;
+}
+
+.vt .cw-reply-soft {
+  border-color: var(--cx-line);
+  color: var(--cx-ink-2, #4a5563);
+  font-weight: 600;
+}
+
+.vt .cx-trap-hint ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 18px;
+}
+
 .vt .cw-chip {
   display: inline-flex;
   align-items: center;
@@ -7597,11 +7635,6 @@ body {
   color: #fff;
 }
 
-.vt .cw-chip-suggested:not([aria-pressed='true']) {
-  border-color: var(--violet-500);
-  border-style: dashed;
-  background: var(--violet-50);
-}
 
 .vt .cw-actions {
   display: flex;
@@ -7640,66 +7673,11 @@ body {
   color: var(--cx-muted);
 }
 
-.vt .cw-inline {
-  margin-left: 4px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--violet);
-  font-size: 12.5px;
-  font-weight: 800;
-  text-decoration: underline;
-}
 
-.vt .cw-trap-help {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.7);
-  font-size: 12.5px;
-  line-height: 1.45;
-  list-style: none;
-}
 
-.vt .cw-trap-pick {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  width: 100%;
-  padding: 6px 4px;
-  border: 0;
-  border-radius: 8px;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
 
-.vt .cw-trap-pick:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.04);
-}
 
-.vt .cw-trap-box {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin-top: 1px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 5px;
-  background: #fff;
-  color: #fff;
-}
 
-.vt .cw-trap-pick[aria-pressed='true'] .cw-trap-box {
-  border-color: var(--cx-ink, #1d2433);
-  background: var(--cx-ink, #1d2433);
-}
 
 .vt .cw-ladder-list {
   display: flex;
