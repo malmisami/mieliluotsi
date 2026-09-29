@@ -22,6 +22,14 @@ export default function ProgressTab() {
       <MoodAnxietyChart points={client.progress.series} title="Mielialasi ja ahdistus" />
       <WordsCard />
 
+      {practice.thoughtRecords.length > 0 && (
+        <section className="cx-section">
+          <h2 className="cx-h2">Ajatuspäiväkirja</h2>
+          <p className="cx-fine"><LockIcon size={12} /> Merkinnät näkyvät vain sinulle. Voit jakaa yksittäisen merkinnän terapeutillesi.</p>
+          {practice.thoughtRecords.map((record) => <RecordCard key={record.id} record={record} />)}
+        </section>
+      )}
+
       <div className="cx-stats" aria-label="Harjoittelu yhteensä">
         <span><strong>{stats.thoughtRecords}</strong> ajatusten tutkimista</span>
         <span><strong>{stats.exposureAttempts}</strong> altistusaskelta</span>
@@ -33,14 +41,6 @@ export default function ProgressTab() {
       )}
 
       <WeekCard />
-
-      {practice.thoughtRecords.length > 0 && (
-        <section className="cx-section">
-          <h2 className="cx-h2">Ajatuspäiväkirja</h2>
-          <p className="cx-fine"><LockIcon size={12} /> Merkinnät näkyvät vain sinulle. Voit jakaa yksittäisen merkinnän terapeutillesi.</p>
-          {practice.thoughtRecords.map((record) => <RecordCard key={record.id} record={record} />)}
-        </section>
-      )}
 
       {practice.experiments.length > 0 && (
         <section className="cx-section">
