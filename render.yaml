@@ -1,0 +1,14 @@
+# Render Blueprint: Mieliluotsi as one free web service built from the Dockerfile.
+# Render → New → Blueprint → this repository. Every push to main deploys again.
+services:
+  - type: web
+    name: mieliluotsi
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Demo texts only – no API key is stored on the server.
+      - key: VALITUKI_AI_MODE
+        value: DEMO_AI_MODE

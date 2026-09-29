@@ -67,6 +67,14 @@ cd backend && .venv/bin/ruff check .
 cd frontend && npm run typecheck && npm run lint && npm run build
 ```
 
+**Shareable web address (Render)**
+
+`Dockerfile` builds the frontend and serves it from the FastAPI backend, so one web service is enough; `render.yaml`
+describes it. On render.com: **New → Blueprint →** this GitHub repository **→ Apply**. The address is
+`https://<service-name>.onrender.com`, and every push to `main` deploys again. The service runs in `DEMO_AI_MODE` and
+stores no API key. Everyone who opens the address shares one demo state, which starts over when the service restarts
+(the free plan sleeps when idle; the first request then takes about half a minute).
+
 ---
 
 ## PRODUCT
