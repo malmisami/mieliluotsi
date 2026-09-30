@@ -58,6 +58,15 @@ const STACKED = 640;
 const PHONE = { width: 396, height: 836 };  // the phone at full size
 const GAP = 56;  // between the phone and the panel: room for the data travelling from one to the other
 
+interface Seen {
+  clientId: string; rowSig: string; matchSig: string; modSig: string; modality: BackstageModality; values: Record<string, string>;
+  ran: boolean; chosen: string | null; shared: string | null; seq: number;
+}
+
+/** What the panel last showed for each client. It outlives the panel: when another view was on the screen meanwhile (the
+    professional's review, the therapist's plan), what changed there travels to the panel when the client's view is back. */
+const lastSeen = new Map<string, Seen>();
+
 /** Next to the phone on wide screens, stacked in one compact column: the matching tables (therapist, therapy approach)
     and the profile for the therapist, all always visible. When the client's data changes, it visibly travels from the
     phone to the rows it updates. */
@@ -70,11 +79,15 @@ export default function Backstage({ client }: { client: ClientView }) {
   const matchSig = matchSignature(match);
   const modality = client.backstage.modality;
   const modSig = modalitySignature(modality);
+  const handover = client.matching.handover;
+  const shared = handover?.status === 'approved' ? handover.therapistName : null;
+  const now = { clientId: client.id, rowSig, matchSig, modSig, modality, values, ran: match.ran, chosen: match.chosen, shared };
 
-  const [seen, setSeen] = useState({ clientId: client.id, rowSig, matchSig, modSig, modality, values, ran: match.ran, seq: 0 });
+  const [seen, setSeen] = useState<Seen>(() => lastSeen.get(client.id) ?? { ...now, seq: 0 });
   const [flows, setFlows] = useState<Flow[]>([]);
   const [fresh, setFresh] = useState<Set<string>>(new Set());
-  if (seen.clientId !== client.id || seen.rowSig !== rowSig || seen.matchSig !== matchSig || seen.modSig !== modSig) {
+  if (seen.clientId !== client.id || seen.rowSig !== rowSig || seen.matchSig !== matchSig || seen.modSig !== modSig
+    || seen.shared !== shared) {
     const seq = seen.seq + 1;
     if (seen.clientId === client.id) {
       // Only approved, stored information moves: each changed row flies to the profile, and to matching when allowed there.
@@ -85,18 +98,25 @@ export default function Backstage({ client }: { client: ClientView }) {
         if (r.match) next.push({ label: r.label, target: 'match' });
       }
       if (seen.matchSig !== matchSig && !next.some((f) => f.target === 'match')) {
-        next.push({ label: match.ran && !seen.ran ? 'Terapeutin vapaa aika' : 'Pisteytys päivittyi', target: 'match' });
+        next.push({ target: 'match', label: match.chosen && match.chosen !== seen.chosen ? `Valinta: ${match.chosen}`
+          : match.ran && !seen.ran ? 'Terapeutin vapaa aika' : 'Pisteytys päivittyi' });
       }
+      // The client approves the summary: the profile is shared with the therapist.
+      if (shared && shared !== seen.shared) next.push({ label: 'Hyväksytty jaettavaksi', target: 'profile' });
       if (seen.modSig !== modSig) next.push({ label: modalityChange(seen.modality, modality), target: 'modality' });
-      setFlows(next.slice(0, 7).map((f, i) => ({ ...f, id: `${seq}-${i}` })));
+      // Every table that changed gets its chip even when many rows changed at once.
+      const firsts = next.filter((f, i) => next.findIndex((g) => g.target === f.target) === i);
+      const ordered = [...firsts, ...next.filter((f) => !firsts.includes(f))];
+      setFlows(ordered.slice(0, 7).map((f, i) => ({ ...f, id: `${seq}-${i}` })));
       setFresh(new Set([...changed.map((r) => r.key), ...(seen.matchSig !== matchSig ? ['match'] : []),
-        ...(seen.modSig !== modSig ? ['modality'] : [])]));
+        ...(seen.modSig !== modSig ? ['modality'] : []), ...(shared && shared !== seen.shared ? ['shared'] : [])]));
     } else {
       setFlows([]);
       setFresh(new Set());
     }
-    setSeen({ clientId: client.id, rowSig, matchSig, modSig, modality, values, ran: match.ran, seq });
+    setSeen({ ...now, seq });
   }
+  useEffect(() => { lastSeen.set(seen.clientId, seen); }, [seen]);
   useEffect(() => {
     if (!fresh.size) return undefined;
     const timer = window.setTimeout(() => setFresh(new Set()), 3600);
