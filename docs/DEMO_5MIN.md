@@ -20,7 +20,8 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
    Palvelimen uudelleenkäynnistys palauttaa aina Demon.
 4. **Aloita alusta:** paina **Aloita demo** tai avaa demopalkin oikean reunan nuolipainike ja valitse **Aloita demo alusta**.
    Demo alkaa suoraan Samin kotinäkymästä.
-5. **Näppäimet:** → tai PageDown vie eteenpäin, ← tai PageUp palaa. Myös esitysklikkeri toimii.
+5. **Näppäimet:** → tai PageDown vie eteenpäin, ← tai PageUp palaa ja Shift+→ vie vaiheen loppuun. Myös esitysklikkeri
+   toimii.
 
 ## Runko: 24 painallusta, noin 5 minuuttia
 
@@ -37,6 +38,11 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
 
 Kun vaihe on käynnissä, painikkeessa lukee **Kelaa**. Painallus (tai →) vie käynnissä olevan keskustelun heti loppuun,
 kuten animaation ohitus diaesityksessä. Seuraava painallus jatkaa taas seuraavaan vaiheeseen.
+
+**Vaihe loppuun** (Seuraava-painikkeen vieressä, tai Shift+→) simuloi koko vaiheen kerralla: kaikki vaiheen
+painallukset tehdään peräkkäin ilman taukoja, keskustelut näkyvät heti kokonaan, ja ruudulle jää vaiheen viimeinen
+näkymä. Painike kertoo, minkä vaiheen se vie loppuun (esim. *Vaihe 3 loppuun*). Kun vaihe on jo valmis, se vie seuraavan
+vaiheen loppuun.
 
 ## Jos jokin menee pieleen
 

@@ -1517,6 +1517,17 @@ body {
   border-radius: 10px;
 }
 
+.vt .dock-btn.pilot-stage {
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-color: rgba(243, 195, 91, 0.45);
+  border-radius: 10px;
+  color: #f3c35b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .vt .pilot-count {
   display: inline-flex;
   flex: none;

@@ -7,7 +7,7 @@ import {
   StethoscopeIcon, UsersIcon,
 } from '../icons';
 import { useDemoActions } from './demoActions';
-import { BEATS, STAGES, stageStart, useDemoPilot } from './demoPilot';
+import { BEATS, STAGES, stageEnd, stageStart, useDemoPilot } from './demoPilot';
 import type { AICheck, AIStatus } from '../types';
 
 const seconds = (ms: number | null) => (ms === null ? '' : `${fmtNum(ms / 1000)} s`);
@@ -80,11 +80,9 @@ function ViewSwitch() {
 
 type Stage = (typeof STAGES)[number];
 
-const lastBeat = (stage: string) => BEATS.reduce((last, beat, i) => (beat.stage === stage ? i : last), -1);
-
-/** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: the concept's
-    stages (click one to jump there), the step number and Seuraava; everything else (time, scenarios, other clients) opens
-    from the chevron. The AI switch sits in the top bar. → / PageDown = Seuraava, ← / PageUp = back. */
+/** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: back, Seuraava and "Vaihe loppuun",
+    the concept's stages (click one to jump there) and the step number; everything else (time, scenarios, other clients)
+    opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. */
 export default function DemoDock() {
   const { view, run, busy, scope, setClientId, setProClientId } = useValituki();
   const [more, setMore] = useState(false);
@@ -94,6 +92,7 @@ export default function DemoDock() {
   const pilot = useDemoPilot();
   const current = pilot.pointer > 0 ? BEATS[pilot.pointer - 1] : null;
   const upcoming = BEATS[pilot.pointer] ?? null;
+  const upcomingStage = upcoming ? STAGES.findIndex((s) => s.key === upcoming.stage) : -1;
   const stageKey = current?.stage ?? 'intro';
   // Keep the current stage in view when the row is too narrow for all of them.
   const railRef = useRef<HTMLOListElement>(null);
@@ -111,7 +110,7 @@ export default function DemoDock() {
   const pill = (stage: Stage) => {
     const n = STAGES.indexOf(stage) + 1;
     const isCurrent = stage.key === stageKey;
-    const done = !isCurrent && lastBeat(stage.key) < pilot.pointer;
+    const done = !isCurrent && stageEnd(stage.key) < pilot.pointer;
     return (
       <li key={stage.key} className={isCurrent ? 'current' : done ? 'done' : ''}>
         <button type="button" disabled={pilot.running} aria-current={isCurrent ? 'step' : undefined} aria-label={`${n}. ${stage.label}`}
@@ -127,7 +126,7 @@ export default function DemoDock() {
   return (
     <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
-        {/* Demo-ohjaus: back and Seuraava in one control at the start of the bar. */}
+        {/* Demo-ohjaus: back, Seuraava and "Vaihe loppuun" in one control at the start of the bar. */}
         <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
           <span className="dock-pilot-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
             <PresentIcon size={16} /> Demo-ohjaus
@@ -139,6 +138,13 @@ export default function DemoDock() {
             title={pilot.running ? 'Kelaa käynnissä oleva vaihe loppuun (→)' : upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
             {pilot.running ? 'Kelaa' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={17} />
           </button>
+          {/* The stage the next press belongs to, simulated to its end at once – no presses or pauses in between. */}
+          {upcomingStage >= 0 && (
+            <button type="button" className="dock-btn pilot-stage" disabled={pilot.running} onClick={() => void pilot.finishStage()}
+              title={`Simuloi vaihe ${upcomingStage + 1} (${STAGES[upcomingStage].label}) loppuun ilman välipainalluksia (Shift+→)`}>
+              <ForwardIcon size={15} /> Vaihe {upcomingStage + 1} loppuun
+            </button>
+          )}
         </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (

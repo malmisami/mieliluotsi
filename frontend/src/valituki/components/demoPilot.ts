@@ -267,6 +267,11 @@ export function stageStart(stage: StageKey): number {
   return Math.max(0, BEATS.findIndex((b) => b.stage === stage));
 }
 
+/** The index of a stage's last step. */
+export function stageEnd(stage: StageKey): number {
+  return BEATS.reduce((last, beat, i) => (beat.stage === stage ? i : last), -1);
+}
+
 /* How far Sami's story has come, as the index of the last step whose change is in the state. It lets a step notice that
    it was already done by hand (skip it) and that the state is behind (rebuild it first). */
 function progress(view: ValitukiView): number {
@@ -373,6 +378,8 @@ export interface DemoPilot {
   prev: () => Promise<void>;
   /** Go to step `index`: rebuild the demo to just before it and take it. */
   enter: (index: number) => Promise<void>;
+  /** The rest of the stage the next step belongs to, at once: no presses or pauses in between (Shift+→). */
+  finishStage: () => Promise<void>;
   restart: () => void;
   replay: () => Promise<void>;
 }
@@ -523,6 +530,39 @@ export function useDemoPilot(): DemoPilot {
     return perform(target);
   }), [guard, perform, rebuild]);
 
+  // "Vaihe loppuun": every remaining step of the stage in a row without pauses – the chat shows each reply whole – and then
+  // the view of the stage's last step. While a step plays, it finishes that step at once like Seuraava.
+  const finishStage = useCallback(async () => {
+    if (runningRef.current) {
+      hurryRef.current = true;
+      hurryChat(true);
+      return;
+    }
+    await guard(async () => {
+      const start = pointer;
+      if (!BEATS[start]) return true;
+      const end = stageEnd(BEATS[start].stage);
+      await ensureScope();
+      hurryRef.current = true;
+      hurryChat(true);
+      setPointer(end + 1);
+      if (start > 0 && progress(latest.current) < lastActBefore(start) && !(await rebuild(start))) {
+        setPointer(start);
+        return false;
+      }
+      const quiet = pilot(true);
+      for (let i = start; i <= end; i += 1) {
+        const act = BEATS[i].act;
+        if (act && !(i > 0 && progress(latest.current) >= i) && !(await act(quiet))) {
+          setPointer(i);
+          return false;
+        }
+      }
+      await BEATS[end].show(pilot(false));
+      return true;
+    });
+  }, [ensureScope, guard, pilot, pointer, rebuild, setPointer]);
+
   const back = useCallback((index: number) => guard(async () => {
     const target = Math.max(1, Math.min(BEATS.length, index));
     if (!(await rebuild(target))) return false;
@@ -556,12 +596,20 @@ export function useDemoPilot(): DemoPilot {
     return true;
   }), [ensureScope, guard, pilot]);
 
-  // Keyboard and presentation clickers: → / PageDown = next, ← / PageUp = back. Typing in a field is never hijacked.
+  // Keyboard and presentation clickers: → / PageDown = next, ← / PageUp = back, Shift+→ = the rest of the stage. Typing
+  // in a field is never hijacked.
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target as HTMLElement | null;
       if (target?.closest('input, textarea, select, [contenteditable="true"], [role="radiogroup"], [role="tablist"]')) return;
+      if (event.shiftKey) {
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          void finishStage();
+        }
+        return;
+      }
       if (event.key === 'ArrowRight' || event.key === 'PageDown') {
         event.preventDefault();
         void next();
@@ -572,7 +620,7 @@ export function useDemoPilot(): DemoPilot {
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [next, prev]);
+  }, [finishStage, next, prev]);
 
-  return { pointer, running, failed, next, prev, enter, restart, replay };
+  return { pointer, running, failed, next, prev, enter, finishStage, restart, replay };
 }
