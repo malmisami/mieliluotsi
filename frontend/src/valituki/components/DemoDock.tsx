@@ -129,7 +129,7 @@ export default function DemoDock() {
         {/* Demo-ohjaus: back, Seuraava and "Vaihe loppuun" in one control at the start of the bar. */}
         <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
           <span className="dock-pilot-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
-            <PresentIcon size={16} /> Demo-ohjaus
+            <PresentIcon size={16} /> <span className="dock-pilot-text">Demo-ohjaus</span>
           </span>
           <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
             aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={17} /></button>
@@ -141,8 +141,9 @@ export default function DemoDock() {
           {/* The stage the next press belongs to, simulated to its end at once – no presses or pauses in between. */}
           {upcomingStage >= 0 && (
             <button type="button" className="dock-btn pilot-stage" disabled={pilot.running} onClick={() => void pilot.finishStage()}
+              aria-label={`Vaihe ${upcomingStage + 1} loppuun`}
               title={`Simuloi vaihe ${upcomingStage + 1} (${STAGES[upcomingStage].label}) loppuun ilman välipainalluksia (Shift+→)`}>
-              <ForwardIcon size={15} /> Vaihe {upcomingStage + 1} loppuun
+              <ForwardIcon size={15} /> <span className="pilot-stage-text">Vaihe {upcomingStage + 1} loppuun</span>
             </button>
           )}
         </div>

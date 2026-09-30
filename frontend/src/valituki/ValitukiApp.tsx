@@ -101,8 +101,12 @@ export default function ValitukiApp() {
       const top = Math.round(stage.getBoundingClientRect().top + window.scrollY);
       stage.parentElement?.style.setProperty('--stage-top', `${top}px`);
       // The phone keeps an iPhone's proportions (836 px tall at full size) and is scaled down to the room below the dock.
+      // On a phone the app is the screen under the demo control: its whole screen (374 × 814) scaled to fit.
       const room = Math.min(860, Math.max(540, window.innerHeight - top - 28));
-      stage.parentElement?.style.setProperty('--phone-zoom', String(Math.min(1, room / 836)));
+      const zoom = window.innerWidth <= 640
+        ? Math.min(1.2, window.innerWidth / 374, Math.max(0.5, (window.innerHeight - top) / 814))
+        : Math.min(1, room / 836);
+      stage.parentElement?.style.setProperty('--phone-zoom', zoom.toFixed(3));
     };
     update();
     const observer = new ResizeObserver(update);
