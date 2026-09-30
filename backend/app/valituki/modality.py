@@ -120,7 +120,7 @@ def rank(state: ValitukiState, client: ClientProfile) -> dict[str, Any]:
         }
         total = round(sum(float(weights[key]) * scores[key] for key, _ in COMPONENTS), 1)
         offered = [t.name for t in pool if set(t.therapeuticApproaches) & set(modality['approaches'])]
-        rows.append({'id': modality['id'], 'label': modality['label'], 'title': modality['title'], 'total': total,
+        rows.append({'id': modality['id'], 'label': modality['label'], 'total': total,
                      'therapists': len(offered),
                      'components': [{'key': key, 'label': label, 'score': round(scores[key], 3), 'known': known[key],
                                      'detail': details[key]} for key, label in COMPONENTS]})

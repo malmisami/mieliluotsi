@@ -240,7 +240,7 @@ export interface BackstageMatch {
 /** Which therapy approach fits the client: goals, working style and experience during the wait, 0–100 by rules. */
 export interface BackstageModality {
   version: string;
-  rows: { id: string; label: string; title: string; total: number; therapists: number;
+  rows: { id: string; label: string; total: number; therapists: number;
     components: { key: string; label: string; score: number; known: boolean; detail: string }[] }[];
 }
 

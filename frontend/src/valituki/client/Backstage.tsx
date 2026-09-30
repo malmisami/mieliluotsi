@@ -271,7 +271,7 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
     <section className={`bm-card bm-modality ${fresh ? 'is-fresh' : ''}`} aria-label="Terapiamuoto ja työtapa">
       <div className="bp-head">
         <p className="bs-title"><SlidersIcon size={15} /> Terapiamuoto ja työtapa</p>
-        {modality.rows[0] && <span className="bm-state is-run" title={modality.rows[0].title}>sopivin: {modality.rows[0].label}</span>}
+        <span className="bm-state">ehdotus</span>
       </div>
       <div className="bm-grid" ref={gridRef} role="table" aria-label="Terapiamuotojen sopivuus osa-alueittain">
         <div className="bm-row bm-row-head" role="row">
@@ -281,7 +281,7 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
         </div>
         {modality.rows.map((row, i) => (
           <div key={row.id} data-name={row.id} role="row" className={`bm-row ${i === 0 ? 'is-top' : ''}`}
-            title={`${row.title} – ${row.therapists ? `tarjolla ${row.therapists} terapeutilla` : 'ei tarjolla nyt'}`}>
+            title={row.therapists ? `Tarjolla ${row.therapists} terapeutilla` : 'Ei tarjolla nyt'}>
             <span role="cell" className="bm-name">{row.label}</span>
             {row.components.map((c) => (
               <span key={c.key} role="cell" className="bm-cell">
@@ -295,7 +295,7 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
           </div>
         ))}
       </div>
-      <p className="bm-scale">kokemus = odotusajan harjoittelu · – ei vielä tietoa · ehdotus, ammattilainen päättää</p>
+      <p className="bm-scale">sopivin ylimpänä · kokemus = odotusajan harjoittelu · – ei vielä tietoa</p>
     </section>
   );
 }

@@ -2066,6 +2066,15 @@ body {
   background: var(--brand-50);
 }
 
+/* Therapy approaches are written out in full (no abbreviations): a wider name column, a name may take two lines. */
+.vt .bm-modality .bm-row {
+  grid-template-columns: minmax(148px, 2fr) repeat(3, minmax(0, 1fr)) minmax(92px, 1.3fr);
+}
+
+.vt .bm-modality .bm-name {
+  line-height: 1.15;
+}
+
 
 .vt .bm-name {
   display: flex;
