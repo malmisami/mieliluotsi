@@ -3,6 +3,7 @@ import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtShort } from '../format';
 import { ArrowRightIcon, CheckIcon, ClockIcon, EditIcon, InfoIcon, QuoteIcon, SendIcon, SparkleIcon } from '../icons';
+import { LogoMark } from '../components/Logo';
 import { Pill, Segmented } from '../components/ui';
 import type { ConsentScope, IntakeProposal, ValitukiView } from '../types';
 import { useClientUI } from './ClientApp';
@@ -116,11 +117,11 @@ function Conversation() {
       <div className="chat-log" aria-live="polite">
         {intake.messages.map((m) => (
           <div key={m.id} className={`bubble-row ${m.role === 'client' ? 'me' : 'bot'}`}>
-            {m.role === 'assistant' && <span className="bot-mark" aria-hidden="true" />}
+            {m.role === 'assistant' && <span className="bot-mark" aria-hidden="true"><LogoMark size={26} /></span>}
             <div className={`bubble ${m.role === 'client' ? 'bubble-me' : m.questionKey ? 'bubble-q' : 'bubble-bot'}`}>{m.text}</div>
           </div>
         ))}
-        {busy && <div className="bubble-row bot"><span className="bot-mark" aria-hidden="true" /><div className="bubble bubble-bot typing"><i /><i /><i /></div></div>}
+        {busy && <div className="bubble-row bot"><span className="bot-mark" aria-hidden="true"><LogoMark size={26} /></span><div className="bubble bubble-bot typing"><i /><i /><i /></div></div>}
         <div ref={endRef} />
       </div>
       <div className="composer">

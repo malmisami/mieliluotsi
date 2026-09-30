@@ -1,15 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34">
-  <defs>
-    <linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0d5f6f"/>
-      <stop offset="1" stop-color="#2a9d82"/>
-    </linearGradient>
-  </defs>
-  <rect width="34" height="34" rx="10" fill="url(#t)"/>
-  <circle cx="17" cy="17" r="10" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="1.6"/>
-  <g transform="rotate(40 17 17)">
-    <path d="M17 8.2 20.2 17h-6.4Z" fill="#fff"/>
-    <path d="M13.8 17h6.4L17 25.8Z" fill="#bff0de"/>
-  </g>
-  <circle cx="17" cy="17" r="1.5" fill="#0d5f6f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Mieliluotsi "Luotsilippu": the same shapes as components/Logo.tsx -->
+  <path d="M50 0 C57 14 57 34 51 54 C46 70 44 86 50 100 H30 A30 30 0 0 1 0 70 V30 A30 30 0 0 1 30 0 Z" fill="#a9cccb"/>
+  <path d="M50 0 H70 A30 30 0 0 1 100 30 V70 A30 30 0 0 1 70 100 H50 C44 86 46 70 51 54 C57 34 57 14 50 0 Z" fill="#0d5f6f"/>
 </svg>

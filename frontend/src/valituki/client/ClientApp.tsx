@@ -4,6 +4,7 @@ import { api } from '../api';
 import { useValituki } from '../context';
 import type { ClientTab } from '../context';
 import { ArrowLeftIcon, BellIcon, ChatIcon, GridIcon, HomeIcon, LifebuoyIcon, RouteIcon, TrendIcon } from '../icons';
+import { Logo } from '../components/Logo';
 import { HelpSheet, SafetyScreen } from '../components/Safety';
 import type { ClientView } from '../types';
 import ActivitySheet from './ActivitySheet';
@@ -133,7 +134,7 @@ export default function ClientApp() {
           <div className="phone-inner">
             {inIntake ? (
               <header className="app-bar">
-                <span className="app-title">Mieliluotsi</span>
+                <Logo size={24} />
                 <button type="button" className="help-btn" onClick={() => setSheet({ type: 'help' })}>
                   <LifebuoyIcon size={17} /> Apua nyt
                 </button>
@@ -143,6 +144,8 @@ export default function ClientApp() {
                 <button type="button" className="cx-sos" onClick={() => setSheet({ type: 'help' })}>
                   <LifebuoyIcon size={16} /> Apua nyt
                 </button>
+                {/* The logo in the middle – in the chat its header right below shows the mark and the name. */}
+                {clientTab === 'keskustelu' ? <span /> : <Logo size={22} />}
                 <div className="cx-bar-actions">
                   <button type="button" className="cx-icon-btn" aria-label={`Viestit Mieliluotsilta${current.unreadCount ? ` – ${current.unreadCount} uutta` : ''}`}
                     onClick={() => openPage('notices')}>

@@ -7,6 +7,7 @@ import {
   AlertIcon, ArrowRightIcon, CalendarIcon, ChatIcon, CheckIcon, ChevronRightIcon, CrossIcon, FlaskIcon, LeafIcon, SendIcon,
   SparkleIcon, StairsIcon, StethoscopeIcon, ThoughtIcon,
 } from '../icons';
+import { LogoMark } from '../components/Logo';
 import { Scale5 } from '../components/ui';
 import type { PracticeTask } from '../types';
 import { useClientUI } from './ClientApp';
@@ -75,7 +76,7 @@ export default function HomeTab() {
       <p className="cx-mode">
         {mode === 'therapy_support' ? <><StethoscopeIcon size={14} /> Terapian välituki · {client.mode.therapistName}</>
           : mode === 'aftercare_support' ? <><CheckIcon size={14} /> Seuranta terapian jälkeen</>
-            : <><SparkleIcon size={14} /> Mieliluotsi · odotusajan tuki</>}
+            : <><SparkleIcon size={14} /> Odotusajan tuki</>}
       </p>
       <h1 className="cx-greeting">Hei {client.firstName},<br />{askMood ? 'miten voit tänään?' : 'mitä mielessäsi on?'}</h1>
 
@@ -104,7 +105,7 @@ export default function HomeTab() {
 
       {guided && (
         <button type="button" className="cx-continue" onClick={() => openTab('keskustelu')}>
-          <span className="cx-bot-avatar" aria-hidden="true"><BotFace /></span>
+          <span className="cx-bot-avatar" aria-hidden="true"><LogoMark /></span>
           <span className="cx-continue-text">
             <strong>Jatka: {guided.title}</strong>
             <span>Kysymys {guided.stepIndex}/{guided.stepCount} odottaa vastaustasi</span>
@@ -306,15 +307,4 @@ export function toolIcon(tool: string, size = 18) {
   if (tool === 'experiment') return <FlaskIcon size={size} />;
   if (tool === 'checkin') return <ChatIcon size={size} />;
   return <ThoughtIcon size={size} />;
-}
-
-export function BotFace({ size = 30 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
-      <rect width="34" height="34" rx="17" fill="var(--brand)" />
-      <path d="M10 18.5c2 3 4.3 4.5 7 4.5s5-1.5 7-4.5" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
-      <circle cx="12.8" cy="13" r="2" fill="#9fe0d0" />
-      <circle cx="21.2" cy="13" r="2" fill="#fff" />
-    </svg>
-  );
 }

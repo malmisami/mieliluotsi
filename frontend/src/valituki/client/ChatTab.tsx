@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import type { FormEvent } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
+import { LogoMark } from '../components/Logo';
 import { fmtWeekday } from '../format';
 import { InfoIcon, LifebuoyIcon, SendIcon, SparkleIcon } from '../icons';
 import type { ChatMessage, ChatWidget, GuidedView, SummaryData, ValitukiView } from '../types';
 import { Examples, SummaryCard, TrapHint, WidgetPanel, describeValue } from './ChatWidgets';
 import { chatHurried, setChatRevealing, splitBubbles, subscribeChatHurry, typingTime } from './chatPace';
 import { useClientUI } from './ClientApp';
-import { BotFace, toolIcon } from './HomeTab';
+import { toolIcon } from './HomeTab';
 
 const TOOL_LABELS: Record<string, string> = { checkin: 'Tee check-in', thought_record: 'Ajatusten tutkiminen', exposure: 'Altistusporras',
   experiment: 'Käyttäytymiskoe' };
@@ -147,7 +148,7 @@ export default function ChatTab() {
   return (
     <div className="cx-chat">
       <div className="cx-chat-head">
-        <span className="cx-bot-avatar" aria-hidden="true"><BotFace size={34} /></span>
+        <span className="cx-bot-avatar" aria-hidden="true"><LogoMark size={34} /></span>
         <div className="cx-chat-who">
           <p className="cx-chat-name">Mieliluotsi</p>
           <p className="cx-chat-sub">{guided ? `${guided.title} · voit lopettaa milloin vain` : 'Tekoälyavusteinen tuki – ei terapeutti eikä päivystys'}</p>
