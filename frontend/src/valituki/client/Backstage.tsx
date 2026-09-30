@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { fmtNum } from '../format';
-import { AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon } from '../icons';
+import {
+  AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon,
+} from '../icons';
 import { AISwitch } from '../components/DemoDock';
 import { AgentTimeline } from '../components/Timeline';
 import type { BackstageMatch, BackstageModality, ClientView, InsightRow } from '../types';
@@ -68,8 +70,9 @@ interface Seen {
 const lastSeen = new Map<string, Seen>();
 
 /** Next to the phone on wide screens, stacked in one compact column: the matching tables (therapist, therapy approach)
-    and the profile for the therapist, all always visible. When the client's data changes, it visibly travels from the
-    phone to the rows it updates. */
+    and the profile for the therapist, all always visible. Framed apart from the app – behind the scenes, not what the
+    client sees: computed by rules from their actions and approved entries. When the client's data changes, it visibly
+    travels from the phone to the rows it updates. */
 export default function Backstage({ client }: { client: ClientView }) {
   const asideRef = useRef<HTMLElement>(null);
   const rows = profileRows(client);
@@ -138,11 +141,12 @@ export default function Backstage({ client }: { client: ClientView }) {
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const parts = [aside.querySelector('.bs-ai'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
+      const parts = [aside.querySelector('.bs-bar'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
         aside.querySelector('.bs-log summary')];
-      const rowGap = Number.parseFloat(getComputedStyle(aside).rowGap) || 0;
+      const box = getComputedStyle(aside);
+      const frame = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'] as const;
       const height = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
-        + (parts.length - 1) * rowGap + 8;
+        + (parts.length - 1) * (Number.parseFloat(box.rowGap) || 0) + frame.reduce((sum, k) => sum + (Number.parseFloat(box[k]) || 0), 0) + 4;
       const width = aside.getBoundingClientRect().width / zoom;
       const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
@@ -177,7 +181,14 @@ export default function Backstage({ client }: { client: ClientView }) {
 
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
-      <div className="stage-ai bs-ai"><AISwitch /></div>
+      <header className="bs-bar">
+        <span className="bs-bar-icon" aria-hidden="true"><EyeOffIcon size={17} /></span>
+        <span className="bs-bar-text">
+          <strong>Taustalla – {client.firstName} ei näe tätä</strong>
+          <span>Mieliluotsi laskee nämä säännöillä asiakkaan toimista ja hyväksymistä kirjauksista</span>
+        </span>
+        <span className="stage-ai bs-ai"><AISwitch /></span>
+      </header>
       <MatchCard match={match} fresh={fresh.has('match')} />
       <ModalityCard modality={modality} fresh={fresh.has('modality')} />
       <ProfileCard client={client} rows={rows} fresh={fresh} />

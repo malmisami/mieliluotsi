@@ -33,6 +33,7 @@ export const ArrowLeftIcon = (p: IconProps) => <Icon {...p}><path d="M19 12H5M11
 export const ArrowDownIcon = (p: IconProps) => <Icon {...p}><path d="M12 5v14M6 13l6 6 6-6" /></Icon>;
 export const SparkleIcon = (p: IconProps) => <Icon {...p}><path d="M12 3.5 13.8 9l5.7 1.9-5.7 1.9L12 18.5l-1.8-5.7L4.5 11l5.7-2Z" /><path d="M19 3v3M17.5 4.5h3" /></Icon>;
 export const EyeIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="2.8" /></Icon>;
+export const EyeOffIcon = (p: IconProps) => <Icon {...p}><path d="M9.9 5.8A9 9 0 0 1 12 5.5C18 5.5 21.5 12 21.5 12a17 17 0 0 1-2.7 3.6M6.2 7.6C3.9 9.3 2.5 12 2.5 12S6 18.5 12 18.5a9 9 0 0 0 4.3-1.1" /><path d="M10 10a2.8 2.8 0 0 0 4 4" /><path d="m4 4 16 16" /></Icon>;
 export const PuzzleIcon = (p: IconProps) => <Icon {...p}><path d="M9.5 4.5a2 2 0 1 1 4 0V6H18v4.5h-1.5a2 2 0 1 0 0 4H18V19h-4.5v-1.5a2 2 0 1 0-4 0V19H5v-4.5h1.5a2 2 0 1 0 0-4H5V6h4.5Z" /></Icon>;
 export const LockIcon = (p: IconProps) => <Icon {...p}><rect x="5" y="10.5" width="14" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></Icon>;
 export const CalendarIcon = (p: IconProps) => <Icon {...p}><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" /></Icon>;

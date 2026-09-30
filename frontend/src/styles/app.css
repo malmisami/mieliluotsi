@@ -1782,12 +1782,60 @@ body {
   scrollbar-color: var(--line-strong) transparent;
 }
 
+/* Behind the scenes: framed apart from the client's app (the dashed line marks what is not the service, as in the demo
+   control) – what Mieliluotsi computes from the client's actions and approved entries, not what the client sees. */
 .vt .backstage {
   display: flex;
   flex: none;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
+  padding: 10px;
+  border: 1.5px dashed #a3b5bc;
+  border-radius: 18px;
+  background: #e6edf0;
+}
+
+.vt .bs-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 0 2px;
+}
+
+.vt .bs-bar-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #13222b;
+  color: #e6edf0;
+}
+
+.vt .bs-bar-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.vt .bs-bar-text strong {
+  color: #13222b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.vt .bs-bar-text span {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.vt .bs-bar .bs-ai {
+  flex: none;
 }
 
 @media (min-width: 641px) {
@@ -1795,10 +1843,9 @@ body {
   .vt .client-stage .backstage {
     /* One compact column, wide enough for the therapy approaches' full names on one line. --bs-zoom is measured in
        Backstage: the cards fit the screen height and the room beside the phone; lengths inside scale with the zoom. */
-    width: 624px;
+    width: 650px;
     zoom: var(--bs-zoom, 1);
     max-height: calc(max(360px, 100dvh - var(--stage-top, 110px) - 28px) / var(--bs-zoom, 1));
-    padding-right: 4px;
     overflow-y: auto;
     scrollbar-width: thin;
   }
@@ -6254,7 +6301,7 @@ body {
   }
 
   .vt .backstage {
-    padding: 0 16px;
+    width: calc(100% - 24px);
   }
 
   .vt .pro-title {
