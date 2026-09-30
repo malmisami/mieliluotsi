@@ -1120,13 +1120,17 @@ body {
 /* Demo dock – visibly NOT part of the product */
 
 .vt .dock {
-  /* The only bar: sticks to the top so that Seuraava and the cue stay visible on long pages too. */
+  /* The only bar: sticks to the top so that Seuraava and the cue stay visible on long pages too. In the app's colours
+     (light, petrol accents); the dashed frames mark it as the presenter's control, not the service – as around the
+     panel beside the phone. */
   position: sticky;
   top: 0;
   z-index: 35;
-  background: #13222b;
-  color: #dbe6ea;
-  border-bottom: 1px solid #0a151b;
+  border-bottom: 1px solid var(--line);
+  background: rgba(246, 249, 249, 0.94);
+  box-shadow: 0 1px 8px rgba(20, 35, 43, 0.05);
+  color: var(--ink);
+  backdrop-filter: blur(6px);
 }
 
 .vt .dock-row {
@@ -1147,7 +1151,7 @@ body {
   gap: 5px;
   margin-right: 4px;
   padding: 3px 3px 3px 11px;
-  border: 1px dashed rgba(243, 195, 91, 0.55);
+  border: 1.5px dashed #a3b5bc;
   border-radius: 13px;
 }
 
@@ -1156,7 +1160,7 @@ body {
   align-items: center;
   gap: 6px;
   margin-right: 3px;
-  color: #f3c35b;
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
@@ -1168,7 +1172,7 @@ body {
   gap: 2px;
   padding: 2px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(20, 35, 43, 0.07);
 }
 
 .vt .dock-views button {
@@ -1179,19 +1183,20 @@ body {
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #b9c7cd;
+  color: var(--muted);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .vt .dock-views button:hover {
-  color: #fff;
+  color: var(--ink);
 }
 
 .vt .dock-views button[aria-pressed='true'] {
-  background: #eef4f6;
-  color: #13222b;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
+  color: var(--brand);
 }
 
 .vt .dock-ai {
@@ -1345,10 +1350,10 @@ body {
   gap: 4px;
   height: 34px;
   padding: 0 9px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: transparent;
-  color: #b9c7cd;
+  background: var(--surface);
+  color: var(--ink-2);
   font-size: 12.5px;
   font-weight: 650;
 }
@@ -1378,11 +1383,11 @@ body {
   width: 7px;
   height: 2px;
   margin: 0 2px;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--line-strong);
 }
 
 .vt .dock-steps li.done + li::before {
-  background: rgba(120, 220, 170, 0.45);
+  background: #a9cccb;
 }
 
 .vt .dock-steps button {
@@ -1393,15 +1398,15 @@ body {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #b9c7cd;
+  color: var(--ink-2);
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .vt .dock-steps button:hover:not(:disabled) .dock-step-n {
-  border-color: #f3c35b;
-  color: #fff;
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 .vt .dock-step-n {
@@ -1411,16 +1416,18 @@ body {
   justify-content: center;
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--line-strong);
   border-radius: 50%;
+  background: var(--surface);
   font-size: 12px;
   font-weight: 800;
 }
 
+/* Done steps in the logo's light teal. */
 .vt .dock-steps li.done .dock-step-n {
   border-color: transparent;
-  background: rgba(120, 220, 170, 0.2);
-  color: #9fe7c1;
+  background: #a9cccb;
+  color: var(--brand-strong);
 }
 
 .vt .dock-step-t {
@@ -1445,16 +1452,16 @@ body {
 
 .vt .dock-steps li.current button {
   padding: 2px 11px 2px 2px;
-  background: #f3c35b;
-  color: #1f1500;
+  background: var(--brand);
+  color: #fff;
   font-weight: 700;
   cursor: default;
 }
 
 .vt .dock-steps li.current .dock-step-n {
   border-color: transparent;
-  background: #221800;
-  color: #f3c35b;
+  background: var(--surface);
+  color: var(--brand);
 }
 
 .vt .dock-steps button:disabled {
@@ -1466,13 +1473,13 @@ body {
 .vt .pilot-rail .pilot-group {
   gap: 2px;
   padding: 2px 6px 2px 10px;
-  border: 1px dashed rgba(159, 224, 208, 0.35);
+  border: 1.5px dashed #a3b5bc;
   border-radius: 999px;
 }
 
 .vt .pilot-group-label {
   margin-right: 4px;
-  color: #9fe0d0;
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
 }
@@ -1521,9 +1528,9 @@ body {
   gap: 6px;
   height: 34px;
   padding: 0 12px;
-  border-color: rgba(243, 195, 91, 0.45);
+  border-color: var(--brand-200);
   border-radius: 10px;
-  color: #f3c35b;
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
 }
@@ -1535,8 +1542,8 @@ body {
   height: 34px;
   padding: 0 11px;
   border-radius: 999px;
-  background: rgba(243, 195, 91, 0.16);
-  color: #f3c35b;
+  background: var(--brand-50);
+  color: var(--brand);
   font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -1544,7 +1551,7 @@ body {
 }
 
 .vt .pilot-warn {
-  color: #ffb3c3;
+  color: var(--rose);
   font-size: 12.5px;
   font-weight: 700;
   white-space: nowrap;
@@ -1577,7 +1584,7 @@ body {
 
 .vt .dock-group + .dock-group {
   padding-left: 14px;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid var(--line);
 }
 
 .vt .dock-end {
@@ -1589,17 +1596,17 @@ body {
   align-items: center;
   gap: 6px;
   padding: 4px 9px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.07);
-  color: #eef4f6;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 13px;
   font-weight: 650;
   white-space: nowrap;
 }
 
 .vt .dock-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--brand-50);
 }
 
 .vt .dock-btn:disabled {
@@ -1607,35 +1614,39 @@ body {
 }
 
 .vt .dock-next {
-  border-color: #f3c35b;
-  background: #f3c35b;
-  color: #221800;
-  box-shadow: 0 0 0 3px rgba(243, 195, 91, 0.25);
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(13, 95, 111, 0.16);
 }
 
 .vt .dock-next:hover:not(:disabled) {
-  background: #f7d27f;
+  background: var(--brand-strong);
 }
 
 .vt .dock-warn {
-  border-color: rgba(255, 140, 165, 0.4);
-  background: rgba(179, 40, 74, 0.28);
-  color: #ffd6df;
+  border-color: var(--rose-200);
+  background: var(--rose-50);
+  color: var(--rose);
+}
+
+.vt .dock-warn:hover:not(:disabled) {
+  background: #f7dbe3;
 }
 
 .vt .dock-select select {
   max-width: 300px;
   padding: 4px 28px 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background-color: #1c2f39;
-  color: #eef4f6;
+  background-color: var(--surface);
+  color: var(--ink);
   font-size: 13px;
 }
 
 .vt .dock-select select:focus {
-  border-color: #f3c35b;
-  box-shadow: 0 0 0 3px rgba(243, 195, 91, 0.3);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(13, 95, 111, 0.18);
 }
 
 .vt .stage {
