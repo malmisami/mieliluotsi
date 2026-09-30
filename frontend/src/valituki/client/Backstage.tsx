@@ -53,8 +53,9 @@ function modalityChange(before: BackstageModality, after: BackstageModality): st
   return moved ? moved[1] : 'Terapiamuodon sopivuus';
 }
 
-/** Next to the phone on wide screens: the therapist profile and matching, both always visible. When the client's data
-    changes, it visibly travels from the phone to the rows it updates. */
+/** Next to the phone on wide screens, in two columns: the matching tables (therapist, therapy approach) and the profile
+    for the therapist, all always visible. When the client's data changes, it visibly travels from the phone to the rows
+    it updates. */
 export default function Backstage({ client }: { client: ClientView }) {
   const asideRef = useRef<HTMLElement>(null);
   const rows = profileRows(client);
@@ -97,29 +98,37 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
-  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the AI switch, the two
-  // matching tables, the profile and the log's heading fit under the demo dock (an opened log scrolls inside).
+  // Beside the phone the panel fits the screen like the phone does. Two columns side by side – the matching tables and
+  // the profile – so it stays wide and readable: it is zoomed down only as much as the taller column needs to fit under
+  // the demo dock and the columns need to fit next to the phone (an opened log scrolls inside); on a large screen it
+  // grows a little.
   useLayoutEffect(() => {
     const aside = asideRef.current;
-    if (!aside) return undefined;
+    const stage = aside?.parentElement;
+    if (!aside || !stage) return undefined;
     const fit = () => {
       if (window.innerWidth <= 1100) {
         aside.style.removeProperty('--bs-zoom');
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const parts = [aside.querySelector('.bs-ai'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
-        aside.querySelector('.bs-log summary')];
-      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
-        + (parts.length - 1) * 12 + 8;
+      const natural = (el: Element | null) => (el ? el.getBoundingClientRect().height / zoom : 0);
+      const column = (els: (Element | null)[]) => els.reduce((sum, el) => sum + natural(el), 0) + (els.length - 1) * 12;
+      const height = natural(aside.querySelector('.bs-ai')) + 12 + 8 + Math.max(column([...aside.querySelectorAll('.bm-card')]),
+        column([aside.querySelector('.bp-doc'), aside.querySelector('.bs-log summary')]));
+      const width = aside.getBoundingClientRect().width / zoom;
+      const phone = stage.querySelector('.phone');
+      const beside = stage.clientWidth - (phone ? phone.getBoundingClientRect().width + Number.parseFloat(getComputedStyle(phone).marginRight) : 0);
       const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
-      const next = Math.max(0.55, Math.min(1, room / natural));
+      const next = Math.max(0.55, Math.min(1.15, room / height, beside / width));
       if (Math.abs(next - zoom) > 0.01) aside.style.setProperty('--bs-zoom', next.toFixed(3));
     };
     fit();
     const observer = new ResizeObserver(fit);
     aside.querySelectorAll('.bm-card, .bp-doc').forEach((el) => observer.observe(el));
+    const phone = stage.querySelector('.phone');
+    if (phone) observer.observe(phone);  // the phone is scaled to the screen height: the room beside it changes
     window.addEventListener('resize', fit);
     return () => {
       observer.disconnect();
@@ -130,13 +139,19 @@ export default function Backstage({ client }: { client: ClientView }) {
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
       <div className="stage-ai bs-ai"><AISwitch /></div>
-      <MatchCard match={match} fresh={fresh.has('match')} />
-      <ModalityCard modality={modality} fresh={fresh.has('modality')} />
-      <ProfileCard client={client} rows={rows} fresh={fresh} />
-      <details className="bs-log">
-        <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
-        <Log client={client} />
-      </details>
+      <div className="bs-cols">
+        <div className="bs-col">
+          <MatchCard match={match} fresh={fresh.has('match')} />
+          <ModalityCard modality={modality} fresh={fresh.has('modality')} />
+        </div>
+        <div className="bs-col">
+          <ProfileCard client={client} rows={rows} fresh={fresh} />
+          <details className="bs-log">
+            <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
+            <Log client={client} />
+          </details>
+        </div>
+      </div>
       <DataFlow flows={flows} asideRef={asideRef} />
     </aside>
   );
