@@ -19,6 +19,7 @@ from app.valituki import (
     journey,
     labels,
     matching_flow,
+    modality,
     practice,
     professional,
     therapy,
@@ -510,7 +511,7 @@ def client_view(state: ValitukiState, client: ClientProfile) -> dict[str, Any]:
         'safety': {'lockActive': bool(lock and not lock.dismissedAt)},
         'phaseFlags': {'matchingReady': phase in ('MATCHING_READY', 'MATCH_PROPOSED'), 'booked': phase == 'MATCH_ACCEPTED',
                        'therapy': phase == 'THERAPY_ACTIVE', 'aftercare': phase == 'AFTERCARE'},
-        'backstage': {'match': _backstage_match(state, client)},
+        'backstage': {'match': _backstage_match(state, client), 'modality': modality.rank(state, client)},
     }
 
 

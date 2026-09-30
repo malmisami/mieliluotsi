@@ -2062,6 +2062,10 @@ body {
   box-shadow: inset 0 0 0 1px var(--brand-200);
 }
 
+.vt .bm-row.is-top {
+  background: var(--brand-50);
+}
+
 
 .vt .bm-name {
   display: flex;
@@ -2099,6 +2103,14 @@ body {
 
 .vt .bm-dots i.on {
   background: var(--brand);
+}
+
+/* Not known yet (no working-style wishes, no practice during the wait): counted as neutral, shown as a dash. */
+.vt .bm-unknown {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 9px;
 }
 
 .vt .bm-total {
@@ -2227,7 +2239,8 @@ body {
   opacity: 0;
 }
 
-.vt .df-path.df-match {
+.vt .df-path.df-match,
+.vt .df-path.df-modality {
   stroke: #b0761a;
 }
 
@@ -2247,7 +2260,8 @@ body {
   opacity: 0;
 }
 
-.vt .df-chip.df-match {
+.vt .df-chip.df-match,
+.vt .df-chip.df-modality {
   background: #f3c35b;
   box-shadow: 0 6px 16px rgba(176, 118, 26, 0.3);
   color: #2a1d00;

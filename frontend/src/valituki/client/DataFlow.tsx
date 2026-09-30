@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import type { RefObject } from 'react';
 
-export interface Flow { id: string; label: string; target: 'profile' | 'match'; row?: string }
+export interface Flow { id: string; label: string; target: 'profile' | 'match' | 'modality'; row?: string }
 
 const SVG = 'http://www.w3.org/2000/svg';
 
-/** Data leaving the phone: for every flow a labelled chip travels along a curve from the phone to the profile row or the
-    matching table it updates. Drawn imperatively on a layer over the client stage, then removed; no layout change. */
+/** Data leaving the phone: for every flow a labelled chip travels along a curve from the phone to the profile row, the
+    therapist matching or the therapy approach table it updates. Drawn imperatively on a layer over the client stage, then removed; no layout change. */
 export function DataFlow({ flows, asideRef }: { flows: Flow[]; asideRef: RefObject<HTMLElement | null> }) {
   useEffect(() => {
     const aside = asideRef.current;
@@ -31,7 +31,7 @@ export function DataFlow({ flows, asideRef }: { flows: Flow[]; asideRef: RefObje
     const running: Animation[] = [];
     flows.forEach((flow, i) => {
       const target = (flow.row && aside.querySelector(`[data-row="${flow.row}"]`))
-        || aside.querySelector(flow.target === 'match' ? '.bm-card' : '.bp-doc') || aside;
+        || aside.querySelector({ match: '.bm-card', modality: '.bm-modality', profile: '.bp-doc' }[flow.target]) || aside;
       const to = target.getBoundingClientRect();
       const sx = from.right - box.left - 16;
       const sy = from.top - box.top + from.height * (0.3 + 0.07 * (i % 5));

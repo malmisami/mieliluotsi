@@ -237,6 +237,13 @@ export interface BackstageMatch {
   readiness: Criterion[] | null; chosen: string | null;
 }
 
+/** Which therapy approach fits the client: goals, working style and experience during the wait, 0–100 by rules. */
+export interface BackstageModality {
+  version: string;
+  rows: { id: string; label: string; title: string; total: number; therapists: number;
+    components: { key: string; label: string; score: number; known: boolean; detail: string }[] }[];
+}
+
 export interface Criterion { key: string; label: string; passed: boolean; detail?: string }
 
 export interface MatchingView {
@@ -299,7 +306,7 @@ export interface ClientView {
   safety: { lockActive: boolean };
   phaseFlags: { matchingReady: boolean; booked: boolean; therapy: boolean; aftercare: boolean };
   /** Presenter-only: the deterministic matching run behind the phone. */
-  backstage: { match: BackstageMatch };
+  backstage: { match: BackstageMatch; modality: BackstageModality };
 }
 
 export interface ObservationRow {

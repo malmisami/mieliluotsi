@@ -149,7 +149,8 @@ backend/app/valituki/                         frontend/src/valituki/
   trends.py        own-baseline trends, patterns
   activities.py    approved library selection   data/valituki/   activities, cbt (tools, thinking traps, flows,
   matching.py      pure matching engine                          ladder templates), therapists, clients, rules,
-                                                                 safety_rules, matching_config, cohort (all JSON)
+                                                                 safety_rules, matching_config, modalities,
+  modality.py      therapy approach suggestion                   cohort (all JSON)
   matching_flow.py runs, decisions, booking
   handover.py      first-session summary
   therapy.py       therapist configuration
@@ -268,6 +269,15 @@ failure, ms, answering model).
 
 Clients see *Vahva / Hyvä / Mahdollinen yhteensopivuus* with reasons, unmet wishes, the first free time and the data
 used – never a numeric probability. The professional sees the component meters and the excluded therapists with reasons.
+
+**Terapiamuoto ja työtapa** (next to the phone, under the therapist matching): the same kind of table for the therapy
+approaches the pool offers – KKT, HOT (ACT), ratkaisukeskeinen, IPT, psykodynaaminen (`modality.py`,
+`data/valituki/modalities.json`). Goals 40 (the approach's fit to the approved goal topics, the referral's until then),
+working style 35 (the approved wishes against the approach's typical way of working, on the therapists' 1–5 levels) and
+experience 25 (how the approach's own exercises went during the wait: 0–10 changes of guided practice with the
+practice-sharing consent, never journal content; unknown = neutral, shown as a dash). Only data allowed in matching is
+used, no language model takes part, and it is a suggestion for the professional's decision. For Sami, KKT leads and
+rises as the practice during the wait accumulates.
 
 ### Handover
 

@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { fmtNum } from '../format';
-import { AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, TargetIcon } from '../icons';
+import { AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon } from '../icons';
 import { AISwitch } from '../components/DemoDock';
 import { AgentTimeline } from '../components/Timeline';
-import type { BackstageMatch, ClientView, InsightRow } from '../types';
+import type { BackstageMatch, BackstageModality, ClientView, InsightRow } from '../types';
 import { DataFlow } from './DataFlow';
 import type { Flow } from './DataFlow';
 
@@ -37,6 +37,22 @@ function matchSignature(match: BackstageMatch): string {
   return `${match.ran}|${match.candidates.map((c) => `${c.name}:${c.total}:${c.status}`).join(',')}`;
 }
 
+function modalitySignature(modality: BackstageModality): string {
+  return modality.rows.map((r) => `${r.id}:${r.total}`).join(',');
+}
+
+const MODALITY_CHANGES: [string, string][] = [
+  ['experience', 'Harjoittelu odotusaikana'], ['workingStyle', 'Työskentelytapatoiveet'], ['goals', 'Tavoitteet'],
+];
+
+/** What moved the therapy approach table: the practice during the wait first, then the working style, then the goals. */
+function modalityChange(before: BackstageModality, after: BackstageModality): string {
+  const old = new Map(before.rows.flatMap((r) => r.components.map((c) => [`${r.id}.${c.key}`, c.score] as const)));
+  const moved = MODALITY_CHANGES.find(([key]) => after.rows.some((r) => r.components.some((c) => c.key === key
+    && old.get(`${r.id}.${key}`) !== c.score)));
+  return moved ? moved[1] : 'Terapiamuodon sopivuus';
+}
+
 /** Next to the phone on wide screens: the therapist profile and matching, both always visible. When the client's data
     changes, it visibly travels from the phone to the rows it updates. */
 export default function Backstage({ client }: { client: ClientView }) {
@@ -46,11 +62,13 @@ export default function Backstage({ client }: { client: ClientView }) {
   const values = Object.fromEntries(rows.map((r) => [r.key, r.value ?? '']));
   const rowSig = rows.map((r) => `${r.key}=${r.value ?? ''}`).join('|');
   const matchSig = matchSignature(match);
+  const modality = client.backstage.modality;
+  const modSig = modalitySignature(modality);
 
-  const [seen, setSeen] = useState({ clientId: client.id, rowSig, matchSig, values, ran: match.ran, seq: 0 });
+  const [seen, setSeen] = useState({ clientId: client.id, rowSig, matchSig, modSig, modality, values, ran: match.ran, seq: 0 });
   const [flows, setFlows] = useState<Flow[]>([]);
   const [fresh, setFresh] = useState<Set<string>>(new Set());
-  if (seen.clientId !== client.id || seen.rowSig !== rowSig || seen.matchSig !== matchSig) {
+  if (seen.clientId !== client.id || seen.rowSig !== rowSig || seen.matchSig !== matchSig || seen.modSig !== modSig) {
     const seq = seen.seq + 1;
     if (seen.clientId === client.id) {
       // Only approved, stored information moves: each changed row flies to the profile, and to matching when allowed there.
@@ -63,13 +81,15 @@ export default function Backstage({ client }: { client: ClientView }) {
       if (seen.matchSig !== matchSig && !next.some((f) => f.target === 'match')) {
         next.push({ label: match.ran && !seen.ran ? 'Terapeutin vapaa aika' : 'Pisteytys päivittyi', target: 'match' });
       }
+      if (seen.modSig !== modSig) next.push({ label: modalityChange(seen.modality, modality), target: 'modality' });
       setFlows(next.slice(0, 7).map((f, i) => ({ ...f, id: `${seq}-${i}` })));
-      setFresh(new Set([...changed.map((r) => r.key), ...(seen.matchSig !== matchSig ? ['match'] : [])]));
+      setFresh(new Set([...changed.map((r) => r.key), ...(seen.matchSig !== matchSig ? ['match'] : []),
+        ...(seen.modSig !== modSig ? ['modality'] : [])]));
     } else {
       setFlows([]);
       setFresh(new Set());
     }
-    setSeen({ clientId: client.id, rowSig, matchSig, values, ran: match.ran, seq });
+    setSeen({ clientId: client.id, rowSig, matchSig, modSig, modality, values, ran: match.ran, seq });
   }
   useEffect(() => {
     if (!fresh.size) return undefined;
@@ -77,8 +97,8 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
-  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the AI switch, the matching,
-  // the profile and the log's heading fit under the demo dock (an opened log scrolls inside).
+  // Beside the phone the panel fits the screen like the phone does: it is zoomed down until the AI switch, the two
+  // matching tables, the profile and the log's heading fit under the demo dock (an opened log scrolls inside).
   useLayoutEffect(() => {
     const aside = asideRef.current;
     if (!aside) return undefined;
@@ -88,9 +108,10 @@ export default function Backstage({ client }: { client: ClientView }) {
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const parts = [aside.querySelector('.bs-ai'), aside.querySelector('.bm-card'), aside.querySelector('.bp-doc'),
+      const parts = [aside.querySelector('.bs-ai'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
         aside.querySelector('.bs-log summary')];
-      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0) + 3 * 12 + 8;
+      const natural = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
+        + (parts.length - 1) * 12 + 8;
       const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
       const next = Math.max(0.55, Math.min(1, room / natural));
@@ -110,6 +131,7 @@ export default function Backstage({ client }: { client: ClientView }) {
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
       <div className="stage-ai bs-ai"><AISwitch /></div>
       <MatchCard match={match} fresh={fresh.has('match')} />
+      <ModalityCard modality={modality} fresh={fresh.has('modality')} />
       <ProfileCard client={client} rows={rows} fresh={fresh} />
       <details className="bs-log">
         <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
@@ -126,7 +148,7 @@ function ProfileCard({ client, rows, fresh }: { client: ClientView; rows: Profil
   const filled = rows.filter((r) => r.value).length;
   const handover = client.matching.handover;
   return (
-    <section className={`bp-doc ${[...fresh].some((k) => k !== 'match') ? 'is-fresh' : ''}`} aria-label="Profiili terapeutille">
+    <section className={`bp-doc ${[...fresh].some((k) => k !== 'match' && k !== 'modality') ? 'is-fresh' : ''}`} aria-label="Profiili terapeutille">
       <div className="bp-head">
         <p className="bs-title"><LayersIcon size={15} /> Profiili terapeutille</p>
         <span className="bp-meter" title={`${filled}/${rows.length} osiota`} aria-label={`${filled}/${rows.length} osiota`}>
@@ -166,20 +188,18 @@ const COLUMNS: { key: string; label: string }[] = [
   { key: 'goalCompetence', label: 'Osaaminen' }, { key: 'workingStyle', label: 'Työtapa' }, { key: 'userPreferences', label: 'Toiveet' },
 ];
 
-function Dots({ score, label }: { score: number; label: string }) {
+function Dots({ score, label, hint }: { score: number; label: string; hint?: string }) {
   const filled = Math.round(score * 4);
   return (
-    <span className="bm-dots" title={`${label}: ${Math.round(score * 100)} %`} aria-label={`${label} ${filled}/4`}>
+    <span className="bm-dots" title={hint ?? `${label}: ${Math.round(score * 100)} %`} aria-label={`${label} ${filled}/4`}>
       {[0, 1, 2, 3].map((i) => <i key={i} className={i < filled ? 'on' : ''} />)}
     </span>
   );
 }
 
-function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) {
-  // Rows glide to their new place when the ranking changes (FLIP; no re-render needed).
-  const gridRef = useRef<HTMLDivElement>(null);
+/** Rows glide to their new place when the ranking changes (FLIP; no re-render needed). */
+function useRowFlip(gridRef: RefObject<HTMLDivElement | null>, order: string) {
   const tops = useRef(new Map<string, number>());
-  const order = match.candidates.map((c) => c.name).join('|');
   useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
@@ -192,7 +212,12 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
       }
       tops.current.set(name, el.offsetTop);
     });
-  }, [order]);
+  }, [gridRef, order]);
+}
+
+function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  useRowFlip(gridRef, match.candidates.map((c) => c.name).join('|'));
 
   return (
     <section className={`bm-card ${fresh ? 'is-fresh' : ''}`} aria-label="Terapeuttimatching">
@@ -228,6 +253,49 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
         </details>
       )}
       <p className="bm-scale"><Dots score={1} label="Vahva osuma" /> vahva osuma · sopivuus 0–100 säännöillä, ei tekoälyllä</p>
+    </section>
+  );
+}
+
+/* ---------- Therapy approach: which way of working fits the client ---------- */
+
+const MODALITY_COLUMNS = ['Tavoitteet', 'Työtapa', 'Kokemus'];
+
+/** The same kind of table as the therapist matching, for the therapy approaches: how each suits the client's goals,
+    the way of working they wish for and what they have tried during the wait. A suggestion – the professional decides. */
+function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh: boolean }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  useRowFlip(gridRef, modality.rows.map((r) => r.id).join('|'));
+  const columns = modality.rows[0]?.components.map((c) => c.label) ?? MODALITY_COLUMNS;
+  return (
+    <section className={`bm-card bm-modality ${fresh ? 'is-fresh' : ''}`} aria-label="Terapiamuoto ja työtapa">
+      <div className="bp-head">
+        <p className="bs-title"><SlidersIcon size={15} /> Terapiamuoto ja työtapa</p>
+        {modality.rows[0] && <span className="bm-state is-run" title={modality.rows[0].title}>sopivin: {modality.rows[0].label}</span>}
+      </div>
+      <div className="bm-grid" ref={gridRef} role="table" aria-label="Terapiamuotojen sopivuus osa-alueittain">
+        <div className="bm-row bm-row-head" role="row">
+          <span role="columnheader">Terapiamuoto</span>
+          {columns.map((label) => <span key={label} role="columnheader">{label}</span>)}
+          <span role="columnheader">Sopivuus</span>
+        </div>
+        {modality.rows.map((row, i) => (
+          <div key={row.id} data-name={row.id} role="row" className={`bm-row ${i === 0 ? 'is-top' : ''}`}
+            title={`${row.title} – ${row.therapists ? `tarjolla ${row.therapists} terapeutilla` : 'ei tarjolla nyt'}`}>
+            <span role="cell" className="bm-name">{row.label}</span>
+            {row.components.map((c) => (
+              <span key={c.key} role="cell" className="bm-cell">
+                {c.known ? <Dots score={c.score} label={c.label} hint={`${c.label}: ${c.detail}`} />
+                  : <span className="bm-unknown" title={c.detail} aria-label={`${c.label}: ${c.detail}`}>–</span>}
+              </span>
+            ))}
+            <span role="cell" className="bm-total">
+              <span className="bm-bar"><i style={{ width: `${Math.min(100, row.total)}%` }} /></span>{Math.round(row.total)}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="bm-scale">kokemus = odotusajan harjoittelu · – ei vielä tietoa · ehdotus, ammattilainen päättää</p>
     </section>
   );
 }
