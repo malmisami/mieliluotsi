@@ -134,9 +134,10 @@ export default function DemoDock() {
           </span>
           <button type="button" className="dock-btn pilot-prev" disabled={pilot.running || pilot.pointer <= 1} onClick={() => void pilot.prev()}
             aria-label="Edellinen (←)" title="Edellinen (←)"><ArrowLeftIcon size={17} /></button>
-          <button type="button" className="dock-btn dock-next pilot-next" disabled={pilot.running || !upcoming} onClick={() => void pilot.next()}
-            title={upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
-            {pilot.running ? 'Odota…' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={17} />
+          {/* While a step plays (a conversation), the same button – or → – finishes it at once. */}
+          <button type="button" className="dock-btn dock-next pilot-next" disabled={!pilot.running && !upcoming} onClick={() => void pilot.next()}
+            title={pilot.running ? 'Kelaa käynnissä oleva vaihe loppuun (→)' : upcoming ? `Seuraavaksi: ${upcoming.title} (→)` : 'Demo on valmis'}>
+            {pilot.running ? 'Kelaa' : pilot.pointer === 0 ? 'Aloita demo' : 'Seuraava'} <ArrowRightIcon size={17} />
           </button>
         </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">

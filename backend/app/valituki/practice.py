@@ -39,7 +39,7 @@ from app.valituki.store import add_days, days_between, next_id, now
 AGENT = 'SupportAgent'
 CBT_TOOLS = ('thought_record', 'experiment', 'exposure')
 PARENT = {'experiment_review': 'experiment', 'exposure_attempt': 'exposure'}
-AVOIDANCE_WORDS = r'(valt|jatin|jain pois|siirsin|perun|perua|lykka|en mennyt|jatan|en uskalla)'
+AVOIDANCE_WORDS = r'(valt|jatin|jain pois|siir(ra|si|ta|re)|puolestani|perun|perua|lykka|en mennyt|jatan|en uskalla)'
 MAX_TEXT = 600
 
 
@@ -570,6 +570,8 @@ def expects_text(state: ValitukiState, client: ClientProfile) -> bool:
 # --- demo phrasing (DEMO_AI_MODE and the fallback for model texts) -------------------------------------------------------
 
 def demo_reflection(ctx: dict[str, Any]) -> str:
+    """A short, warm reflection of the previous answer, like a therapist in a chat: a sentence or two (the chat shows each
+    sentence as its own bubble). It validates the feeling without agreeing that a feared outcome will happen."""
     key, value, answers = ctx.get('previousKey'), ctx.get('previousValue'), ctx.get('answers') or {}
     tool = ctx.get('tool')
     if key is None or value in (None, '', []) or tool == 'checkin':
@@ -577,31 +579,36 @@ def demo_reflection(ctx: dict[str, Any]) -> str:
     if key == 'situation':
         return 'Kiitos, että kerroit. Käydään tilanne läpi rauhassa.'
     if key == 'thought':
-        return f'Ajatus ”{short(value, 70)}” voi tuntua hyvin todelta, kun tilanne jännittää.'
+        return 'Kiitos, että kerroit sen. Tuollainen ajatus voi tuntua hyvin todelta, kun tilanne jännittää.'
+    if key == 'emotions':
+        named = 'ne' if len(value) > 1 else 'sen'
+        return (f'{emotions_text(value)} – kiitos, että nimesit {named}. '
+                'Jo tunteen nimeäminen auttaa usein ottamaan siihen hieman etäisyyttä.')
     if key in ('intensityBefore', 'goalAnxiety'):
         number = int(value)
         if key == 'goalAnxiety':
-            return f'{number}/10. Porras aloitetaan paljon helpommasta.' if number >= 5 else f'{number}/10. Hyvä lähtökohta.'
+            return (f'{number}/10 on paljon. Siksi porras aloitetaan jostain selvästi helpommasta.' if number >= 5
+                    else f'{number}/10 – hyvä lähtökohta.')
         if number >= 7:
-            return f'{number}/10 on voimakas tunne – on hyvä, että pysähdyt sen äärelle.'
+            return f'{number}/10 on voimakas tunne. On hyvä, että pysähdyt sen äärelle.'
         return f'{number}/10 – tunne on selvästi läsnä.' if number >= 4 else f'{number}/10 – kiitos, että arvioit sen.'
     if key == 'behaviour':
         if re.search(AVOIDANCE_WORDS, normalize(str(value))):
-            return 'Välttäminen helpottaa usein hetkeksi, mutta se voi pitää jännityksen yllä pidempään.'
+            return ('Se on hyvin ymmärrettävää – välttäminen helpottaa hetkeksi. '
+                    'Pidemmän päälle se voi kuitenkin pitää jännityksen yllä.')
         return 'Kiitos, että kerroit myös sen.'
     if key == 'traps':
-        first = next((t for t in trap_catalog() if t['id'] == value[0]), None)
-        return f'Hyvä huomio. {first["label"]}: {first["description"][:1].lower()}{first["description"][1:]}' if first else ''
+        return 'Hyvä huomio! Kun ajatusloukun tunnistaa, sen otetta on helpompi löysätä.'
     if key == 'evidenceFor':
-        return 'Ymmärrettävää, että ajatus tuntuu todelta.'
+        return 'Ymmärrän, miksi ajatus tuntuu todelta. Katsotaan sitä nyt myös toisesta suunnasta.'
     if key == 'evidenceAgainst':
-        return 'Kiitos. Katsotaan tilannetta myös tästä suunnasta.'
+        return 'Tuo on lempeä ja viisas vastaus. Ystävälle osaa usein sanoa juuri sen, mitä itse tarvitsisi kuulla.'
     if key == 'alternative':
-        return 'Uusi ajatus ei poista jännitystä kokonaan, mutta se voi tehdä siitä kestettävämmän.'
+        return 'Hieno ajatus! Se ei poista jännitystä kokonaan, mutta voi tehdä siitä kestettävämmän.'
     if key == 'intensityAfter':
         before = answers.get('intensityBefore')
         if isinstance(before, int) and value < before:
-            return f'Tunne laski {before}/10 → {value}/10.'
+            return f'Tunne laski {before}/10 → {value}/10. Jo hetken pysähtyminen voi keventää oloa.'
         if isinstance(before, int) and value == before:
             return f'Tunne pysyi {value}/10 – sekin on tavallista. Uusi ajatus vahvistuu usein harjoittelemalla.'
         return f'Tunne on nyt {value}/10. Kiitos, että kokeilit.'
@@ -614,9 +621,9 @@ def demo_reflection(ctx: dict[str, Any]) -> str:
     if key == 'outcome':
         return 'Kiitos, että kirjasit, mitä oikeasti tapahtui.'
     if key == 'goal':
-        return 'Kiitos. Tästä tulee portaan yläpää – sinne ei tarvitse mennä heti.'
+        return 'Kiitos. Tästä tulee portaan ylin askel – sinne ei tarvitse mennä heti.'
     if key == 'ladder':
-        return f'Portaassa on {len(value)} askelta.'
+        return f'Selvä – portaassa on {len(value)} askelta.'
     if key == 'firstStep':
         return 'Hyvä valinta aloitukseksi.'
     if key == 'after':

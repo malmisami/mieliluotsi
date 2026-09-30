@@ -1,19 +1,63 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { FormEvent } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtWeekday } from '../format';
 import { InfoIcon, LifebuoyIcon, SendIcon, SparkleIcon } from '../icons';
-import type { ChatMessage, GuidedView, SummaryData, ValitukiView } from '../types';
+import type { ChatMessage, ChatWidget, GuidedView, SummaryData, ValitukiView } from '../types';
 import { Examples, SummaryCard, TrapHint, WidgetPanel, describeValue } from './ChatWidgets';
+import { chatHurried, setChatRevealing, splitBubbles, subscribeChatHurry, typingTime } from './chatPace';
 import { useClientUI } from './ClientApp';
 import { BotFace, toolIcon } from './HomeTab';
 
 const TOOL_LABELS: Record<string, string> = { checkin: 'Tee check-in', thought_record: 'Ajatusten tutkiminen', exposure: 'Altistusporras',
   experiment: 'Käyttäytymiskoe' };
 
-/** The conversation: Mieliluotsi's messages as plain text, the client's as bubbles. A guided exercise shows its current
-    question's answer controls above the composer; free text always works too (it answers a text question). */
+/** One row of the conversation. Mieliluotsi's messages are split into short bubbles, a sentence each; the client's
+    messages, the dates and the saved cards are shown whole. */
+type Row =
+  | { key: string; type: 'day'; label: string }
+  | { key: string; type: 'bot'; text: string; message: ChatMessage | null; last: boolean }
+  | { key: string; type: 'hint'; message: ChatMessage }
+  | { key: string; type: 'other'; message: ChatMessage };
+
+function buildRows(chat: ChatMessage[], greeting: string, today: string): Row[] {
+  const rows: Row[] = [];
+  const greet = () => splitBubbles(greeting).forEach((text, i, all) =>
+    rows.push({ key: `greet-${i}`, type: 'bot', text, message: null, last: i === all.length - 1 }));
+  if (chat.length === 0) {
+    rows.push({ key: `day-${today}`, type: 'day', label: fmtWeekday(today) });
+    greet();
+  }
+  chat.forEach((m, i) => {
+    const day = m.createdAt.slice(0, 10);
+    if (i === 0 || chat[i - 1].createdAt.slice(0, 10) !== day) rows.push({ key: `day-${day}`, type: 'day', label: fmtWeekday(day) });
+    if (i === 0 && m.role === 'client') greet();  // a conversation the client started: the greeting stays above it
+    if (m.role === 'client' || m.safetyLevel >= 3 || m.kind === 'summary' || m.kind === 'notice') {
+      rows.push({ key: m.id, type: 'other', message: m });
+      return;
+    }
+    const bubbles = splitBubbles(m.text);
+    if (bubbles.length === 0) bubbles.push(m.text);
+    // Thinking traps: Mieliluotsi's proposal comes just before the actual question, the message's last sentence.
+    const hint = m.kind === 'question' && m.widget?.type === 'traps' && m.widget.suggested.length > 0;
+    bubbles.forEach((text, j) => {
+      const last = j === bubbles.length - 1;
+      if (hint && last) rows.push({ key: `${m.id}-hint`, type: 'hint', message: m });
+      rows.push({ key: `${m.id}-${j}`, type: 'bot', text, message: m, last });
+    });
+  });
+  return rows;
+}
+
+const byBot = (row: Row | undefined) => row?.type === 'bot' || row?.type === 'hint';
+/** Mieliluotsi's rows appear after the typing dots; the client's own message, a date and a safety message at once. */
+const paced = (row: Row) => byBot(row) || (row.type === 'other' && row.message.role === 'assistant' && row.message.safetyLevel < 3);
+const delayOf = (row: Row) => (row.type === 'bot' ? typingTime(row.text) : row.type === 'hint' ? 1000 : 700);
+
+/** The conversation, like a chat with a person: Mieliluotsi answers in short bubbles, one at a time, and the client in
+    their own words. A guided exercise shows its current question's answer controls above the composer once the question
+    is on the screen; free text always works too (it answers a text question). */
 export default function ChatTab() {
   const { view, run, busy } = useValituki();
   const { client, openSheet, send, pending, withPending } = useClientUI();
@@ -24,13 +68,39 @@ export default function ChatTab() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const questionId = guided?.questionId ?? null;
 
+  // What was already there appears at once; a new reply bubble by bubble. Another conversation (a demo reset, another
+  // client), a burst of messages or a hurried demo is shown at once.
+  const greeting = `Hei ${client.firstName}! Mitä mielessäsi on tänään?`;
+  const rows = useMemo(() => buildRows(client.chat, greeting, view.meta.currentDate), [client.chat, greeting, view.meta.currentDate]);
+  const hurried = useSyncExternalStore(subscribeChatHurry, chatHurried);
+  const [shown, setShown] = useState(rows.length);
+  const [base, setBase] = useState(rows[0]?.key);
+  if (base !== rows[0]?.key || shown > rows.length || (shown < rows.length && (hurried || rows.length - shown > 12))) {
+    setBase(rows[0]?.key);
+    setShown(rows.length);
+  }
+  let visible = Math.min(shown, rows.length);
+  while (visible < rows.length && !paced(rows[visible])) visible += 1;
+  const settled = visible >= rows.length;
+  const delay = settled ? 0 : delayOf(rows[visible]);
+  useEffect(() => {
+    if (settled) return undefined;
+    const timer = window.setTimeout(() => setShown(visible + 1), delay);
+    return () => window.clearTimeout(timer);
+  }, [settled, visible, delay]);
+  useEffect(() => { setChatRevealing(!settled); }, [settled]);
+  useEffect(() => () => setChatRevealing(false), []);
+
+  const scrolled = useRef(false);
   useEffect(() => {
     const log = logRef.current;
-    if (log) log.scrollTop = log.scrollHeight;
-  }, [client.chat.length, busy, questionId, pending]);
+    if (!log) return;
+    log.scrollTo({ top: log.scrollHeight, behavior: scrolled.current ? 'smooth' : 'auto' });  // the history opens at its end
+    scrolled.current = true;
+  }, [visible, busy, pending, settled]);
 
-  // Each new question starts with an empty composer – in demo mode (not Claude) a text question's scripted answer is
-  // already typed in it: press send or edit it first.
+  // Each new question empties the composer at once – in demo mode (not Claude) a text question's scripted answer is typed
+  // in it once the question is on the screen: press send or edit it first.
   const demoMode = view.meta.ai.configuredMode === 'DEMO_AI_MODE';
   const demoText = demoMode && widget?.type === 'text' && typeof guided?.demoAnswer === 'string' ? guided.demoAnswer : '';
   // A multiple choice (what changed, emotions) is answered with the send button: the picked options are kept per question.
@@ -38,10 +108,13 @@ export default function ChatTab() {
   const picking = widget?.type === 'multi';
   const multi = picking && picked.question === questionId ? picked.values : [];
   const draftKey = `${questionId ?? ''}|${demoMode}`;
-  const [draftFor, setDraftFor] = useState<string | null>(null);
-  if (draftFor !== draftKey) {
-    setDraftFor(draftKey);
-    setText(demoText);
+  const [draft, setDraft] = useState<{ key: string | null; filled: boolean }>({ key: null, filled: false });
+  if (draft.key !== draftKey) {
+    setDraft({ key: draftKey, filled: false });
+    setText('');
+  } else if (settled && !draft.filled) {
+    setDraft({ key: draftKey, filled: true });
+    if (demoText && !text) setText(demoText);
   }
 
   async function answerWith(current: GuidedView, value: unknown, skip = false): Promise<ValitukiView | null> {
@@ -57,7 +130,7 @@ export default function ChatTab() {
   async function submit(event?: FormEvent) {
     event?.preventDefault();
     const value = text.trim();
-    if (busy) return;
+    if (busy || !settled) return;
     if (!value && guided && picking && multi.length > 0) {
       await answerWith(guided, multi);
       return;
@@ -67,17 +140,17 @@ export default function ChatTab() {
     if (!(await send(value))) setText(value);  // not sent: keep what was written
   }
 
-
   const progress = guided ? Math.round(((guided.stepIndex - 1) / Math.max(1, guided.stepCount)) * 100) : 0;
   const tools = client.practice.allowedTools.filter((t) => TOOL_LABELS[t]);
+  const asking = settled && guided ? widget : null;  // the answer controls wait until the question is on the screen
 
   return (
     <div className="cx-chat">
       <div className="cx-chat-head">
         <span className="cx-bot-avatar" aria-hidden="true"><BotFace size={34} /></span>
         <div className="cx-chat-who">
-          <p className="cx-chat-name">{guided ? guided.title : 'Mieliluotsi'}</p>
-          <p className="cx-chat-sub">{guided ? `Kysymys ${guided.stepIndex}/${guided.stepCount} · voit ohittaa tai lopettaa` : 'Tekoälyavusteinen tuki – ei terapeutti eikä päivystys'}</p>
+          <p className="cx-chat-name">Mieliluotsi</p>
+          <p className="cx-chat-sub">{guided ? `${guided.title} · voit lopettaa milloin vain` : 'Tekoälyavusteinen tuki – ei terapeutti eikä päivystys'}</p>
         </div>
         {guided && (
           <button type="button" className="cx-stop" disabled={busy}
@@ -88,32 +161,28 @@ export default function ChatTab() {
 
       <div className="cx-chat-log" ref={logRef} aria-live="polite">
         <p className="cx-chat-disclaimer"><InfoIcon size={14} /> Mieliluotsi ei ole terapeutti, eikä keskustelua seurata jatkuvasti. Hätätilanteessa soita 112.</p>
-        {client.chat.length === 0 && (
-          <p className="cx-msg-bot cx-msg-first">Hei {client.firstName}! Voit kertoa, mitä mielessäsi on – tai aloittaa ohjatun harjoituksen alta.</p>
-        )}
-        {client.chat.map((m, i) => (
-          <Fragment key={m.id}>
-            {(i === 0 || client.chat[i - 1].createdAt.slice(0, 10) !== m.createdAt.slice(0, 10)) && (
-              <p className="cx-day-sep"><span>{fmtWeekday(m.createdAt)}</span></p>
-            )}
-            <Message message={m} previous={client.chat[i - 1]} busy={busy}
-              onChoose={(option) => run((s) => api.chooseOffer(s, client.id, m.id, option))} onHelp={() => openSheet({ type: 'help' })} />
-          </Fragment>
+        {rows.slice(0, visible).map((row, i) => (
+          <ChatRow key={row.key} row={row} cont={byBot(row) && byBot(rows[i - 1])} busy={busy}
+            onChoose={(message, option) => run((s) => api.chooseOffer(s, client.id, message.id, option))}
+            onHelp={() => openSheet({ type: 'help' })} />
         ))}
-        {guided && widget?.type === 'traps' && !pending && <TrapHint widget={widget} />}
         {pending && <div className="cx-msg-me is-pending"><p>{pending}</p></div>}
-        {busy && <div className="cx-typing" aria-label="Mieliluotsi kirjoittaa"><i /><i /><i /></div>}
+        {(busy || !settled) && (
+          <div className={`cx-typing${!pending && byBot(rows[visible - 1]) ? ' is-cont' : ''}`} aria-label="Mieliluotsi kirjoittaa">
+            <i /><i /><i />
+          </div>
+        )}
       </div>
 
       <div className="cx-dock">
         <div className="cx-dock-top">
-          {guided && widget && widget.type !== 'text' && (
-            <WidgetPanel key={questionId ?? 'none'} widget={widget} busy={busy} selected={multi}
+          {guided && asking && asking.type !== 'text' && (
+            <WidgetPanel key={questionId ?? 'none'} widget={asking} busy={busy} selected={multi}
               onSelect={(values) => setPicked({ question: questionId, values })}
               onAnswer={(value) => answerWith(guided, value)} onSkip={() => answerWith(guided, null, true)} />
           )}
-          {guided && widget?.type === 'text' && (
-            <Examples widget={widget} busy={busy} onUse={(example) => { setText(example); inputRef.current?.focus(); }} />
+          {asking?.type === 'text' && (
+            <Examples widget={asking} busy={busy} onUse={(example) => { setText(example); inputRef.current?.focus(); }} />
           )}
           {!guided && (
             <div className="cx-quick" role="group" aria-label="Aloita ohjattu harjoitus">
@@ -134,15 +203,13 @@ export default function ChatTab() {
         <form className="cx-composer" onSubmit={submit}>
           <label className="visually-hidden" htmlFor="chat-input">{guided?.questionText ?? 'Viesti Mieliluotsille'}</label>
           <textarea id="chat-input" ref={inputRef} rows={Math.min(4, Math.max(1, Math.ceil(text.length / 34)))} value={text} onChange={(e) => setText(e.target.value)}
-            placeholder={widget?.type === 'text' ? widget.placeholder || 'Kirjoita vastaus…'
-              : picking ? (multi.length ? `${multi.length} valittu – lähetä` : 'Valitse yksi tai useampi ja lähetä…')
-                : guided ? 'Vastaa valitsemalla – tai kirjoita…' : 'Kirjoita viesti…'}
+            placeholder={placeholder(asking, guided !== null, multi.length)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void submit(); } }}  />
-          <button type="submit" className="cx-send" aria-label="Lähetä" disabled={busy || (!text.trim() && multi.length === 0)}><SendIcon size={18} /></button>
+          <button type="submit" className="cx-send" aria-label="Lähetä" disabled={busy || !settled || (!text.trim() && multi.length === 0)}><SendIcon size={18} /></button>
         </form>
-        {guided && widget?.type === 'text' && widget.skippable && (
+        {guided && asking?.type === 'text' && asking.skippable && (
           <button type="button" className="cw-skip cw-skip-center" disabled={busy} onClick={() => answerWith(guided, null, true)}>
-            {widget.skipLabel || 'Ohita kysymys'}
+            {asking.skipLabel || 'Ohita kysymys'}
           </button>
         )}
       </div>
@@ -150,9 +217,39 @@ export default function ChatTab() {
   );
 }
 
-function Message({ message: m, previous, busy, onChoose, onHelp }: {
-  message: ChatMessage; previous?: ChatMessage; busy: boolean; onChoose: (option: string) => void; onHelp: () => void;
+function placeholder(widget: ChatWidget | null, guided: boolean, picked: number): string {
+  if (widget?.type === 'text') return widget.placeholder || 'Kirjoita vastaus…';
+  if (widget?.type === 'multi') return picked ? `${picked} valittu – lähetä` : 'Valitse yksi tai useampi ja lähetä…';
+  return guided ? 'Vastaa valitsemalla – tai kirjoita…' : 'Kirjoita viesti…';
+}
+
+function ChatRow({ row, cont, busy, onChoose, onHelp }: {
+  row: Row; cont: boolean; busy: boolean; onChoose: (message: ChatMessage, option: string) => void; onHelp: () => void;
 }) {
+  if (row.type === 'day') return <p className="cx-day-sep"><span>{row.label}</span></p>;
+  if (row.type === 'hint') return row.message.widget ? <TrapHint widget={row.message.widget} cont={cont} /> : null;
+  if (row.type === 'other') return <Message message={row.message} onHelp={onHelp} />;
+  const m = row.message;
+  const offer = row.last && m && m.kind === 'offer' && m.actionable && m.widget ? { message: m, options: m.widget.options } : null;
+  return (
+    <>
+      <div className={`cx-bubble${cont ? ' is-cont' : ''}`}><p>{row.text}</p></div>
+      {offer && (
+        <div className="cx-offer" role="group" aria-label="Vaihtoehdot">
+          {offer.options.map((o, i) => (
+            <button key={o.value} type="button" className={`cx-btn cx-btn-sm ${i === 0 ? 'cx-btn-dark' : 'cx-btn-ghost'}`} disabled={busy}
+              onClick={() => onChoose(offer.message, o.value)}>{o.label}</button>
+          ))}
+        </div>
+      )}
+      {row.last && m?.textSource === 'live' && <span className="cx-source"><SparkleIcon size={11} /> Tekoälyn muotoilema</span>}
+      {row.last && m?.textSource === 'fallback' && <span className="cx-source">Valmis tekstipohja – tekoälyn vastausta ei käytetty</span>}
+    </>
+  );
+}
+
+/** The client's own message, a safety message, a saved exercise card or a notice – each shown whole. */
+function Message({ message: m, onHelp }: { message: ChatMessage; onHelp: () => void }) {
   if (m.role === 'client') {
     return (
       <div className={`cx-msg-me ${m.kind === 'skip' ? 'is-skip' : ''}`}>
@@ -172,21 +269,5 @@ function Message({ message: m, previous, busy, onChoose, onHelp }: {
     );
   }
   if (m.kind === 'summary' && m.widget) return <SummaryCard data={m.widget.data as unknown as SummaryData} />;
-  if (m.kind === 'notice') return <p className="cx-msg-notice">{m.text}</p>;
-  const grouped = previous && previous.role === 'assistant' && previous.kind !== 'summary' && previous.createdAt.slice(0, 10) === m.createdAt.slice(0, 10);
-  return (
-    <div className={`cx-msg-bot ${m.kind === 'question' ? 'is-question' : ''} ${grouped ? 'is-grouped' : ''}`}>
-      <p>{m.text}</p>
-      {m.kind === 'offer' && m.widget && m.actionable && (
-        <div className="cx-offer" role="group" aria-label="Vaihtoehdot">
-          {m.widget.options.map((o, i) => (
-            <button key={o.value} type="button" className={`cx-btn cx-btn-sm ${i === 0 ? 'cx-btn-dark' : 'cx-btn-ghost'}`} disabled={busy}
-              onClick={() => onChoose(o.value)}>{o.label}</button>
-          ))}
-        </div>
-      )}
-      {m.textSource === 'live' && <span className="cx-source"><SparkleIcon size={11} /> Tekoälyn muotoilema</span>}
-      {m.textSource === 'fallback' && <span className="cx-source">Valmis tekstipohja – tekoälyn vastausta ei käytetty</span>}
-    </div>
-  );
+  return <p className="cx-msg-notice">{m.text}</p>;
 }

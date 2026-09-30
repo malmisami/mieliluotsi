@@ -142,19 +142,19 @@
     },
     "thought_record": {
       "title": "Ajatusten tutkiminen",
-      "intro": null,
+      "intro": "Hyvä, tehdään niin. Edetään rauhassa – voit ohittaa kysymyksiä tai lopettaa milloin vain.",
       "steps": [
-        {"key": "situation", "widget": "text", "question": "Mitä tapahtui – tai mikä tilanne on edessä? Kuvaile se lyhyesti.", "placeholder": "Esim. maanantaina pitää pitää esitys tiimille"},
-        {"key": "thought", "widget": "text", "question": "Mikä ajatus nousi ensimmäisenä mieleen, kun mietit tilannetta?", "placeholder": "Esim. mokaan varmasti"},
-        {"key": "emotions", "widget": "multi", "options": "emotions", "question": "Mitä tunsit?", "skippable": true, "skipLabel": "En osaa sanoa"},
-        {"key": "intensityBefore", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kuinka voimakas tunne oli asteikolla 0–10?"},
-        {"key": "behaviour", "widget": "text", "question": "Mitä teit – tai mitä teki mieli tehdä?", "placeholder": "Esim. siirsin valmistelua ja mietin, voisinko perua", "skippable": true},
-        {"key": "traps", "widget": "traps", "question": "Ajatuksiin tulee helposti tuttuja ajatusloukkuja. Tunnistatko ajatuksessa ”{thought_short}” jonkin näistä?", "skippable": true, "skipLabel": "En tunnista"},
-        {"key": "evidenceFor", "widget": "text", "question": "Mikä saa ajatuksen tuntumaan todelta?", "placeholder": "Esim. jännitin viimeksi niin, että ääni tärisi", "skippable": true},
-        {"key": "evidenceAgainst", "widget": "text", "question": "Mitä sanoisit ystävälle, jolla olisi sama ajatus?", "placeholder": "Esim. olet valmistautunut hyvin, ja jännitys näkyy ulospäin vähemmän kuin luulet", "skippable": true},
-        {"key": "alternative", "widget": "text", "examples": "alternatives", "question": "Miten voisit ajatella tilanteesta tasapainoisemmin? Voit kirjoittaa omin sanoin tai muokata esimerkkiä.", "placeholder": "Kirjoita vaihtoehtoinen ajatus…"},
-        {"key": "intensityAfter", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kun luet uuden ajatuksen, kuinka voimakas tunne on nyt, 0–10?"},
-        {"key": "nextStep", "widget": "choices", "options": "next_steps", "question": "Mitä sovittua harjoitusta voisit kokeilla seuraavaksi?"}
+        {"key": "situation", "widget": "text", "question": "Kerro lyhyesti, mikä tilanne on mielessäsi – mitä tapahtui tai mitä on edessä?", "placeholder": "Esim. maanantaina pitää pitää esitys tiimille"},
+        {"key": "thought", "widget": "text", "question": "Kun ajattelet tilannetta, mikä ajatus nousee ensimmäisenä mieleen?", "placeholder": "Esim. mokaan varmasti"},
+        {"key": "emotions", "widget": "multi", "options": "emotions", "question": "Mitä tunteita ajatus herättää sinussa?", "skippable": true, "skipLabel": "En osaa sanoa"},
+        {"key": "intensityBefore", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kuinka voimakas tunne on asteikolla 0–10, kun ajattelet tilannetta?"},
+        {"key": "behaviour", "widget": "text", "question": "Mitä olet tehnyt – tai mitä on tehnyt mieli tehdä?", "placeholder": "Esim. siirsin valmistelua ja mietin, voisinko perua", "skippable": true},
+        {"key": "traps", "widget": "traps", "question": "Mieli kulkee helposti tuttuja oikopolkuja, joita kutsutaan ajatusloukuiksi. Tunnistatko omassa ajatuksessasi jonkin näistä?", "skippable": true, "skipLabel": "En tunnista"},
+        {"key": "evidenceFor", "widget": "text", "question": "Mikä saa ajatuksen tuntumaan niin todelta?", "placeholder": "Esim. jännitin viimeksi niin, että ääni tärisi", "skippable": true},
+        {"key": "evidenceAgainst", "widget": "text", "question": "Entä jos hyvä ystäväsi kertoisi sinulle saman ajatuksen – mitä sanoisit hänelle?", "placeholder": "Esim. olet valmistautunut hyvin, ja jännitys näkyy ulospäin vähemmän kuin luulet", "skippable": true},
+        {"key": "alternative", "widget": "text", "examples": "alternatives", "question": "Miten voisit ajatella tilanteesta hieman tasapainoisemmin?", "placeholder": "Kirjoita vaihtoehtoinen ajatus…"},
+        {"key": "intensityAfter", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kun luet tuon uuden ajatuksen, kuinka voimakas tunne on nyt, 0–10?"},
+        {"key": "nextStep", "widget": "choices", "options": "next_steps", "question": "Mitä haluaisit kokeilla seuraavaksi?"}
       ]
     },
     "experiment": {
@@ -178,13 +178,13 @@
     },
     "exposure": {
       "title": "Altistusporras",
-      "intro": "Kootaan altistusporras. Porras etenee helpoimmasta askeleesta vaikeimpaan, ja sinä päätät tahdin. Tavoitteena on, että tilanteeseen totuttelee pienin askelin – ei yhdellä kertaa.",
+      "intro": "Kootaan yhdessä altistusporras. Siinä tilanteeseen totutellaan pienin askelin, helpoimmasta vaikeimpaan – ja sinä päätät tahdin.",
       "steps": [
-        {"key": "goal", "widget": "text", "question": "Mitä tilannetta olet alkanut välttää tai mikä jännittää eniten?", "placeholder": "Esim. esityksen pitäminen tiimille"},
-        {"key": "goalAnxiety", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kuinka paljon ahdistusta tilanne herättäisi nyt, 0–10?"},
-        {"key": "ladder", "widget": "ladder", "question": "Tässä ehdotus portaaksi helpoimmasta vaikeimpaan. Muokkaa, poista tai lisää askelia niin, että porras tuntuu omalta."},
-        {"key": "firstStep", "widget": "choices", "options": "ladder_steps", "question": "Mistä askeleesta aloitat? Hyvä aloitus jännittää vain vähän."},
-        {"key": "when", "widget": "choices", "options": "days", "question": "Milloin teet ensimmäisen askeleen?"}
+        {"key": "goal", "widget": "text", "question": "Mikä tilanne jännittää sinua eniten – tai mitä olet alkanut välttää?", "placeholder": "Esim. esityksen pitäminen tiimille"},
+        {"key": "goalAnxiety", "widget": "scale", "min": 0, "max": 10, "minLabel": "Ei lainkaan", "maxLabel": "Voimakkain mahdollinen", "question": "Kuinka paljon jännitystä se herättäisi nyt, 0–10?"},
+        {"key": "ladder", "widget": "ladder", "question": "Tässä on ehdotus portaaksi, helpoimmasta vaikeimpaan. Muokkaa askelia niin, että porras tuntuu omalta."},
+        {"key": "firstStep", "widget": "choices", "options": "ladder_steps", "question": "Hyvä aloitus jännittää vain vähän. Mistä askeleesta haluaisit aloittaa?"},
+        {"key": "when", "widget": "choices", "options": "days", "question": "Milloin voisit ottaa ensimmäisen askeleen?"}
       ]
     },
     "exposure_attempt": {
@@ -254,15 +254,15 @@
   "texts": {
     "stopped": "Selvä, lopetetaan tältä erää. Keskeneräistä harjoitusta ei tallennettu. Voit aloittaa uudelleen milloin tahansa.",
     "reask": "Voit vastata valitsemalla vaihtoehdon alta – tai ohittaa kysymyksen. Voit myös lopettaa harjoituksen.",
-    "thought_record_done": "Hienoa työtä. Merkintä tallentui ajatuspäiväkirjaasi, ja se näkyy vain sinulle, ellet itse jaa sitä.",
+    "thought_record_done": "Hienoa työtä! Merkintä tallentui ajatuspäiväkirjaasi, ja se näkyy vain sinulle, ellet itse jaa sitä.",
     "experiment_done": "Koe on suunniteltu. Muistutan sovittuna päivänä – kerro sitten, mitä oikeasti tapahtui.",
     "experiment_review_done": "Kiitos, että testasit ennusteen. Tulos tallentui harjoituksiisi.",
-    "exposure_done": "Porras on valmis. Ensimmäinen askel on tehtävälistallasi – etene omaan tahtiisi.",
+    "exposure_done": "Porras on valmis! Ensimmäinen askel on tehtävälistallasi – etene omaan tahtiisi.",
     "exposure_attempt_done": "Kiitos, että teit askeleen. Harjoitus kirjattiin portaaseesi.",
     "checkin_offer": "Kuulostaa siltä, että päivässä oli paljon jännitystä. Haluatko tutkia tilannetta tarkemmin?",
-    "situation_offer": "Kuulostaa siltä, että tuleva tilanne jännittää paljon. Tällaisessa tilanteessa voi auttaa, kun ajatuksen pysäyttää ja katsoo sitä lähempää. Haluatko tutkia sitä yhdessä?",
-    "avoidance_offer": "Vaikuttaa siltä, että tilannetta on alkanut tehdä mieli välttää. Välttäminen helpottaa hetkeksi, mutta pelko voi silloin kasvaa. Haluatko koota altistusportaan, jolla tilanteeseen voi totutella askel kerrallaan?",
-    "self_critical_offer": "Kuulostaa siltä, että olet itsellesi aika ankara juuri nyt. Haluatko tutkia tätä ajatusta yhdessä?",
+    "situation_offer": "On ymmärrettävää, että tuleva tilanne jännittää sinua jo nyt. Tällaisessa tilanteessa voi auttaa, kun pysähtyy hetkeksi katsomaan omia ajatuksiaan. Haluatko, että tutkitaan niitä yhdessä?",
+    "avoidance_offer": "Vaikuttaa siltä, että tilannetta on alkanut tehdä mieli välttää. Se on ymmärrettävää – välttäminen helpottaa hetkeksi. Pidemmän päälle pelko voi silloin kuitenkin kasvaa. Haluatko, että kootaan porras, jolla tilanteeseen voi totutella askel kerrallaan?",
+    "self_critical_offer": "Kuulostaa siltä, että olet itsellesi aika ankara juuri nyt. Sellainen ajatus voi painaa paljon. Haluatko, että tutkitaan sitä yhdessä?",
     "task_due": "Tänään on sovittu: {title}. Kerro, miten meni, kun olet tehnyt sen – voit myös siirtää harjoitusta.",
     "homework_due": "Terapeuttisi välitehtävä: {title}. Voit tehdä sen täällä silloin, kun sinulle sopii."
   }

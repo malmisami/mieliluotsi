@@ -7293,28 +7293,24 @@ body {
   font-weight: 700;
 }
 
-.vt .cx-msg-bot {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 92%;
-  font-size: 15.5px;
-  line-height: 1.5;
-  animation: vt-rise 0.2s ease-out;
+/* Mieliluotsi speaks in short bubbles, a sentence each, like a person in a chat; consecutive bubbles sit close together. */
+.vt .cx-bubble {
+  align-self: flex-start;
+  max-width: 86%;
+  padding: 10px 14px;
+  border: 1px solid var(--cx-line);
+  border-radius: 20px 20px 20px 6px;
+  background: var(--cx-surface);
+  color: var(--cx-ink);
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  animation: vt-rise 0.22s ease-out;
 }
 
-.vt .cx-msg-bot.is-question p {
-  font-family: var(--serif);
-  font-size: 19px;
-  line-height: 1.35;
-}
-
-.vt .cx-msg-bot.is-grouped {
-  margin-top: -2px;
-}
-
-.vt .cx-msg-first {
-  color: var(--cx-ink-2);
+.vt .cx-bubble.is-cont,
+.vt .cx-typing.is-cont {
+  margin-top: -5px;
 }
 
 .vt .cx-msg-me {
@@ -7377,12 +7373,14 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  animation: vt-rise 0.22s ease-out;
 }
 
 .vt .cx-source {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-top: -4px;
   color: var(--cx-muted);
   font-size: 11px;
   font-weight: 600;
@@ -7390,8 +7388,12 @@ body {
 
 .vt .cx-typing {
   display: flex;
+  align-self: flex-start;
   gap: 5px;
-  padding: 6px 2px;
+  padding: 13px 15px;
+  border: 1px solid var(--cx-line);
+  border-radius: 20px 20px 20px 6px;
+  background: var(--cx-surface);
 }
 
 .vt .cx-typing i {
@@ -7607,6 +7609,12 @@ body {
   border-color: var(--cx-line);
   color: var(--cx-ink-2, #4a5563);
   font-weight: 600;
+}
+
+.vt .cx-trap-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .vt .cx-trap-hint ul {

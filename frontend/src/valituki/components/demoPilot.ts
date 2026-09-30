@@ -4,6 +4,7 @@ import type { ViewScope } from '../api';
 import { useValituki } from '../context';
 import type { ClientTab } from '../context';
 import type { GuidedView, IntakeView, Mutation, ValitukiView } from '../types';
+import { chatRevealing, hurryChat } from '../client/chatPace';
 
 /* DEMO-OHJAIN – the presenter presses "Seuraava" (or →) and the demo takes the next step of the concept's story: it
    types the demo text, presses the right button and opens the right view. Every step goes through the same API as a
@@ -42,6 +43,8 @@ interface PilotCtx {
   spot: (selectors: string | string[], block?: 'start' | 'center') => Promise<HTMLElement | null>;
   /** Pauses between replayed answers – skipped when a jump rebuilds a step in the background. */
   pause: (ms: number) => Promise<void>;
+  /** Wait until the chat has shown Mieliluotsi's whole reply, bubble by bubble (at once when hurried or rebuilt). */
+  settle: () => Promise<void>;
 }
 
 export interface Beat {
@@ -75,16 +78,19 @@ async function playIntake(p: PilotCtx): Promise<boolean> {
   return ok(view);
 }
 
-/** A guided CBT exercise in the chat: the rest of the scripted answers, one at a time. */
+/** A guided CBT exercise in the chat: the rest of the scripted answers, one at a time – each once Mieliluotsi's reply and
+    question are on the screen and there has been a moment to read them. */
 async function playGuided(p: PilotCtx): Promise<boolean> {
   let view: ValitukiView | null = p.view();
   for (let i = 0; i < 30; i += 1) {
     const guided: GuidedView | null | undefined = view?.client?.guided;
     if (!guided || guided.demoAnswer === null || guided.demoAnswer === undefined) break;
-    await p.pause(i === 0 ? 400 : 1600);  // slow enough to read each question and answer
+    await p.settle();
+    await p.pause(i === 0 ? 400 : 900);
     view = await p.mutate((s): Promise<Mutation> => api.answerPractice(s, AINO,
       { sessionId: guided.id, stepKey: guided.stepKey, value: guided.demoAnswer }));
   }
+  await p.settle();
   return ok(view);
 }
 
@@ -133,7 +139,9 @@ export const BEATS: Beat[] = [
       const text = p.view().client?.demoMessage ?? FALLBACK_MESSAGE;
       p.go({ role: 'client', tab: 'keskustelu' });
       await p.pause(500);
-      return ok(await p.mutate((s) => api.sendMessage(s, AINO, text)));
+      const sent = ok(await p.mutate((s) => api.sendMessage(s, AINO, text)));
+      await p.settle();
+      return sent;
     },
     show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
   { stage: 'kkt', title: '”Kyllä, tutkitaan” – ohjattu harjoitus alkaa',
@@ -142,8 +150,11 @@ export const BEATS: Beat[] = [
       const offer = [...(p.view().client?.chat ?? [])].reverse()
         .find((m) => m.kind === 'offer' && m.actionable && m.widget?.options.some((o) => o.value.startsWith('start:')));
       const option = offer?.widget?.options.find((o) => o.value.startsWith('start:'))?.value;
-      if (offer && option) return ok(await p.mutate((s) => api.chooseOffer(s, AINO, offer.id, option)));
-      return ok(await p.mutate((s) => api.startPractice(s, AINO, 'thought_record', {}, 'chat')));
+      const started = offer && option
+        ? ok(await p.mutate((s) => api.chooseOffer(s, AINO, offer.id, option)))
+        : ok(await p.mutate((s) => api.startPractice(s, AINO, 'thought_record', {}, 'chat')));
+      await p.settle();
+      return started;
     },
     show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
   { stage: 'kkt', title: 'Tilanne → ajatus → tunne → ajatusloukku → tasapainoisempi ajatus → askel',
@@ -377,6 +388,8 @@ export function useDemoPilot(): DemoPilot {
   const latest = useRef(ctx.view);
   const ctxRef = useRef(ctx);
   const runningRef = useRef(false);
+  // → while a step plays (a conversation) finishes it at once, like skipping an animation in a slide show.
+  const hurryRef = useRef(false);
   // The steps run in event handlers: they read the newest view and context through refs, synced after every render.
   useEffect(() => {
     latest.current = ctx.view;
@@ -423,7 +436,14 @@ export function useDemoPilot(): DemoPilot {
       window.setTimeout(() => el.classList.remove('pilot-spot'), 2600);
       return el;
     },
-    pause: (ms) => (fast ? Promise.resolve() : sleep(ms)),
+    pause: (ms) => (fast || hurryRef.current ? Promise.resolve() : sleep(ms)),
+    settle: async () => {
+      if (fast) return;
+      await sleep(60);  // the new view renders and the chat starts showing the reply
+      await frame();
+      const until = Date.now() + 20000;
+      while (chatRevealing() && Date.now() < until) await sleep(100);
+    },
   }), []);
 
   /** Bring the state to "after step index − 1": the nearest prepared scene, then the remaining steps without pauses. */
@@ -431,12 +451,18 @@ export function useDemoPilot(): DemoPilot {
     const target = index - 1;
     const [scene, after] = [...SCENE_AFTER].reverse().find(([, beat]) => beat <= target) ?? SCENE_AFTER[0];
     const quiet = pilot(true);
-    if (!(await quiet.mutate((s) => api.scene(s, scene)))) return false;
-    for (let i = after + 1; i <= target; i += 1) {
-      const act = BEATS[i].act;
-      if (act && !(await act(quiet))) return false;
+    hurryChat(true);  // a rebuilt conversation appears at once
+    try {
+      if (!(await quiet.mutate((s) => api.scene(s, scene)))) return false;
+      for (let i = after + 1; i <= target; i += 1) {
+        const act = BEATS[i].act;
+        if (act && !(await act(quiet))) return false;
+      }
+      return true;
+    } finally {
+      await sleep(60);  // the last rebuilt view renders while the chat is still hurried
+      hurryChat(hurryRef.current);
     }
-    return true;
   }, [pilot]);
 
   const guard = useCallback(async (task: () => Promise<boolean>) => {
@@ -447,7 +473,10 @@ export function useDemoPilot(): DemoPilot {
     try {
       if (!(await task())) setFailed(true);
     } finally {
+      if (hurryRef.current) await sleep(60);  // a hurried step's last reply renders at once too
       runningRef.current = false;
+      hurryRef.current = false;
+      hurryChat(false);
       setRunning(false);
     }
   }, []);
@@ -477,7 +506,14 @@ export function useDemoPilot(): DemoPilot {
     return true;
   }, [ensureScope, pilot, rebuild, setPointer]);
 
-  const next = useCallback(() => guard(() => perform(pointer)), [guard, perform, pointer]);
+  const next = useCallback(async () => {
+    if (runningRef.current) {
+      hurryRef.current = true;
+      hurryChat(true);
+      return;
+    }
+    await guard(() => perform(pointer));
+  }, [guard, perform, pointer]);
 
   // A stage on the rail: rebuild the demo to just before the stage's first step and take that step, so the stage is on
   // the screen at once.

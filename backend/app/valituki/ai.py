@@ -281,6 +281,8 @@ _INTENTS: list[tuple[str, str, list[str]]] = [
     ('lonely', r'(yksin|yksinai|ei ole ketaan)', ['act-support-network']),
     ('stress', r'(stress|kiire|kuormit|uupu|vasyn|vasymy|\btyo)', ['act-small-next-step', 'act-paced-breathing']),
     ('low', r'(alakul|surullin|apea|masentun|ei huvita|mikaan ei)', ['act-activity-planning', 'act-values']),
+    # A short "I can't think of anything" after a question: that is fine too (a specific topic above wins).
+    ('unsure', r'^(en (oikein )?(keksi|tieda|osaa sanoa)|ei (oikein )?mitaan|en oikein)\b', []),
     ('thanks', r'\b(kiitos|kiitti|auttoi)', []),
 ]
 
@@ -293,18 +295,20 @@ _DEMO_TEXTS = {
     'waiting': ('Odottaminen voi tuntua pitkältä. Näet tilanteesi Terapeutin löytäminen -sivulta, ja kerron, kun sopivia '
                 'vaihtoehtoja löytyy. Voisiko jokin pieni asia tehdä tästä päivästä hieman helpomman?',
                 'Epävarmuus jonotilanteesta', 'NONE'),
-    'sleep': ('Kiitos, että kerroit unestasi. Huono uni voi kuormittaa paljon. Hyväksytyistä harjoituksista iltarutiinin '
-              'tarkastelu voi auttaa huomaamaan pieniä muutettavia asioita. Haluatko kokeilla sitä tänään?', 'Univaikeudet', 'NONE'),
+    'sleep': ('Kiitos, että kerroit unestasi. Huono uni voi kuormittaa paljon. Iltarutiinin tarkastelu voi auttaa huomaamaan '
+              'pieniä asioita, joita voisi muuttaa. Haluatko kokeilla sitä tänään?', 'Univaikeudet', 'NONE'),
     'anxiety': ('Vaikuttaa siltä, että jännitys on ollut läsnä. Lyhyt maadoittumisharjoitus voi auttaa palaamaan tähän hetkeen. '
                 'Haluatko kokeilla sitä nyt?', 'Ahdistuksen tunne', 'NONE'),
-    'worry': ('Huolet voivat pyöriä mielessä sitkeästi. Huolihetki-harjoituksessa huolet kirjoitetaan ylös ja niille varataan '
-              'oma aika myöhemmin. Haluatko kokeilla sitä?', 'Toistuvat huolet', 'NONE'),
-    'lonely': ('Kiitos, että kerroit. Yksinäisyys voi tuntua raskaalta. Voisiko joku läheinen olla ihminen, jolle voisit tänään '
+    'worry': ('On ymmärrettävää, että asia huolestuttaa sinua. Huolet voivat pyöriä mielessä sitkeästi. Huolihetki-harjoituksessa '
+              'huolet kirjoitetaan ylös, ja niille varataan oma aika myöhemmin. Haluatko kokeilla sitä?', 'Toistuvat huolet', 'NONE'),
+    'lonely': ('Kiitos, että kerroit. Yksinäisyys voi tuntua todella raskaalta. Voisiko joku läheinen olla ihminen, jolle voisit tänään '
                'laittaa lyhyen viestin?', 'Yksinäisyyden tunne', 'NONE'),
     'stress': ('Kuormitus kuulostaa suurelta. Yksi pieni seuraava askel voi tehdä tilanteesta hallittavamman. Mikä olisi '
                'pienin asia, jonka voisit tehdä tänään?', 'Kuormitus ja kiire', 'NONE'),
     'low': ('Kiitos, että kerroit. Kun vointi on matala, pienikin mukava tai merkityksellinen tekeminen voi auttaa. Haluatko '
             'suunnitella yhden tällaisen asian tälle viikolle?', 'Matala mieliala', 'NONE'),
+    'unsure': ('Se on ihan okei. Kaikkeen ei tarvitse löytää vastausta heti. Voit palata tähän myöhemmin – tai kertoa, mitä '
+               'mielessäsi on juuri nyt.', 'Epävarmuus', 'NONE'),
     'thanks': ('Hienoa kuulla. Voit ohittaa harjoituksia ja palata tänne silloin, kun sinulle sopii.', 'Kiitos', 'NONE'),
     'default': ('Kiitos, että kerroit. Voinko tarkistaa, ymmärsinkö oikein – mikä tuntuu juuri nyt raskaimmalta?',
                 'Kuulumisten jakaminen', 'NONE'),
@@ -606,8 +610,10 @@ class ClaudeAIProvider(AIProvider):
         fallback = self.demo.generate_support_response(ctx)
         allowed = list(ctx.get('allowedActivityIds') or [])
         tools = [t for t in (ctx.get('allowedTools') or []) if t in OFFERABLE_TOOLS]
-        prompt = ('Task: generateSupportResponse. Reply to the person\'s latest message with at most four short '
-                  'sentences. Continue the conversation naturally from recentConversation (oldest first): do not repeat '
+        prompt = ('Task: generateSupportResponse. Reply to the person\'s latest message in a warm, calm and reflective '
+                  'chat style, in at most four short sentences – the app shows each sentence as its own chat bubble. First reflect '
+                  'what the person said, close to their own words; then, if it helps, name one way forward; end with at most '
+                  'one open question. Continue the conversation naturally from recentConversation (oldest first): do not repeat '
                   'what was already said or ask again what the person already answered. You may suggest one activity from '
                   'approvedActivities by id, or none. If the message describes '
                   'a specific situation with anxious or self-critical thoughts, you may offer a guided tool with '
@@ -691,7 +697,8 @@ class ClaudeAIProvider(AIProvider):
         want_examples, want_ladder = bool(ctx.get('wantExamples')), bool(ctx.get('wantLadder'))
         parts = ['Task: generateGuidedTurn. You are guiding the person through the approved tool "' + str(ctx.get('toolTitle'))
                  + '". The application decides the steps; you only phrase them. Write "reflection": at most two short '
-                 'sentences reflecting what the person just answered (previousAnswer), close to their own words; validate '
+                 'sentences reflecting what the person just answered (previousAnswer), close to their own words, in a warm and '
+                 'reflective chat style (the app shows each sentence as its own bubble); validate '
                  'the feeling without agreeing that a feared outcome will happen and without interpreting their health; '
                  'use an empty string when there is nothing to reflect. Write "question": the next question in Finnish, '
                  'phrased naturally around approvedQuestion without changing its meaning, with exactly one question mark.']

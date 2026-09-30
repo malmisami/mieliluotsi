@@ -28,14 +28,15 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
 |---|---|---|---|
 | 1 · Avun haku | 1 | Sami on terapiajonossa, jonotiedot korostettuna | 0:00–0:35 |
 | 2 · AI-alkukeskustelu | 2–5 | Keskustelu alkaa → vastaukset toistuvat (noin 6 s) → ”Ymmärsinkö tilanteesi oikein?” → Sami hyväksyy, ja profiili täyttyy → check-in-rytmi → kotinäkymässä ”Miten voit tänään?” (oma lähtötaso) | 0:35–1:35 |
-| 3 · Mieliluotsi: KKT | 6–8 | Demoviesti → ”Kyllä, tutkitaan” → harjoitus toistuu (noin 20 s) → altistusporras | 1:35–2:20 |
+| 3 · Mieliluotsi: KKT | 6–8 | Demoviesti → ”Kyllä, tutkitaan” → keskustelu etenee kuin terapeutin kanssa: Mieliluotsi vastaa lyhyin kuplin yksi kerrallaan ja kysyy yhden asian kerrallaan (noin 45 s, → kelaa loppuun) → altistusporras | 1:35–2:30 |
 | 4 · Mieliluotsi: seuranta ja muutosten tunnistus | 9–13 | Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä, ja vointi heikkenee → ”Huomasimme jotain” (havainto on vain ehdotus) → Ammattilainen: jono → ”Miksi Sami nousi tarkistettavaksi?” → merkitään tarkistetuksi | 2:20–3:10 |
 | 5 · Mieliluotsi: havainto tarkentaa terapeuttiprofiilia | 14 | Sami hyväksyy havainnon, ja profiili päivittyy | 3:10–3:30 |
 | 6 · Sopivin terapeutti ja handover | 15–19 | Vapaa paikka → matching → ”Miksi Anna?” → valinta ja ensimmäinen aika → yhteenveto → hyväksytään jaettavaksi | 3:30–4:15 |
 | 7 · Terapia + välitehtävät | 20–23 | Terapia alkaa: Anna näkee hyväksytyn yhteenvedon → välituen määritys → tallennus → Sami näkee suunnitelman | 4:15–4:50 |
 | 8 · Seuranta terapian jälkeen | 24 | Terapia päättyy – seuranta jatkuu | 4:50–5:00 |
 
-Kun toisto on käynnissä, painike näyttää tekstiä **Odota…**. Tänä aikana ylimääräiset painallukset eivät tee mitään.
+Kun vaihe on käynnissä, painikkeessa lukee **Kelaa**. Painallus (tai →) vie käynnissä olevan keskustelun heti loppuun,
+kuten animaation ohitus diaesityksessä. Seuraava painallus jatkaa taas seuraavaan vaiheeseen.
 
 ## Jos jokin menee pieleen
 

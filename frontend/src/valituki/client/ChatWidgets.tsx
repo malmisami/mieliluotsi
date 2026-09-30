@@ -91,8 +91,8 @@ function MultiWidget({ widget, busy, onSkip, selected = [], onSelect }: WidgetPr
   );
 }
 
-/** Thinking traps as quick replies, like a chat: one tap answers. Mieliluotsi's proposals (explained in the chat just above,
-    see TrapHint) come first; the rest of the list opens with "Jokin muu…". */
+/** Thinking traps as quick replies, like a chat: one tap answers. Mieliluotsi's proposals (explained in the chat just
+    before the question, see TrapHint) come first; the rest of the list opens with "Jokin muu…". */
 function TrapWidget({ widget, busy, onAnswer, onSkip }: WidgetProps) {
   const [others, setOthers] = useState(false);
   const suggested = widget.options.filter((o) => widget.suggested.includes(o.value));
@@ -120,12 +120,12 @@ function TrapWidget({ widget, busy, onAnswer, onSkip }: WidgetProps) {
   );
 }
 
-/** Mieliluotsi's proposal as its own chat message under the question: which traps and what they mean. */
-export function TrapHint({ widget }: { widget: ChatWidget }) {
+/** Mieliluotsi's proposal as its own chat bubble just before the question: which traps and what they mean. */
+export function TrapHint({ widget, cont = false }: { widget: ChatWidget; cont?: boolean }) {
   const suggested = widget.options.filter((o) => widget.suggested.includes(o.value));
   if (!suggested.length) return null;
   return (
-    <div className="cx-msg-bot is-grouped cx-trap-hint">
+    <div className={`cx-bubble cx-trap-hint${cont ? ' is-cont' : ''}`}>
       <p>{suggested.length === 1 ? 'Tällaisessa ajatuksessa näkyy usein tämä:' : 'Tällaisessa ajatuksessa näkyy usein nämä:'}</p>
       <ul>
         {suggested.map((o) => <li key={o.value}><strong>{o.label}</strong> – {o.hint?.replace(/^./, (c) => c.toLowerCase())}</li>)}
