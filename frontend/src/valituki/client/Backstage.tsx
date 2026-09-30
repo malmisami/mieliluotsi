@@ -53,6 +53,11 @@ function modalityChange(before: BackstageModality, after: BackstageModality): st
   return moved ? moved[1] : 'Terapiamuodon sopivuus';
 }
 
+/** At or below this window width the panel is under the phone (the same breakpoint as in styles/app.css). */
+const STACKED = 640;
+const PHONE = { width: 396, height: 836 };  // the phone at full size
+const GAP = 56;  // between the phone and the panel: room for the data travelling from one to the other
+
 /** Next to the phone on wide screens, stacked in one compact column: the matching tables (therapist, therapy approach)
     and the profile for the therapist, all always visible. When the client's data changes, it visibly travels from the
     phone to the rows it updates. */
@@ -98,31 +103,45 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
-  // Beside the phone the panel fits the screen like the phone does: the cards are compact, so one column fits under the
-  // demo dock at nearly full size. It is zoomed down only as much as the column needs to fit the height and the room
-  // beside the phone (an opened log scrolls inside); on a large screen it grows a little.
+  // The phone and the panel side by side on one screen: both are scaled to the height under the demo dock, and when the
+  // window is narrow they shrink together – the gap with them – until they fit its width. The panel may grow a little on
+  // a large screen; an opened log scrolls inside it.
   useLayoutEffect(() => {
     const aside = asideRef.current;
     const stage = aside?.parentElement;
     if (!aside || !stage) return undefined;
     const fit = () => {
-      if (window.innerWidth <= 1100) {
+      if (window.innerWidth <= STACKED) {
         aside.style.removeProperty('--bs-zoom');
+        stage.style.removeProperty('--phone-zoom');
+        stage.style.removeProperty('--stage-gap');
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
       const parts = [aside.querySelector('.bs-ai'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
         aside.querySelector('.bs-log summary')];
-      const gap = Number.parseFloat(getComputedStyle(aside).rowGap) || 0;
+      const rowGap = Number.parseFloat(getComputedStyle(aside).rowGap) || 0;
       const height = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
-        + (parts.length - 1) * gap + 8;
+        + (parts.length - 1) * rowGap + 8;
       const width = aside.getBoundingClientRect().width / zoom;
-      const phone = stage.querySelector('.phone');
-      const beside = stage.clientWidth - (phone ? phone.getBoundingClientRect().width + Number.parseFloat(getComputedStyle(phone).marginRight) : 0);
       const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
-      const next = Math.max(0.55, Math.min(1.15, room / height, beside / width));
-      if (Math.abs(next - zoom) > 0.01) aside.style.setProperty('--bs-zoom', next.toFixed(3));
+      let phone = Math.min(1, room / PHONE.height);  // an iPhone's proportions, as tall as the room allows
+      let panel = Math.min(1.15, room / height);
+      const fits = (gap: number) => Math.min(1, (stage.clientWidth - gap) / (PHONE.width * phone + width * panel));
+      let gap = GAP;
+      if (fits(gap) < 1) {
+        gap = Math.max(24, Math.round(GAP * fits(gap)));
+        const factor = fits(gap);
+        phone *= factor;
+        panel *= factor;
+      }
+      panel = Math.max(0.45, panel);
+      if (Math.abs(panel - zoom) > 0.005) aside.style.setProperty('--bs-zoom', panel.toFixed(3));
+      if (Math.abs(phone - (Number.parseFloat(stage.style.getPropertyValue('--phone-zoom')) || 0)) > 0.005) {
+        stage.style.setProperty('--phone-zoom', phone.toFixed(3));
+      }
+      stage.style.setProperty('--stage-gap', `${gap}px`);
     };
     fit();
     const observer = new ResizeObserver(fit);
