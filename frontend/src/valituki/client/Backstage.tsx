@@ -53,9 +53,9 @@ function modalityChange(before: BackstageModality, after: BackstageModality): st
   return moved ? moved[1] : 'Terapiamuodon sopivuus';
 }
 
-/** Next to the phone on wide screens, in two columns: the matching tables (therapist, therapy approach) and the profile
-    for the therapist, all always visible. When the client's data changes, it visibly travels from the phone to the rows
-    it updates. */
+/** Next to the phone on wide screens, stacked in one compact column: the matching tables (therapist, therapy approach)
+    and the profile for the therapist, all always visible. When the client's data changes, it visibly travels from the
+    phone to the rows it updates. */
 export default function Backstage({ client }: { client: ClientView }) {
   const asideRef = useRef<HTMLElement>(null);
   const rows = profileRows(client);
@@ -98,10 +98,9 @@ export default function Backstage({ client }: { client: ClientView }) {
     return () => window.clearTimeout(timer);
   }, [fresh]);
 
-  // Beside the phone the panel fits the screen like the phone does. Two columns side by side – the matching tables and
-  // the profile – so it stays wide and readable: it is zoomed down only as much as the taller column needs to fit under
-  // the demo dock and the columns need to fit next to the phone (an opened log scrolls inside); on a large screen it
-  // grows a little.
+  // Beside the phone the panel fits the screen like the phone does: the cards are compact, so one column fits under the
+  // demo dock at nearly full size. It is zoomed down only as much as the column needs to fit the height and the room
+  // beside the phone (an opened log scrolls inside); on a large screen it grows a little.
   useLayoutEffect(() => {
     const aside = asideRef.current;
     const stage = aside?.parentElement;
@@ -112,10 +111,11 @@ export default function Backstage({ client }: { client: ClientView }) {
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const natural = (el: Element | null) => (el ? el.getBoundingClientRect().height / zoom : 0);
-      const column = (els: (Element | null)[]) => els.reduce((sum, el) => sum + natural(el), 0) + (els.length - 1) * 12;
-      const height = natural(aside.querySelector('.bs-ai')) + 12 + 8 + Math.max(column([...aside.querySelectorAll('.bm-card')]),
-        column([aside.querySelector('.bp-doc'), aside.querySelector('.bs-log summary')]));
+      const parts = [aside.querySelector('.bs-ai'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
+        aside.querySelector('.bs-log summary')];
+      const gap = Number.parseFloat(getComputedStyle(aside).rowGap) || 0;
+      const height = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
+        + (parts.length - 1) * gap + 8;
       const width = aside.getBoundingClientRect().width / zoom;
       const phone = stage.querySelector('.phone');
       const beside = stage.clientWidth - (phone ? phone.getBoundingClientRect().width + Number.parseFloat(getComputedStyle(phone).marginRight) : 0);
@@ -139,19 +139,13 @@ export default function Backstage({ client }: { client: ClientView }) {
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">
       <div className="stage-ai bs-ai"><AISwitch /></div>
-      <div className="bs-cols">
-        <div className="bs-col">
-          <MatchCard match={match} fresh={fresh.has('match')} />
-          <ModalityCard modality={modality} fresh={fresh.has('modality')} />
-        </div>
-        <div className="bs-col">
-          <ProfileCard client={client} rows={rows} fresh={fresh} />
-          <details className="bs-log">
-            <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
-            <Log client={client} />
-          </details>
-        </div>
-      </div>
+      <MatchCard match={match} fresh={fresh.has('match')} />
+      <ModalityCard modality={modality} fresh={fresh.has('modality')} />
+      <ProfileCard client={client} rows={rows} fresh={fresh} />
+      <details className="bs-log">
+        <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
+        <Log client={client} />
+      </details>
       <DataFlow flows={flows} asideRef={asideRef} />
     </aside>
   );
@@ -174,9 +168,8 @@ function ProfileCard({ client, rows, fresh }: { client: ClientView; rows: Profil
         {rows.map((r) => (
           <li key={r.key} data-row={r.key} className={`${r.value ? 'is-filled' : ''} ${fresh.has(r.key) ? 'is-fresh' : ''}`}>
             <span className="bp-icon" aria-hidden="true">{r.icon}</span>
-            <span className="bp-text">
-              <span className="bp-label">{r.label}</span>
-              <span className="bp-value" title={r.value ?? undefined}>{r.value ?? r.hint}</span>
+            <span className="bp-text" title={r.value ?? undefined}>
+              <span className="bp-label">{r.label}</span> <span className="bp-value">{r.value ?? r.hint}</span>
             </span>
             <span className="bp-flags">
               <span className={r.value && r.pro ? 'on' : ''} title={r.value && r.pro ? 'Näkyy terapeutille' : 'Ei näy terapeutille'}><EyeIcon size={13} /></span>
@@ -259,15 +252,17 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
           </div>
         ))}
       </div>
-      {match.excluded.length > 0 && (
-        <details className="bm-out">
-          <summary><ChevronDownIcon size={12} /> Rajattu pois kovilla ehdoilla: {match.excluded.length} terapeuttia</summary>
-          <ul>
-            {match.excluded.map((e) => <li key={e.name}><b>{e.name}</b> {e.reason}</li>)}
-          </ul>
-        </details>
-      )}
-      <p className="bm-scale"><Dots score={1} label="Vahva osuma" /> vahva osuma · sopivuus 0–100 säännöillä, ei tekoälyllä</p>
+      <div className="bm-foot">
+        <p className="bm-scale"><Dots score={1} label="Vahva osuma" /> vahva osuma · sopivuus 0–100 säännöillä, ei tekoälyllä</p>
+        {match.excluded.length > 0 && (
+          <details className="bm-out">
+            <summary title="Rajattu pois kovilla ehdoilla"><ChevronDownIcon size={12} /> Rajattu pois: {match.excluded.length}</summary>
+            <ul>
+              {match.excluded.map((e) => <li key={e.name}><b>{e.name}</b> {e.reason}</li>)}
+            </ul>
+          </details>
+        )}
+      </div>
     </section>
   );
 }
