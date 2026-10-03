@@ -2149,10 +2149,10 @@ body {
   background: var(--brand-50);
 }
 
-/* Therapy approaches are written out in full (no abbreviations): the name column takes the room the dots leave; a name
-   that still does not fit wraps rather than being cut. */
-.vt .bm-modality .bm-row {
-  grid-template-columns: minmax(0, 1fr) repeat(2, 66px) 92px;
+/* Therapy approaches are written out in full (no abbreviations) and show only the fit: the name takes the therapist
+   table's name and dot columns, so the fit bars line up with the matching above; a name that still does not fit wraps. */
+.vt .bm-modality .bm-row > :first-child {
+  grid-column: 1 / 5;
 }
 
 .vt .bm-modality .bm-name {
@@ -2214,14 +2214,6 @@ body {
 
 .vt .bm-dots i.on {
   background: var(--brand);
-}
-
-/* Not known yet (no working-style wishes, no practice during the wait): counted as neutral, shown as a dash. */
-.vt .bm-unknown {
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 10px;
 }
 
 .vt .bm-total {

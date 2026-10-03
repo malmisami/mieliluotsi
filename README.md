@@ -270,14 +270,14 @@ failure, ms, answering model).
 Clients see *Vahva / Hyvä / Mahdollinen yhteensopivuus* with reasons, unmet wishes, the first free time and the data
 used – never a numeric probability. The professional sees the component meters and the excluded therapists with reasons.
 
-**Terapiamuoto ja työtapa** (next to the phone, under the therapist matching): the same kind of table for the therapy
-approaches the pool offers, written out in full – kognitiivinen käyttäytymisterapia, hyväksymis- ja omistautumisterapia,
-ratkaisukeskeinen lyhytterapia, interpersoonallinen terapia, psykodynaaminen psykoterapia (`modality.py`,
-`data/valituki/modalities.json`). Goals 55 (the approach's fit to the approved goal topics, the referral's until then)
-and working style 45 (the approved wishes against the approach's typical way of working, on the therapists' 1–5 levels);
-unknown = neutral, shown as a dash. Practice during the wait is not counted: only cognitive behavioural therapy has
-guided exercises in the app, so it would always gain. Only data allowed in matching is used, no language model takes
-part, and it is a suggestion for the professional's decision. For Sami, cognitive behavioural therapy leads.
+**Terapiamuoto ja työtapa** (next to the phone, under the therapist matching): the therapy approaches the pool offers,
+written out in full – kognitiivinen käyttäytymisterapia, hyväksymis- ja omistautumisterapia, ratkaisukeskeinen
+lyhytterapia, interpersoonallinen terapia, psykodynaaminen psykoterapia (`modality.py`, `data/valituki/modalities.json`)
+– with only their fit 0–100; the breakdown is in the tooltip. Goals 55 (the approach's fit to the approved goal topics,
+the referral's until then) and working style 45 (the approved wishes against the approach's typical way of working, on
+the therapists' 1–5 levels); unknown = neutral. Practice during the wait is not counted: only cognitive behavioural
+therapy has guided exercises in the app, so it would always gain. Only data allowed in matching is used, no language
+model takes part, and it is a suggestion for the professional's decision. For Sami, cognitive behavioural therapy leads.
 
 ### Handover
 

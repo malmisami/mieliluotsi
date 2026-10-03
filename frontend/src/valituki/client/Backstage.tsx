@@ -244,10 +244,10 @@ const COLUMNS: { key: string; label: string }[] = [
   { key: 'goalCompetence', label: 'Osaaminen' }, { key: 'workingStyle', label: 'Työtapa' }, { key: 'userPreferences', label: 'Toiveet' },
 ];
 
-function Dots({ score, label, hint }: { score: number; label: string; hint?: string }) {
+function Dots({ score, label }: { score: number; label: string }) {
   const filled = Math.round(score * 4);
   return (
-    <span className="bm-dots" title={hint ?? `${label}: ${Math.round(score * 100)} %`} aria-label={`${label} ${filled}/4`}>
+    <span className="bm-dots" title={`${label}: ${Math.round(score * 100)} %`} aria-label={`${label} ${filled}/4`}>
       {[0, 1, 2, 3].map((i) => <i key={i} className={i < filled ? 'on' : ''} />)}
     </span>
   );
@@ -317,43 +317,41 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
 
 /* ---------- Therapy approach: which way of working fits the client ---------- */
 
-const MODALITY_COLUMNS = ['Tavoitteet', 'Työtapa'];
+/** What a fit is made of, for the tooltip: "Tavoitteet 94 % · Työtapa 94 %". */
+function fitBreakdown(row: BackstageModality['rows'][number]): string {
+  return row.components.map((c) => (c.known ? `${c.label} ${Math.round(c.score * 100)} %` : `${c.label}: ei vielä tietoa`))
+    .join(' · ');
+}
 
-/** The same kind of table as the therapist matching, for the therapy approaches: how each suits the client's goals and
-    the way of working they wish for. A suggestion – the professional decides. */
+/** The same kind of table as the therapist matching, for the therapy approaches – only the fit, computed from the
+    client's goals and the way of working they wish for (the breakdown is in the tooltip). A suggestion – the
+    professional decides. */
 function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh: boolean }) {
   const gridRef = useRef<HTMLDivElement>(null);
   useRowFlip(gridRef, modality.rows.map((r) => r.id).join('|'));
-  const columns = modality.rows[0]?.components.map((c) => c.label) ?? MODALITY_COLUMNS;
   return (
     <section className={`bm-card bm-modality ${fresh ? 'is-fresh' : ''}`} aria-label="Terapiamuoto ja työtapa">
       <div className="bp-head">
         <p className="bs-title"><SlidersIcon size={15} /> Terapiamuoto ja työtapa</p>
         <span className="bm-state">ehdotus</span>
       </div>
-      <div className="bm-grid" ref={gridRef} role="table" aria-label="Terapiamuotojen sopivuus osa-alueittain">
+      <div className="bm-grid" ref={gridRef} role="table" aria-label="Terapiamuotojen sopivuus">
         <div className="bm-row bm-row-head" role="row">
           <span role="columnheader">Terapiamuoto</span>
-          {columns.map((label) => <span key={label} role="columnheader">{label}</span>)}
           <span role="columnheader">Sopivuus</span>
         </div>
         {modality.rows.map((row, i) => (
           <div key={row.id} data-name={row.id} role="row" className={`bm-row ${i === 0 ? 'is-top' : ''}`}
             title={row.therapists ? `Tarjolla ${row.therapists} terapeutilla` : 'Ei tarjolla nyt'}>
             <span role="cell" className="bm-name">{row.label}</span>
-            {row.components.map((c) => (
-              <span key={c.key} role="cell" className="bm-cell">
-                {c.known ? <Dots score={c.score} label={c.label} hint={`${c.label}: ${c.detail}`} />
-                  : <span className="bm-unknown" title={c.detail} aria-label={`${c.label}: ${c.detail}`}>–</span>}
-              </span>
-            ))}
-            <span role="cell" className="bm-total">
+            <span role="cell" className="bm-total" title={fitBreakdown(row)}
+              aria-label={`${Math.round(row.total)}: ${fitBreakdown(row)}`}>
               <span className="bm-bar"><i style={{ width: `${Math.min(100, row.total)}%` }} /></span>{Math.round(row.total)}
             </span>
           </div>
         ))}
       </div>
-      <p className="bm-scale">sopivin ylimpänä · – ei vielä tietoa</p>
+      <p className="bm-scale">sopivin ylimpänä · sopivuus 0–100 säännöillä tavoitteista ja työtapatoiveista</p>
     </section>
   );
 }
