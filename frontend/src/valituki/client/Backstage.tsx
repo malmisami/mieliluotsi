@@ -301,7 +301,10 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
         ))}
       </div>
       <div className="bm-foot">
-        <p className="bm-scale"><Dots score={1} label="Vahva osuma" /> vahva osuma · sopivuus 0–100 säännöillä, ei tekoälyllä</p>
+        <p className="bm-scale">
+          <span className="bm-legend-dots"><Dots score={1} label="Vahva osuma" /> vahva osuma ·</span>
+          sopivuus 0–100 säännöillä, ei tekoälyllä
+        </p>
         {match.excluded.length > 0 && (
           <details className="bm-out">
             <summary title="Rajattu pois kovilla ehdoilla"><ChevronDownIcon size={12} /> Rajattu pois: {match.excluded.length}</summary>

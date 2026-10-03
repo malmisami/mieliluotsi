@@ -2291,6 +2291,12 @@ body {
   font-size: 12px;
 }
 
+.vt .bm-legend-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 
 
 .vt .bs-log {
@@ -6194,6 +6200,20 @@ body {
     max-width: 560px;
   }
 
+  /* On a phone the tables show only the fit: the dot columns do not fit side by side. */
+  .vt .bm-row {
+    grid-template-columns: minmax(0, 1fr) 120px;
+  }
+
+  .vt .bm-modality .bm-row > :first-child {
+    grid-column: auto;
+  }
+
+  .vt .bm-row > .bm-cell,
+  .vt .bm-row-head > :not(:first-child, :last-child),
+  .vt .bm-legend-dots {
+    display: none;
+  }
 
   .vt .bs-feed {
     max-height: none;
