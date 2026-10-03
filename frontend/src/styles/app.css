@@ -2152,7 +2152,7 @@ body {
 /* Therapy approaches are written out in full (no abbreviations): the name column takes the room the dots leave; a name
    that still does not fit wraps rather than being cut. */
 .vt .bm-modality .bm-row {
-  grid-template-columns: minmax(0, 1fr) repeat(3, 66px) 92px;
+  grid-template-columns: minmax(0, 1fr) repeat(2, 66px) 92px;
 }
 
 .vt .bm-modality .bm-name {

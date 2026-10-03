@@ -1,58 +1,46 @@
 {
-  "version": "demo-1",
-  "note": "Demo: suuntaa-antava, sääntöpohjainen taulukko siitä, miten terapiamuoto sopii asiakkaan tavoitteisiin, toivottuun työskentelytapaan ja odotusajan kokemuksiin. Sisällön hyväksyisi kliininen asiantuntija (placeholder). Ehdotus ammattilaisen päätöksen tueksi – ei diagnoosi eikä hoitosuositus.",
+  "version": "demo-2",
+  "note": "Demo: suuntaa-antava, sääntöpohjainen taulukko siitä, miten terapiamuoto sopii asiakkaan tavoitteisiin ja toivottuun työskentelytapaan. Sisällön hyväksyisi kliininen asiantuntija (placeholder). Ehdotus ammattilaisen päätöksen tueksi – ei diagnoosi eikä hoitosuositus.",
   "weights": {
-    "goals": 40,
-    "workingStyle": 35,
-    "experience": 25
+    "goals": 55,
+    "workingStyle": 45
   },
   "neutralScore": 0.5,
-  "experienceFullAfter": 3,
   "modalities": [
     {
       "id": "cbt",
       "label": "Kognitiivinen käyttäytymisterapia",
       "approaches": ["Kognitiivinen käyttäytymisterapia (KKT)", "KKT", "Traumatietoinen KKT", "Kognitiivinen lyhytterapia", "Kognitiv beteendeterapi (KBT)"],
       "style": {"structure": 5, "exercises": 5, "approach": 4, "homework": 5},
-      "topics": {"anxiety": 1.0, "panic": 1.0, "work_stress": 0.9, "sleep": 0.9, "mood": 0.9, "stress": 0.8, "self_esteem": 0.8, "trauma": 0.8, "burnout": 0.7, "loneliness": 0.6, "life_transitions": 0.6, "relationships": 0.5, "grief": 0.5},
-      "tools": ["thought_record", "exposure", "experiment"],
-      "activities": ["act-paced-breathing", "act-worry-time", "act-activity-planning", "act-sleep-reflection"]
+      "topics": {"anxiety": 1.0, "panic": 1.0, "work_stress": 0.9, "sleep": 0.9, "mood": 0.9, "stress": 0.8, "self_esteem": 0.8, "trauma": 0.8, "burnout": 0.7, "loneliness": 0.6, "life_transitions": 0.6, "relationships": 0.5, "grief": 0.5}
     },
     {
       "id": "act",
       "label": "Hyväksymis- ja omistautumisterapia",
       "approaches": ["Hyväksymis- ja omistautumisterapia (ACT)"],
       "style": {"structure": 3, "exercises": 4, "approach": 3, "homework": 3},
-      "topics": {"work_stress": 0.9, "stress": 0.9, "burnout": 0.9, "anxiety": 0.8, "life_transitions": 0.8, "mood": 0.7, "self_esteem": 0.7, "grief": 0.7, "panic": 0.6, "loneliness": 0.6, "sleep": 0.5, "trauma": 0.5, "relationships": 0.5},
-      "tools": [],
-      "activities": ["act-values", "act-grounding"]
+      "topics": {"work_stress": 0.9, "stress": 0.9, "burnout": 0.9, "anxiety": 0.8, "life_transitions": 0.8, "mood": 0.7, "self_esteem": 0.7, "grief": 0.7, "panic": 0.6, "loneliness": 0.6, "sleep": 0.5, "trauma": 0.5, "relationships": 0.5}
     },
     {
       "id": "solution",
       "label": "Ratkaisukeskeinen lyhytterapia",
       "approaches": ["Ratkaisukeskeinen lyhytterapia"],
       "style": {"structure": 4, "exercises": 3, "approach": 3, "homework": 4},
-      "topics": {"work_stress": 0.9, "stress": 0.9, "life_transitions": 0.8, "burnout": 0.7, "anxiety": 0.6, "sleep": 0.6, "mood": 0.6, "self_esteem": 0.6, "relationships": 0.6, "loneliness": 0.6, "panic": 0.4, "grief": 0.4, "trauma": 0.3},
-      "tools": [],
-      "activities": ["act-small-next-step"]
+      "topics": {"work_stress": 0.9, "stress": 0.9, "life_transitions": 0.8, "burnout": 0.7, "anxiety": 0.6, "sleep": 0.6, "mood": 0.6, "self_esteem": 0.6, "relationships": 0.6, "loneliness": 0.6, "panic": 0.4, "grief": 0.4, "trauma": 0.3}
     },
     {
       "id": "ipt",
       "label": "Interpersoonallinen terapia",
       "approaches": ["Interpersoonallinen terapia (IPT)"],
       "style": {"structure": 3, "exercises": 2, "approach": 3, "homework": 2},
-      "topics": {"mood": 1.0, "relationships": 1.0, "grief": 0.9, "life_transitions": 0.9, "loneliness": 0.8, "self_esteem": 0.6, "anxiety": 0.5, "work_stress": 0.5, "stress": 0.5, "burnout": 0.5, "trauma": 0.4, "sleep": 0.3, "panic": 0.3},
-      "tools": [],
-      "activities": ["act-support-network"]
+      "topics": {"mood": 1.0, "relationships": 1.0, "grief": 0.9, "life_transitions": 0.9, "loneliness": 0.8, "self_esteem": 0.6, "anxiety": 0.5, "work_stress": 0.5, "stress": 0.5, "burnout": 0.5, "trauma": 0.4, "sleep": 0.3, "panic": 0.3}
     },
     {
       "id": "psychodynamic",
       "label": "Psykodynaaminen psykoterapia",
       "approaches": ["Psykodynaaminen psykoterapia"],
       "style": {"structure": 1, "exercises": 1, "approach": 1, "homework": 1},
-      "topics": {"relationships": 0.9, "self_esteem": 0.9, "mood": 0.8, "grief": 0.8, "trauma": 0.7, "life_transitions": 0.7, "loneliness": 0.7, "anxiety": 0.6, "work_stress": 0.5, "stress": 0.5, "burnout": 0.5, "panic": 0.4, "sleep": 0.3},
-      "tools": [],
-      "activities": []
+      "topics": {"relationships": 0.9, "self_esteem": 0.9, "mood": 0.8, "grief": 0.8, "trauma": 0.7, "life_transitions": 0.7, "loneliness": 0.7, "anxiety": 0.6, "work_stress": 0.5, "stress": 0.5, "burnout": 0.5, "panic": 0.4, "sleep": 0.3}
     }
   ]
 }

@@ -237,7 +237,7 @@ export interface BackstageMatch {
   readiness: Criterion[] | null; chosen: string | null;
 }
 
-/** Which therapy approach fits the client: goals, working style and experience during the wait, 0–100 by rules. */
+/** Which therapy approach fits the client: goals and working style, 0–100 by rules. */
 export interface BackstageModality {
   version: string;
   rows: { id: string; label: string; total: number; therapists: number;

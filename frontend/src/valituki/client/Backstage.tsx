@@ -43,11 +43,9 @@ function modalitySignature(modality: BackstageModality): string {
   return modality.rows.map((r) => `${r.id}:${r.total}`).join(',');
 }
 
-const MODALITY_CHANGES: [string, string][] = [
-  ['experience', 'Harjoittelu odotusaikana'], ['workingStyle', 'Työskentelytapatoiveet'], ['goals', 'Tavoitteet'],
-];
+const MODALITY_CHANGES: [string, string][] = [['workingStyle', 'Työskentelytapatoiveet'], ['goals', 'Tavoitteet']];
 
-/** What moved the therapy approach table: the practice during the wait first, then the working style, then the goals. */
+/** What moved the therapy approach table: the working style first, then the goals. */
 function modalityChange(before: BackstageModality, after: BackstageModality): string {
   const old = new Map(before.rows.flatMap((r) => r.components.map((c) => [`${r.id}.${c.key}`, c.score] as const)));
   const moved = MODALITY_CHANGES.find(([key]) => after.rows.some((r) => r.components.some((c) => c.key === key
@@ -319,10 +317,10 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
 
 /* ---------- Therapy approach: which way of working fits the client ---------- */
 
-const MODALITY_COLUMNS = ['Tavoitteet', 'Työtapa', 'Kokemus'];
+const MODALITY_COLUMNS = ['Tavoitteet', 'Työtapa'];
 
-/** The same kind of table as the therapist matching, for the therapy approaches: how each suits the client's goals,
-    the way of working they wish for and what they have tried during the wait. A suggestion – the professional decides. */
+/** The same kind of table as the therapist matching, for the therapy approaches: how each suits the client's goals and
+    the way of working they wish for. A suggestion – the professional decides. */
 function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh: boolean }) {
   const gridRef = useRef<HTMLDivElement>(null);
   useRowFlip(gridRef, modality.rows.map((r) => r.id).join('|'));
@@ -355,7 +353,7 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
           </div>
         ))}
       </div>
-      <p className="bm-scale">sopivin ylimpänä · kokemus = odotusajan harjoittelu · – ei vielä tietoa</p>
+      <p className="bm-scale">sopivin ylimpänä · – ei vielä tietoa</p>
     </section>
   );
 }
