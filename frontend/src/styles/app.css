@@ -1658,7 +1658,7 @@ body {
 }
 
 .vt.role-client .stage {
-  max-width: 1680px;
+  /* As wide as the demo dock's row, so the phone starts under the dock's left end on any screen. */
   padding: 14px 20px 14px;
 }
 
@@ -1700,7 +1700,7 @@ body {
   position: relative;
   display: flex;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start; /* at the left edge; the free room stays on the right */
 }
 
 .vt .client-stage > .phone {
