@@ -34,7 +34,8 @@ Kun ohjaus on paneelin vieressä, sarakkeessa näkyy vaihe (esim. *Vaihe 3/8*), 
 kertoo yleisölle, mitä ratkaisu vaiheessa tekee. Kerronta on yksi teksti vaihetta kohden – ei jokaiselle painallukselle.
 Pisteet kertovat, montako painallusta vaiheessa on ja montako on tehty; alimpana näkyy seuraava vaihe. Tekstit ovat
 tiedostossa `frontend/src/valituki/components/demoPilot.ts` (`STAGES[].tell` ja `DEMO_INTRO`). Kerronta on yhteensä
-noin 270 sanaa, eli rauhallisesti luettuna noin 2:45.
+noin 270 sanaa, eli rauhallisesti luettuna noin 2:45. Videon puhuttu käsikirjoitus painallusvihjeineen on tiedostossa
+[DEMO_VIDEO.md](DEMO_VIDEO.md).
 
 - **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas on saanut lähetteen…").
 - **Paina seuraavaa vasta, kun painikkeessa lukee taas Seuraava.** Jos siinä lukee *Kelaa*, painallus vain vie käynnissä

@@ -1,0 +1,19 @@
+Demon asiakas on saanut lähetteen lyhytterapiaan, ja edessä olisi kuukausien passiivinen odotus. Hän ja kaikki tiedot ovat kuvitteellisia.
+
+Vasemmalla on asiakkaan Mieliluotsi-sovellus: tuki alkaa heti. Se ei korvaa terapeuttia eikä päivystystä, ja Apua nyt -painike näyttää kriisinumerot. Keskellä on taustanäkymä, jota asiakas ei näe.
+
+Lomakkeen sijaan asiakas kertoo tilanteestaan omin sanoin. Tekoäly eli kielimalli saa muotoilla jatkokysymykset ja tiivistää vastaukset. Tässä demossa tekstit on kirjoitettu valmiiksi. Tulkinnat ovat vasta ehdotuksia. Katso keskelle: asiakkaan hyväksymät tiedot lentävät terapeutille koottavaan profiiliin ja osin terapeutin valintaan. Ensimmäisistä vointikyselyistä muodostuu asiakkaan oma lähtötaso.
+
+Asiakas kertoo jännittävänsä esitystä töissä, ja Mieliluotsi ehdottaa ajatusten tutkimista. Hän suostuu, ja harjoitus alkaa: yksi kysymys kerrallaan. Pohjana on kognitiivinen käyttäytymisterapia. Jokainen viesti tarkistetaan ensin säännöillä kriisin merkkien varalta. Säännöt päättävät vaiheet, kielimalli saa vain muotoilla ja ehdottaa. Lopuksi asiakas rakentaa altistusportaat: tilannetta lähestytään pienin askelin.
+
+Viikot kuluvat. Katso käyrää. Mielialaa verrataan asiakkaan omaan lähtötasoon. Kun mieliala on kolmesti peräkkäin vähintään pisteen alempana, hoitokoordinaattori saa tarkistuspyynnön. Puhelimessa näkyy toisen säännön havainto: työpäiviä edeltävinä iltoina ahdistusta on enemmän. Nyt hoitokoordinaattorin näkymä: tarkistuspyynnöt ovat työlistan kärjessä. Koordinaattori näkee säännön ja perustelut, ei diagnoosia. Hän merkitsee tilanteen tarkistetuksi. Hoidon kiireellisyyttä voi muuttaa vain ammattilainen.
+
+Katso keskelle: asiakkaan hyväksymä työpäivähavainto lentää profiiliin. Jokaisella tiedolla on oma käyttölupa: tämä näkyy terapeutille, mutta ei vaikuta terapeutin valintaan.
+
+Terapeutilta vapautuu asiakaspaikka, ja keskellä sopivuus lasketaan säännöillä, ei tekoälyllä. Puhelimessa näkyy, miksi terapeutti Anna sopii ja mitkä toiveet jäävät täyttymättä: ei yksikään. Asiakas valitsee itse Annan, ja ensimmäinen aika varataan. Annalle kootaan yhteenveto ilman keskusteluhistoriaa. Asiakas voi muokata sitä, hyväksyä sen tai perua jakamisen.
+
+Nyt terapeutin näkymä. Ensimmäinen tapaaminen ei ala tyhjästä: Anna näkee asiakkaan hyväksymän yhteenvedon. Anna päättää, mitä Mieliluotsi saa tarjota tapaamisten välillä, ja ottaa suunnitelman käyttöön. Puhelimessa asiakas näkee, mitä Anna on sallinut.
+
+Terapia päättyy, mutta seuranta jatkuu Annan ylläpitosuunnitelman mukaan. Jos mieliala laskee, asia palaa ammattilaiselle.
+
+Odotus muuttuu tueksi. Säännöt ohjaavat, kielimalli muotoilee, asiakas hyväksyy ja ammattilainen päättää.

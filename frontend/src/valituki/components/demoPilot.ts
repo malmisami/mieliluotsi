@@ -30,7 +30,7 @@ export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: s
   { key: 'alku', label: 'AI-alkukeskustelu',
     tell: 'Lomakkeen sijaan asiakas kertoo tilanteestaan omin sanoin. Tekoäly eli kielimalli saa esittää '
       + 'jatkokysymyksiä ja tiivistää vastaukset ehdotuksiksi, mutta demossa tekstit on kirjoitettu valmiiksi. '
-      + 'Vain asiakkaan hyväksymät tiedot siirtyvät oikealle: terapeutille koottavaan profiiliin ja osin '
+      + 'Vain asiakkaan hyväksymät tiedot siirtyvät taustanäkymään: terapeutille koottavaan profiiliin ja osin '
       + 'terapeutin valintaan.' },
   { key: 'kkt', label: 'Ohjattu KKT-harjoittelu chatissa', group: 'valituki',
     tell: 'Asiakas kertoo jännittävänsä esitystä töissä. Jokainen viesti tarkistetaan ensin säännöillä kriisin '
