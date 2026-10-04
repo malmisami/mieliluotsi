@@ -196,8 +196,7 @@ export default function Backstage({ client }: { client: ClientView }) {
       <header className="bs-bar">
         <span className="bs-bar-icon" aria-hidden="true"><EyeOffIcon size={17} /></span>
         <span className="bs-bar-text">
-          <strong>Taustalla – {client.firstName} ei näe tätä</strong>
-          <span>Mieliluotsi laskee nämä säännöillä asiakkaan toimista ja hyväksymistä kirjauksista</span>
+          <strong>Taustalla – käyttäjä ei näe tätä</strong>
         </span>
         <span className="stage-ai bs-ai"><AISwitch /></span>
       </header>
@@ -288,6 +287,9 @@ function useRowFlip(gridRef: RefObject<HTMLDivElement | null>, order: string) {
 function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) {
   const gridRef = useRef<HTMLDivElement>(null);
   useRowFlip(gridRef, match.candidates.map((c) => c.name).join('|'));
+  // One row highlighted, as in the therapy approach table: the therapist the client chose, until then the best fit.
+  const chosen = match.candidates.find((c) => c.status === 'selected');
+  const highlighted = chosen ?? match.candidates[0];
 
   return (
     <section className={`bm-card ${fresh ? 'is-fresh' : ''}`} aria-label="Terapeuttimatching">
@@ -302,7 +304,7 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
           <span role="columnheader">Sopivuus</span>
         </div>
         {match.candidates.map((cand) => (
-          <div key={cand.name} data-name={cand.name} role="row" className={`bm-row ${cand.status === 'selected' ? 'is-chosen' : ''}`}>
+          <div key={cand.name} data-name={cand.name} role="row" className={`bm-row ${cand === highlighted ? 'is-top' : ''}`}>
             <span role="cell" className="bm-name">{cand.name}{cand.status === 'selected' && <em>valittu</em>}</span>
             {COLUMNS.map((col) => {
               const c = cand.components.find((x) => x.key === col.key);

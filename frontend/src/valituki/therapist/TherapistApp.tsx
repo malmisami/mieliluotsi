@@ -7,7 +7,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, FlagIcon, LockIcon, PlayIcon,
 import { MoodAnxietyChart, Sparkline } from '../components/charts';
 import { HandoverDoc } from '../components/HandoverDoc';
 import { Milestones } from '../components/Milestones';
-import { Empty, Pill, Segmented } from '../components/ui';
+import { Empty, Pill, Segmented, TypeTag } from '../components/ui';
 import type { AftercareInput, PlanInput, PracticeStats, TherapistClientRow } from '../types';
 
 export default function TherapistApp() {
@@ -74,7 +74,7 @@ function ClientSummary({ row, clients, onSelect }: { row: TherapistClientRow; cl
   );
 }
 
-const LEGEND = [['user_said', 'Asiakkaan sanoin'], ['measured', 'Mitattu'], ['ai_summary', 'Tekoäly'], ['professional_note', 'Ammattilainen']] as const;
+const LEGEND = ['user_said', 'measured', 'ai_summary', 'professional_note'] as const;
 const DIRECTION_ARROWS: Record<string, string> = { improving: '↑', stable: '→', declining: '↓', insufficient: '·' };
 
 type GoalRow = { id: string; text: string; priority: 'primary' | 'secondary' };
@@ -113,14 +113,14 @@ function HandoverCard({ row }: { row: TherapistClientRow }) {
         <>
           <div className="glance">
             {primary && (
-              <div className="glance-tile">
+              <div className="glance-tile type-user_said">
                 <p className="glance-label"><QuoteIcon size={13} /> Tavoitteet</p>
                 <p className="glance-main">{primary.text}</p>
                 {goals.filter((g) => g !== primary).map((g) => <p key={g.id} className="glance-sub">{g.text}</p>)}
               </div>
             )}
             {wellbeing && (
-              <div className="glance-tile">
+              <div className="glance-tile type-measured">
                 <p className="glance-label"><PulseIcon size={13} /> Vointi odotusaikana</p>
                 <p className={`glance-main glance-dir is-${wellbeing.direction}`}>{DIRECTION_ARROWS[wellbeing.direction]} {wellbeing.directionLabel}</p>
                 <p className="glance-sub">Viime päivät {fmtNum(wellbeing.recent)} / 5 · oma taso {fmtNum(wellbeing.baseline)}</p>
@@ -129,7 +129,7 @@ function HandoverCard({ row }: { row: TherapistClientRow }) {
               </div>
             )}
             {practice.length > 0 && (
-              <div className="glance-tile">
+              <div className="glance-tile type-measured">
                 <p className="glance-label"><PulseIcon size={13} /> Harjoittelu odotusaikana</p>
                 <ul className="glance-list">{practice.map((line) => <li key={line}>{line}</li>)}</ul>
               </div>
@@ -141,7 +141,7 @@ function HandoverCard({ row }: { row: TherapistClientRow }) {
           {full && (
             <div className="glance-full">
               <div className="ho-legend">
-                {LEGEND.map(([type, label]) => <span key={type} className={`ho-legend-item ho-dot-${type}`}>{label}</span>)}
+                {LEGEND.map((type) => <TypeTag key={type} type={type} short />)}
                 <span className="ho-legend-note">{row.handoverStatus === 'approved' ? 'Tekoälyn tiivistelmä ei ole kliininen arvio.'
                   : `Luonnos – ${row.firstName} ei ole vielä hyväksynyt yhteenvetoa, ja se voi muuttua.`}</span>
               </div>
