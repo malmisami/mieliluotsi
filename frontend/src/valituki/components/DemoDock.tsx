@@ -9,7 +9,7 @@ import {
 } from '../icons';
 import { useDemoActions } from './demoActions';
 import { setDockSide, useDockRoomy, useDockSide, useDockSlot } from './dockPlace';
-import { BEATS, STAGES, stageEnd, stageStart, useDemoPilot } from './demoPilot';
+import { BEATS, DEMO_INTRO, STAGES, stageEnd, stageStart, useDemoPilot } from './demoPilot';
 import type { AICheck, AIStatus } from '../types';
 
 const seconds = (ms: number | null) => (ms === null ? '' : `${fmtNum(ms / 1000)} s`);
@@ -84,17 +84,17 @@ type Stage = (typeof STAGES)[number];
 
 /** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: back, Seuraava and "Vaihe loppuun",
     the concept's stages (click one to jump there) and the step number; everything else (time, scenarios, other clients)
-    opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. In the client's
-    view it can sit beside the backstage panel instead, as a column (dockPlace.ts). */
+    opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. It can sit in a
+    column on the right instead (dockPlace.ts), with the stage's narration for the pitch video. */
 export default function DemoDock() {
-  const { view, role, run, busy, scope, setClientId, setProClientId } = useValituki();
+  const { view, run, busy, scope, setClientId, setProClientId } = useValituki();
   const [more, setMore] = useState(false);
-  // Beside the backstage panel when the presenter has chosen so and the client's view has room for it. Only the markup
-  // moves (a portal): the demo's state stays in this component, so moving never interrupts a step.
+  // A column beside the content – the backstage panel in the client's view, the page in the others – when the presenter
+  // has chosen so and the window has room for it. Only the markup moves (a portal): the demo's state stays in this
+  // component, so moving never interrupts a step.
   const side = useDockSide();
-  const roomy = useDockRoomy();
+  const canSide = useDockRoomy();
   const slot = useDockSlot();
-  const canSide = roomy && role === 'client';
   const place = side && canSide ? slot : null;
   const demo = view.demo;
   const clientId = scope.clientId ?? 'cl-aino';
@@ -104,6 +104,11 @@ export default function DemoDock() {
   const upcoming = BEATS[pilot.pointer] ?? null;
   const upcomingStage = upcoming ? STAGES.findIndex((s) => s.key === upcoming.stage) : -1;
   const stageKey = current?.stage ?? 'intro';
+  // The narration beside the panel is per stage: the stage, its presses (done ones filled) and the stage after it.
+  const currentStage = STAGES.findIndex((s) => s.key === stageKey);
+  const tellStage = STAGES[currentStage] ?? null;
+  const nextStage = STAGES[currentStage + 1] ?? null;
+  const stagePresses = tellStage ? BEATS.flatMap((b, i) => (b.stage === tellStage.key ? [i] : [])) : [];
   // Keep the current stage in view when the row is too narrow for all of them.
   const railRef = useRef<HTMLOListElement>(null);
   useEffect(() => {
@@ -127,8 +132,7 @@ export default function DemoDock() {
           title={`${n}. ${stage.label}${isCurrent ? '' : ' – siirry tähän vaiheeseen'}`}
           onClick={() => (isCurrent ? undefined : pilot.enter(stageStart(stage.key)))}>
           <span className="dock-step-n">{done ? <CheckIcon size={12} /> : n}</span>
-          {/* In the top bar only the current stage's name shows; beside the panel, all of them. */}
-          <span className="dock-step-t">{stage.label}</span>
+          {isCurrent && <span className="dock-step-t">{stage.label}</span>}
         </button>
       </li>
     );
@@ -157,6 +161,22 @@ export default function DemoDock() {
               <ForwardIcon size={15} /> <span className="pilot-stage-text">Vaihe {upcomingStage + 1} loppuun</span>
             </button>
           )}
+        </div>
+        {/* Beside the panel, the narration: where the demo is and what the solution does – the presenter reads it aloud
+            and the audience sees it in the video. */}
+        <div className="pilot-tell" aria-live="polite">
+          <p className="pilot-tell-stage">
+            <span>{tellStage ? `Vaihe ${currentStage + 1}/${STAGES.length}` : 'Ennen demoa'}</span>
+            {tellStage && (
+              <span className="pilot-tell-steps" role="img"
+                aria-label={`${stagePresses.filter((i) => i < pilot.pointer).length}/${stagePresses.length} painallusta tehty`}>
+                {stagePresses.map((i) => <i key={i} className={i < pilot.pointer ? 'on' : ''} />)}
+              </span>
+            )}
+          </p>
+          <p className="pilot-tell-title">{tellStage?.label ?? 'Mieliluotsi'}</p>
+          <p className="pilot-tell-say">{tellStage?.tell ?? DEMO_INTRO}</p>
+          {nextStage && <p className="pilot-tell-next">Seuraavaksi: {currentStage + 2}. {nextStage.label}</p>}
         </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">
           {rail.map((item) => (Array.isArray(item) ? (
@@ -215,7 +235,7 @@ export default function DemoDock() {
             {canSide && (
               <button type="button" className="dock-btn" onClick={() => setDockSide(!side)}
                 title={side ? 'Demo-ohjaus takaisin yläpalkkiin'
-                  : 'Demo-ohjaus Taustalla-paneelin viereen – puhelimelle ja paneelille jää ruudun koko korkeus'}>
+                  : 'Demo-ohjaus omaksi sarakkeekseen oikealle, asiakasnäkymässä Taustalla-paneelin viereen – vaiheen kerronta näkyy koko demon ajan'}>
                 {side ? <PanelTopIcon size={14} /> : <PanelRightIcon size={14} />} {side ? 'Ohjaus yläpalkkiin' : 'Ohjaus paneelin viereen'}
               </button>
             )}

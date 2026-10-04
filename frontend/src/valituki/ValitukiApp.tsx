@@ -3,7 +3,7 @@ import { api } from './api';
 import type { ViewScope } from './api';
 import ClientApp from './client/ClientApp';
 import DemoDock from './components/DemoDock';
-import { useDockSlot } from './components/dockPlace';
+import { setDockSlot, useDockRoomy, useDockSide, useDockSlot } from './components/dockPlace';
 import StageControls from './components/StageControls';
 import { ValitukiContext } from './context';
 import type { ClientTab, ProTab, ValitukiContextValue } from './context';
@@ -96,6 +96,11 @@ export default function ValitukiApp() {
   const stageRef = useRef<HTMLElement>(null);
   const loaded = view !== null;
   const dockSlot = useDockSlot();
+  // The demo control beside the content in the other views too, when the presenter has moved it there: the narration
+  // stays in the same place through the whole demo.
+  const dockSide = useDockSide();
+  const dockRoomy = useDockRoomy();
+  const pageDock = dockSide && dockRoomy && role !== 'client';
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -158,11 +163,17 @@ export default function ValitukiApp() {
         {!view && !error && <p className="loading" role="status">Ladataan Mieliluotsia…</p>}
         {ctx && (
           <ValitukiContext.Provider value={ctx}>
-            {role !== 'client' && <StageControls />}
-            {role === 'client' && <ClientApp />}
-            {role === 'professional' && <ProfessionalApp />}
-            {role === 'therapist' && <TherapistApp />}
-            {role === 'pitch' && <PitchScreen />}
+            {role === 'client' ? <ClientApp /> : (
+              <div className={`page-layout ${pageDock ? 'has-dock' : ''}`}>
+                <div className="page-main">
+                  <StageControls />
+                  {role === 'professional' && <ProfessionalApp />}
+                  {role === 'therapist' && <TherapistApp />}
+                  {role === 'pitch' && <PitchScreen />}
+                </div>
+                {pageDock && <div className="dock-slot" ref={setDockSlot} />}
+              </div>
+            )}
           </ValitukiContext.Provider>
         )}
       </main>

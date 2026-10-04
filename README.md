@@ -331,10 +331,12 @@ directly: the demo is rebuilt from the prepared scenes and the stage's first ste
 **Lisää** holds the date controls (+1 / +7 / +14 pv), **Vointi heikkenee**, **Vakaa tilanne**, **Kriisipolku**, the demo
 client and **Alkutilaan** (reset). In the chat, **Demovastaus** answers the current question with the scripted answer and
 **Toista demokeskustelu** plays the rest of the exercise. **Ohjaus paneelin viereen** moves the demo control out of the
-top bar into a column beside the backstage panel, with every stage named, so the phone and the panel get the screen's
-whole height; **Ohjaus yläpalkkiin** brings it back. It applies to the client's view in a window at least 900 px wide
-and is remembered in the browser (`components/dockPlace.ts`; the control's state stays put – only its markup moves,
-through a portal).
+top bar into a column on the right – beside the backstage panel in the client's view, beside the page in the others – so
+the phone and the panel get the screen's whole height; **Ohjaus yläpalkkiin** brings it back. The column shows the
+stage's narration for the pitch video (`STAGES[].tell` in `components/demoPilot.ts`: one text per stage, about 270
+words in all for a 3-minute demo; see [docs/DEMO_5MIN.md](docs/DEMO_5MIN.md)). It applies in a window at least 900 px
+wide and is remembered in the browser (`components/dockPlace.ts`; the control's state stays put – only its markup
+moves, through a portal).
 
 ### The 3-minute demo
 

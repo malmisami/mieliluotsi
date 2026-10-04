@@ -1,6 +1,7 @@
-/* Where the demo control sits: the top bar, or – the presenter's choice – beside the backstage panel in the client's view,
-   so that everything that is not the service is on the right and the phone gets the screen's whole height. The choice is
-   remembered in this browser; the slot is the element in the client's view the control moves into. */
+/* Where the demo control sits: the top bar, or – the presenter's choice – a column on the right, beside the backstage panel
+   in the client's view and beside the page in the others: everything that is not the service is on the right, the phone
+   gets the screen's whole height and the stage's narration stays in one place. The choice is remembered in this browser;
+   the slot is the element the control moves into. */
 import { useSyncExternalStore } from 'react';
 
 const KEY = 'mieliluotsi.dockSide';

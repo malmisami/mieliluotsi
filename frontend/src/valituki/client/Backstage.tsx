@@ -58,7 +58,7 @@ function modalityChange(before: BackstageModality, after: BackstageModality): st
 const STACKED = 640;
 const PHONE = { width: 396, height: 836 };  // the phone at full size
 const GAP = 56;  // between the phone and the panel: room for the data travelling from one to the other
-const DOCK = 272 + 20;  // the demo control's column beside the panel and its margin (.dock-slot in styles/app.css)
+const DOCK = 320 + 32;  // the demo control's column beside the panel and its margin (.dock-slot in styles/app.css)
 
 interface Seen {
   clientId: string; rowSig: string; matchSig: string; modSig: string; modality: BackstageModality; values: Record<string, string>;
@@ -156,10 +156,12 @@ export default function Backstage({ client }: { client: ClientView }) {
       const stageTop = (stage.closest('main')?.getBoundingClientRect().top ?? 110) + window.scrollY - extra;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
       let phone = Math.min(1, room / PHONE.height);  // an iPhone's proportions, as tall as the room allows
-      let panel = Math.min(1.15, room / height);
-      // The demo control beside the panel follows the panel's scale, but never grows and stays big enough to use.
-      const dock = Math.min(1, Math.max(0.75, panel));
-      const reserved = dockSlot ? DOCK * dock : 0;
+      // The panel as tall as the phone, so that the phone, the panel and the demo control beside it line up.
+      let panel = Math.min(1.15, Math.min(room, PHONE.height) / height);
+      // The demo control beside the panel has the panel's scale, so their texts are the same size – but stays big enough to
+      // use. Its room is set aside at the scale the panel would have without it.
+      const MIN_DOCK = 0.6;
+      const reserved = dockSlot ? DOCK * Math.max(MIN_DOCK, panel) : 0;
       const fits = (gap: number) => Math.min(1, (stage.clientWidth - gap - reserved) / (PHONE.width * phone + width * panel));
       let gap = GAP;
       if (fits(gap) < 1) {
@@ -174,7 +176,7 @@ export default function Backstage({ client }: { client: ClientView }) {
         stage.style.setProperty('--phone-zoom', phone.toFixed(3));
       }
       stage.style.setProperty('--stage-gap', `${gap}px`);
-      if (dockSlot) stage.style.setProperty('--dock-zoom', dock.toFixed(3));
+      if (dockSlot) stage.style.setProperty('--dock-zoom', Math.max(MIN_DOCK, panel).toFixed(3));
       else stage.style.removeProperty('--dock-zoom');
     };
     fit();

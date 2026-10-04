@@ -23,9 +23,35 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
 5. **Näppäimet:** → tai PageDown vie eteenpäin, ← tai PageUp palaa ja Shift+→ vie vaiheen loppuun. Myös esitysklikkeri
    toimii.
 6. **Ohjaus paneelin viereen (valinnainen):** nuolipainikkeen takaa löytyvä **Ohjaus paneelin viereen** siirtää
-   demo-ohjauksen omaksi sarakkeekseen Taustalla-paneelin oikealle puolelle. Silloin puhelin ja paneeli saavat ruudun koko
-   korkeuden, ja sarakkeessa näkyvät kaikki vaiheet nimineen. **Ohjaus yläpalkkiin** palauttaa sen. Valinta muistetaan
-   selaimessa. Ammattilaisen ja terapeutin näkymissä sekä alle 900 px leveässä ikkunassa ohjaus on aina yläpalkissa.
+   demo-ohjauksen omaksi sarakkeekseen oikealle, asiakasnäkymässä Taustalla-paneelin viereen. Sarakkeessa on vaiheen
+   kerronta (ks. alla), ja puhelin ja paneeli saavat ruudun koko korkeuden. Sarake pysyy samassa paikassa myös
+   ammattilaisen ja terapeutin näkymissä. **Ohjaus yläpalkkiin** palauttaa sen. Valinta muistetaan selaimessa. Alle
+   900 px leveässä ikkunassa ohjaus on aina yläpalkissa.
+
+## Pitch-video: noin 3 minuuttia, kerronta ruudulla
+
+Kun ohjaus on paneelin vieressä, sarakkeessa näkyy vaihe (esim. *Vaihe 3/8*), vaiheen nimi ja luettava kerronta, joka
+kertoo yleisölle, mitä ratkaisu vaiheessa tekee. Kerronta on yksi teksti vaihetta kohden – ei jokaiselle painallukselle.
+Pisteet kertovat, montako painallusta vaiheessa on ja montako on tehty; alimpana näkyy seuraava vaihe. Tekstit ovat
+tiedostossa `frontend/src/valituki/components/demoPilot.ts` (`STAGES[].tell` ja `DEMO_INTRO`). Kerronta on yhteensä
+noin 270 sanaa, eli rauhallisesti luettuna noin 2:45.
+
+- **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas Sami…").
+- **Paina seuraavaa vasta, kun painikkeessa lukee taas Seuraava.** Jos siinä lukee *Kelaa*, painallus vain vie käynnissä
+  olevan keskustelun loppuun.
+- **Tallenna Demo-tilassa.** Kerronta sanoo, että demon tekstit on kirjoitettu valmiiksi; jos tallennat Claude-tilassa,
+  jätä tämä lause sanomatta.
+
+| Vaihe | Painallukset | Aika | Vinkki |
+|---|---|---|---|
+| 1 · Avun haku | 1 | ~15 s | Lue johdanto ennen painallusta, vaiheen teksti sen jälkeen. |
+| 2 · AI-alkukeskustelu | 4 | ~22 s | Paina askeleet 2 ja 3 heti; keskustelu pyörii noin 10 s. Askel 4, kun *Ymmärsinkö tilanteesi oikein?* näkyy, ja 5 heti perään. Älä kelaa vaihetta: keskustelu ja tietojen siirtyminen paneeliin ovat sen ydin. |
+| 3 · Ohjattu harjoittelu | 3 | ~23 s | Askel 8 toistaa koko harjoituksen (noin 45 s). Anna sen edetä noin 10 s ja paina → (*Kelaa*), niin harjoitus ja altistusportaat valmistuvat kerralla. |
+| 4 · Seuranta | 5 | ~23 s | Askel 9 kelaa kaksi viikkoa. Askeleet 11–13 ovat hoitokoordinaattorin näkymässä; kerronta pysyy oikealla. |
+| 5 · Havainto | 1 | ~17 s | Paina ennen kuin alat puhua – tieto lentää profiiliin parissa sekunnissa. |
+| 6 · Sopivin terapeutti | 5 | ~23 s | Kiireessä paina askeleen 16 jälkeen *Vaihe 6 loppuun* (Shift+→): aika varataan ja yhteenveto hyväksytään kerralla. |
+| 7 · Terapia | 4 | ~16 s | Askeleet 20–22 ovat terapeutin näkymässä, askel 23 palaa puhelimeen. |
+| 8 · Seuranta terapian jälkeen | 1 | ~15 s | Viimeinen askel: lopeta tallennus, kun ylläpitosuunnitelma näkyy ja teksti on luettu. |
 
 ## Runko: 24 painallusta, noin 5 minuuttia
 
