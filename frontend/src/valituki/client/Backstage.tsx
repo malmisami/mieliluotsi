@@ -291,9 +291,9 @@ function MatchCard({ match, fresh }: { match: BackstageMatch; fresh: boolean }) 
   const highlighted = chosen ?? match.candidates[0];
 
   return (
-    <section className={`bm-card ${fresh ? 'is-fresh' : ''}`} aria-label="Terapeuttimatching">
+    <section className={`bm-card ${fresh ? 'is-fresh' : ''}`} aria-label="Sopivin terapeutti">
       <div className="bp-head">
-        <p className="bs-title"><PuzzleIcon size={15} /> Terapeuttimatching</p>
+        <p className="bs-title"><PuzzleIcon size={15} /> Sopivin terapeutti</p>
         <span className={`bm-state ${match.ran ? 'is-run' : ''}`}>{match.ran ? 'matching ajettu' : 'esikatselu'}</span>
       </div>
       <div className="bm-grid" ref={gridRef} role="table" aria-label="Pisteytys osa-alueittain">
@@ -348,9 +348,9 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
   const gridRef = useRef<HTMLDivElement>(null);
   useRowFlip(gridRef, modality.rows.map((r) => r.id).join('|'));
   return (
-    <section className={`bm-card bm-modality ${fresh ? 'is-fresh' : ''}`} aria-label="Terapiamuoto ja työtapa">
+    <section className={`bm-card bm-modality ${fresh ? 'is-fresh' : ''}`} aria-label="Sopivin terapiamuoto ja työtapa">
       <div className="bp-head">
-        <p className="bs-title"><SlidersIcon size={15} /> Terapiamuoto ja työtapa</p>
+        <p className="bs-title"><SlidersIcon size={15} /> Sopivin terapiamuoto ja työtapa</p>
         <span className="bm-state">ehdotus</span>
       </div>
       <div className="bm-grid" ref={gridRef} role="table" aria-label="Terapiamuotojen sopivuus">

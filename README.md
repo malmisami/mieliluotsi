@@ -270,7 +270,7 @@ failure, ms, answering model).
 Clients see *Vahva / Hyvä / Mahdollinen yhteensopivuus* with reasons, unmet wishes, the first free time and the data
 used – never a numeric probability. The professional sees the component meters and the excluded therapists with reasons.
 
-**Terapiamuoto ja työtapa** (next to the phone, under the therapist matching): the therapy approaches the pool offers,
+**Sopivin terapiamuoto ja työtapa** (next to the phone, under **Sopivin terapeutti**): the therapy approaches the pool offers,
 written out in full – kognitiivinen käyttäytymisterapia, hyväksymis- ja omistautumisterapia, ratkaisukeskeinen
 lyhytterapia, interpersoonallinen terapia, psykodynaaminen psykoterapia (`modality.py`, `data/valituki/modalities.json`)
 – with only their fit 0–100; the breakdown is in the tooltip. Goals 55 (the approach's fit to the approved goal topics,
