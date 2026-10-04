@@ -3,6 +3,7 @@ import { api } from './api';
 import type { ViewScope } from './api';
 import ClientApp from './client/ClientApp';
 import DemoDock from './components/DemoDock';
+import { useDockSlot } from './components/dockPlace';
 import StageControls from './components/StageControls';
 import { ValitukiContext } from './context';
 import type { ClientTab, ProTab, ValitukiContextValue } from './context';
@@ -91,9 +92,10 @@ export default function ValitukiApp() {
   }, [message]);
 
   // The phone and the backstage fill the screen below the top bar and the demo dock (--stage-top), whatever their height.
-  // Measured again once the view has loaded: the demo dock only appears then.
+  // Measured again once the view has loaded (the demo dock only appears then) and when the dock moves beside the panel.
   const stageRef = useRef<HTMLElement>(null);
   const loaded = view !== null;
+  const dockSlot = useDockSlot();
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -113,7 +115,7 @@ export default function ValitukiApp() {
     Array.from(stage.parentElement?.children ?? []).forEach((el) => { if (el !== stage) observer.observe(el); });
     window.addEventListener('resize', update);
     return () => { observer.disconnect(); window.removeEventListener('resize', update); };
-  }, [role, loaded]);
+  }, [role, loaded, dockSlot]);
 
   const run = useCallback(async <T,>(action: (s: ViewScope) => Promise<Mutation<T>>, describe?: (result: T) => string) => {
     setBusy(true);

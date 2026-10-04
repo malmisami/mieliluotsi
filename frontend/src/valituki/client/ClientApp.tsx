@@ -4,6 +4,7 @@ import { api } from '../api';
 import { useValituki } from '../context';
 import type { ClientTab } from '../context';
 import { ArrowLeftIcon, BellIcon, ChatIcon, GridIcon, HomeIcon, LifebuoyIcon, RouteIcon, TrendIcon } from '../icons';
+import { setDockSlot, useDockRoomy, useDockSide } from '../components/dockPlace';
 import { Logo } from '../components/Logo';
 import { HelpSheet, SafetyScreen } from '../components/Safety';
 import type { ClientView } from '../types';
@@ -63,6 +64,9 @@ export default function ClientApp() {
   const [pending, setPending] = useState<string | null>(null);
   const [opened, setOpened] = useState<{ page: PageState; clientId: string | null }>({ page: null, clientId: null });
   const scrollRef = useRef<HTMLDivElement>(null);
+  // The presenter may move the demo control beside the panel: its place is the column after the panel.
+  const dockSide = useDockSide();
+  const dockRoomy = useDockRoomy();
   const client = view.client;
   // A page (Tietoni, Viestit) belongs to the client it was opened for; switching the demo client closes it.
   const page = opened.clientId === client?.id ? opened.page : null;
@@ -197,6 +201,7 @@ export default function ClientApp() {
           </div>
         </div>
         <Backstage client={current} />
+        {dockSide && dockRoomy && <div className="dock-slot" ref={setDockSlot} />}
       </div>
     </ClientUIContext.Provider>
   );

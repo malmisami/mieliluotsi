@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtNum } from '../format';
 import {
-  AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PersonIcon, PresentIcon, ResetIcon, SparkleIcon,
-  StethoscopeIcon, UsersIcon,
+  AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PanelRightIcon, PanelTopIcon, PersonIcon,
+  PresentIcon, ResetIcon, SparkleIcon, StethoscopeIcon, UsersIcon,
 } from '../icons';
 import { useDemoActions } from './demoActions';
+import { setDockSide, useDockRoomy, useDockSide, useDockSlot } from './dockPlace';
 import { BEATS, STAGES, stageEnd, stageStart, useDemoPilot } from './demoPilot';
 import type { AICheck, AIStatus } from '../types';
 
@@ -82,10 +84,18 @@ type Stage = (typeof STAGES)[number];
 
 /** DEMO-OHJAUS – presenter controls, visually separate from the product. One row: back, Seuraava and "Vaihe loppuun",
     the concept's stages (click one to jump there) and the step number; everything else (time, scenarios, other clients)
-    opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. */
+    opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. In the client's
+    view it can sit beside the backstage panel instead, as a column (dockPlace.ts). */
 export default function DemoDock() {
-  const { view, run, busy, scope, setClientId, setProClientId } = useValituki();
+  const { view, role, run, busy, scope, setClientId, setProClientId } = useValituki();
   const [more, setMore] = useState(false);
+  // Beside the backstage panel when the presenter has chosen so and the client's view has room for it. Only the markup
+  // moves (a portal): the demo's state stays in this component, so moving never interrupts a step.
+  const side = useDockSide();
+  const roomy = useDockRoomy();
+  const slot = useDockSlot();
+  const canSide = roomy && role === 'client';
+  const place = side && canSide ? slot : null;
   const demo = view.demo;
   const clientId = scope.clientId ?? 'cl-aino';
   const { weeks, deteriorate, crisis, jump: jumpScene } = useDemoActions();
@@ -117,14 +127,15 @@ export default function DemoDock() {
           title={`${n}. ${stage.label}${isCurrent ? '' : ' – siirry tähän vaiheeseen'}`}
           onClick={() => (isCurrent ? undefined : pilot.enter(stageStart(stage.key)))}>
           <span className="dock-step-n">{done ? <CheckIcon size={12} /> : n}</span>
-          {isCurrent && <span className="dock-step-t">{stage.label}</span>}
+          {/* In the top bar only the current stage's name shows; beside the panel, all of them. */}
+          <span className="dock-step-t">{stage.label}</span>
         </button>
       </li>
     );
   };
 
-  return (
-    <section className="dock" aria-label="Demo-ohjaus (ei osa palvelua)">
+  const dock = (
+    <section className={`dock ${place ? 'is-side' : ''}`} aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
         {/* Demo-ohjaus: back, Seuraava and "Vaihe loppuun" in one control at the start of the bar. */}
         <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
@@ -201,9 +212,17 @@ export default function DemoDock() {
             <button type="button" className="dock-btn" disabled={busy} onClick={() => { pilot.restart(); void jumpScene('start'); }}>
               <ResetIcon size={14} /> Alkutilaan
             </button>
+            {canSide && (
+              <button type="button" className="dock-btn" onClick={() => setDockSide(!side)}
+                title={side ? 'Demo-ohjaus takaisin yläpalkkiin'
+                  : 'Demo-ohjaus Taustalla-paneelin viereen – puhelimelle ja paneelille jää ruudun koko korkeus'}>
+                {side ? <PanelTopIcon size={14} /> : <PanelRightIcon size={14} />} {side ? 'Ohjaus yläpalkkiin' : 'Ohjaus paneelin viereen'}
+              </button>
+            )}
           </div>
         </div>
       )}
     </section>
   );
+  return place ? createPortal(dock, place) : dock;
 }

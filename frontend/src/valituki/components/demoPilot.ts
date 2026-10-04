@@ -353,8 +353,8 @@ function scrollToElement(el: HTMLElement, block: 'start' | 'center') {
     container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     return;
   }
-  // The page itself scrolls: keep the element below the sticky top bar and demo dock.
-  const covered = document.querySelector('.dock')?.getBoundingClientRect().bottom ?? 0;
+  // The page itself scrolls: keep the element below the sticky top bar and demo dock (beside the panel it covers nothing).
+  const covered = document.querySelector('.dock:not(.is-side)')?.getBoundingClientRect().bottom ?? 0;
   const offset = rect.top + window.scrollY;
   const top = block === 'center' ? offset - (window.innerHeight - covered - rect.height) / 2 - covered : offset - covered - 16;
   window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });

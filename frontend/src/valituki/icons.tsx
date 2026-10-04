@@ -68,6 +68,8 @@ export const BarsIcon = (p: IconProps) => <Icon {...p}><path d="M5 20V11M10 20V5
 export const SlidersIcon = (p: IconProps) => <Icon {...p}><path d="M4 7h9M17 7h3M4 17h3M11 17h9" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="17" r="2" /></Icon>;
 export const SortIcon = (p: IconProps) => <Icon {...p}><path d="m8 9 4-4 4 4M8 15l4 4 4-4" /></Icon>;
 export const PresentIcon = (p: IconProps) => <Icon {...p}><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M12 16v4M8 20h8" /></Icon>;
+export const PanelRightIcon = (p: IconProps) => <Icon {...p}><rect x="3" y="4.5" width="18" height="15" rx="2.5" /><path d="M15 4.5v15" /></Icon>;
+export const PanelTopIcon = (p: IconProps) => <Icon {...p}><rect x="3" y="4.5" width="18" height="15" rx="2.5" /><path d="M3 9.5h18" /></Icon>;
 export const HandHeartIcon = (p: IconProps) => <Icon {...p}><path d="M12 10.5s-3.2-2-3.2-4.2A1.8 1.8 0 0 1 12 5.2a1.8 1.8 0 0 1 3.2 1.1c0 2.2-3.2 4.2-3.2 4.2Z" /><path d="M3 14.5h3.5l3 1.5h3.5a1.5 1.5 0 0 1 0 3H9M13 17.5l5-2.5a1.6 1.6 0 0 1 2 2.4L14 21H7l-4-2" /></Icon>;
 export const ListIcon = (p: IconProps) => <Icon {...p}><path d="M9 6.5h11M9 12h11M9 17.5h11" /><circle cx="4.5" cy="6.5" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="17.5" r="1" /></Icon>;
 export const HomeIcon = (p: IconProps) => <Icon {...p}><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1Z" /></Icon>;

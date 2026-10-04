@@ -330,7 +330,11 @@ tooltip. Clicking a stage opens it
 directly: the demo is rebuilt from the prepared scenes and the stage's first step is taken (`components/demoPilot.ts`). Script: [docs/DEMO_5MIN.md](docs/DEMO_5MIN.md).
 **Lisää** holds the date controls (+1 / +7 / +14 pv), **Vointi heikkenee**, **Vakaa tilanne**, **Kriisipolku**, the demo
 client and **Alkutilaan** (reset). In the chat, **Demovastaus** answers the current question with the scripted answer and
-**Toista demokeskustelu** plays the rest of the exercise.
+**Toista demokeskustelu** plays the rest of the exercise. **Ohjaus paneelin viereen** moves the demo control out of the
+top bar into a column beside the backstage panel, with every stage named, so the phone and the panel get the screen's
+whole height; **Ohjaus yläpalkkiin** brings it back. It applies to the client's view in a window at least 900 px wide
+and is remembered in the browser (`components/dockPlace.ts`; the control's state stays put – only its markup moves,
+through a portal).
 
 ### The 3-minute demo
 

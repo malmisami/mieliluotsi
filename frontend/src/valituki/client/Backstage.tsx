@@ -5,6 +5,7 @@ import {
   AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon,
 } from '../icons';
 import { AISwitch } from '../components/DemoDock';
+import { useDockSlot } from '../components/dockPlace';
 import { AgentTimeline } from '../components/Timeline';
 import type { BackstageMatch, BackstageModality, ClientView, InsightRow } from '../types';
 import { DataFlow } from './DataFlow';
@@ -57,6 +58,7 @@ function modalityChange(before: BackstageModality, after: BackstageModality): st
 const STACKED = 640;
 const PHONE = { width: 396, height: 836 };  // the phone at full size
 const GAP = 56;  // between the phone and the panel: room for the data travelling from one to the other
+const DOCK = 272 + 20;  // the demo control's column beside the panel and its margin (.dock-slot in styles/app.css)
 
 interface Seen {
   clientId: string; rowSig: string; matchSig: string; modSig: string; modality: BackstageModality; values: Record<string, string>;
@@ -73,6 +75,7 @@ const lastSeen = new Map<string, Seen>();
     travels from the phone to the rows it updates. */
 export default function Backstage({ client }: { client: ClientView }) {
   const asideRef = useRef<HTMLElement>(null);
+  const dockSlot = useDockSlot();
   const rows = profileRows(client);
   const match = client.backstage.match;
   const values = Object.fromEntries(rows.map((r) => [r.key, r.value ?? '']));
@@ -126,7 +129,8 @@ export default function Backstage({ client }: { client: ClientView }) {
 
   // The phone and the panel side by side on one screen: both are scaled to the height under the demo dock, and when the
   // window is narrow they shrink together – the gap with them – until they fit its width. The panel may grow a little on
-  // a large screen; an opened log scrolls inside it.
+  // a large screen; an opened log scrolls inside it. When the presenter has moved the demo control beside the panel, it
+  // takes a column of its own and the top bar's height is free.
   useLayoutEffect(() => {
     const aside = asideRef.current;
     const stage = aside?.parentElement;
@@ -146,11 +150,17 @@ export default function Backstage({ client }: { client: ClientView }) {
       const height = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
         + (parts.length - 1) * (Number.parseFloat(box.rowGap) || 0) + frame.reduce((sum, k) => sum + (Number.parseFloat(box[k]) || 0), 0) + 4;
       const width = aside.getBoundingClientRect().width / zoom;
-      const stageTop = Number.parseFloat(getComputedStyle(aside).getPropertyValue('--stage-top')) || 110;
+      // Measured here rather than read from --stage-top: when the demo control moves, this runs before that is updated. Sized
+      // for the control's first row: its extra controls under the chevron are open only for a moment.
+      const extra = document.querySelector('.dock:not(.is-side) .dock-actions')?.getBoundingClientRect().height ?? 0;
+      const stageTop = (stage.closest('main')?.getBoundingClientRect().top ?? 110) + window.scrollY - extra;
       const room = Math.max(360, window.innerHeight - stageTop - 28);
       let phone = Math.min(1, room / PHONE.height);  // an iPhone's proportions, as tall as the room allows
       let panel = Math.min(1.15, room / height);
-      const fits = (gap: number) => Math.min(1, (stage.clientWidth - gap) / (PHONE.width * phone + width * panel));
+      // The demo control beside the panel follows the panel's scale, but never grows and stays big enough to use.
+      const dock = Math.min(1, Math.max(0.75, panel));
+      const reserved = dockSlot ? DOCK * dock : 0;
+      const fits = (gap: number) => Math.min(1, (stage.clientWidth - gap - reserved) / (PHONE.width * phone + width * panel));
       let gap = GAP;
       if (fits(gap) < 1) {
         gap = Math.max(24, Math.round(GAP * fits(gap)));
@@ -164,6 +174,8 @@ export default function Backstage({ client }: { client: ClientView }) {
         stage.style.setProperty('--phone-zoom', phone.toFixed(3));
       }
       stage.style.setProperty('--stage-gap', `${gap}px`);
+      if (dockSlot) stage.style.setProperty('--dock-zoom', dock.toFixed(3));
+      else stage.style.removeProperty('--dock-zoom');
     };
     fit();
     const observer = new ResizeObserver(fit);
@@ -175,7 +187,7 @@ export default function Backstage({ client }: { client: ClientView }) {
       observer.disconnect();
       window.removeEventListener('resize', fit);
     };
-  }, []);
+  }, [dockSlot]);
 
   return (
     <aside className="backstage" ref={asideRef} aria-label="Mieliluotsi taustalla">

@@ -1434,6 +1434,11 @@ body {
   min-width: 0;
 }
 
+/* In the top bar only the current stage's name shows (beside the panel, all of them). */
+.vt .dock-steps li:not(.current) .dock-step-t {
+  display: none;
+}
+
 /* The current step's name is always shown whole: the rest of the row is sized to leave room for the longest one. */
 .vt .dock-steps li.current {
   flex: none;
@@ -1647,6 +1652,167 @@ body {
 .vt .dock-select select:focus {
   border-color: var(--brand);
   box-shadow: 0 0 0 3px rgba(13, 95, 111, 0.18);
+}
+
+/* Beside the backstage panel – the presenter's choice in the client's view when the window has room (dockPlace.ts): the
+   same control as a column of its own, framed like the panel. Everything that is not the service is on the right, and
+   the phone and the panel get the screen's whole height. */
+.vt .dock-slot {
+  /* --dock-zoom is measured in Backstage: the panel's scale, between 0.75 and 1. */
+  position: sticky;
+  top: var(--stage-top, 0px);
+  flex: none;
+  width: 272px;
+  max-height: calc(max(360px, 100dvh - var(--stage-top, 0px) - 28px) / var(--dock-zoom, 1));
+  margin-left: 20px;
+  overflow-y: auto;
+  zoom: var(--dock-zoom, 1);
+  scrollbar-width: thin;
+}
+
+.vt.role-client .stage:has(.dock-slot) {
+  max-width: 1680px;
+}
+
+.vt .dock.is-side {
+  position: static;
+  border: 1.5px dashed #a3b5bc;
+  border-radius: 18px;
+  background: #e6edf0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.vt .dock.is-side .dock-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  max-width: none;
+  margin: 0;
+  padding: 12px;
+}
+
+.vt .dock.is-side .dock-pilot,
+.vt .dock.is-side .dock-steps {
+  grid-column: 1 / -1;
+}
+
+/* "Demo-ohjaus" as the column's heading, back and Seuraava on one row, the rest of the stage under them. */
+.vt .dock.is-side .dock-pilot {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vt .dock.is-side .dock-pilot-label,
+.vt .dock.is-side .pilot-stage {
+  grid-column: 1 / -1;
+}
+
+.vt .dock.is-side .dock-btn.pilot-next,
+.vt .dock.is-side .dock-btn.pilot-stage {
+  justify-content: center;
+}
+
+/* The stages as a list: every name shown, the done ones ticked, the current one highlighted. */
+.vt .dock.is-side .dock-steps,
+.vt .dock.is-side .dock-steps li,
+.vt .dock.is-side .pilot-group ol {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.vt .dock.is-side .dock-steps {
+  overflow: visible;
+}
+
+.vt .dock.is-side .dock-steps li + li::before {
+  width: 2px;
+  height: 6px;
+  margin: 1px 0 1px 12px;
+}
+
+.vt .dock.is-side .dock-steps .pilot-group::before,
+.vt .dock.is-side .dock-steps .pilot-group + li::before {
+  display: none;
+}
+
+.vt .dock.is-side .dock-steps button {
+  padding: 2px 10px 2px 2px;
+  border-radius: 13px;
+  font-size: 13px;
+  line-height: 1.25;
+  text-align: left;
+  white-space: normal;
+}
+
+.vt .dock.is-side .dock-steps li:not(.current) button:hover:not(:disabled) {
+  background: rgba(13, 95, 111, 0.07);
+}
+
+.vt .dock.is-side .dock-steps li.done button {
+  color: var(--muted);
+}
+
+.vt .dock.is-side .dock-steps .dock-step-t {
+  display: inline;
+}
+
+.vt .dock.is-side .pilot-rail .pilot-group {
+  margin: 4px 0;
+  padding: 5px 4px;
+  border-radius: 14px;
+}
+
+.vt .dock.is-side .pilot-rail .pilot-group .pilot-group-label {
+  display: block;
+  margin: 0 0 4px 6px;
+  font-size: 12.5px;
+}
+
+.vt .dock.is-side .pilot-warn {
+  white-space: normal;
+}
+
+/* The extra controls under the chevron, one group under another. */
+.vt .dock.is-side .dock-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.vt .dock.is-side .dock-views {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vt .dock.is-side .dock-views button {
+  justify-content: center;
+  padding: 5px 0;
+}
+
+.vt .dock.is-side .dock-view-t {
+  display: none;
+}
+
+.vt .dock.is-side .dock-select select {
+  width: 100%;
+  max-width: none;
+}
+
+.vt .dock.is-side .dock-group + .dock-group {
+  padding: 8px 0 0;
+  border-top: 1px solid var(--line);
+  border-left: 0;
+}
+
+.vt .dock.is-side .dock-end {
+  margin-left: 0;
 }
 
 .vt .stage {

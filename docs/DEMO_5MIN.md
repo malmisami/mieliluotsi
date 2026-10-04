@@ -22,6 +22,10 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
    Demo alkaa suoraan Samin kotinäkymästä.
 5. **Näppäimet:** → tai PageDown vie eteenpäin, ← tai PageUp palaa ja Shift+→ vie vaiheen loppuun. Myös esitysklikkeri
    toimii.
+6. **Ohjaus paneelin viereen (valinnainen):** nuolipainikkeen takaa löytyvä **Ohjaus paneelin viereen** siirtää
+   demo-ohjauksen omaksi sarakkeekseen Taustalla-paneelin oikealle puolelle. Silloin puhelin ja paneeli saavat ruudun koko
+   korkeuden, ja sarakkeessa näkyvät kaikki vaiheet nimineen. **Ohjaus yläpalkkiin** palauttaa sen. Valinta muistetaan
+   selaimessa. Ammattilaisen ja terapeutin näkymissä sekä alle 900 px leveässä ikkunassa ohjaus on aina yläpalkissa.
 
 ## Runko: 24 painallusta, noin 5 minuuttia
 
