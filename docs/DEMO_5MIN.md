@@ -36,7 +36,7 @@ Pisteet kertovat, montako painallusta vaiheessa on ja montako on tehty; alimpana
 tiedostossa `frontend/src/valituki/components/demoPilot.ts` (`STAGES[].tell` ja `DEMO_INTRO`). Kerronta on yhteensä
 noin 270 sanaa, eli rauhallisesti luettuna noin 2:45.
 
-- **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas Sami…").
+- **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas on saanut lähetteen…").
 - **Paina seuraavaa vasta, kun painikkeessa lukee taas Seuraava.** Jos siinä lukee *Kelaa*, painallus vain vie käynnissä
   olevan keskustelun loppuun.
 - **Tallenna Demo-tilassa.** Kerronta sanoo, että demon tekstit on kirjoitettu valmiiksi; jos tallennat Claude-tilassa,

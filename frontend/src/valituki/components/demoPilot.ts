@@ -25,41 +25,43 @@ export type StageKey = 'intro' | 'haku' | 'alku' | 'seuranta' | 'kkt' | 'tfp' | 
 export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: string }[] = [
   { key: 'haku', label: 'Avun haku',
     tell: 'Mieliluotsi-sovelluksessa tuki alkaa heti. Se ei korvaa terapeuttia eikä päivystystä. Aina esillä '
-      + 'oleva ”Apua nyt” -painike näyttää kriisinumerot. Puhelimen vieressä on taustanäkymä, jota Sami ei näe.' },
+      + 'oleva ”Apua nyt” -painike näyttää kriisinumerot. Puhelimen vieressä on taustanäkymä, jota asiakas ei '
+      + 'näe.' },
   { key: 'alku', label: 'AI-alkukeskustelu',
-    tell: 'Lomakkeen sijaan Sami kertoo tilanteestaan omin sanoin. Tekoäly eli kielimalli saa esittää '
+    tell: 'Lomakkeen sijaan asiakas kertoo tilanteestaan omin sanoin. Tekoäly eli kielimalli saa esittää '
       + 'jatkokysymyksiä ja tiivistää vastaukset ehdotuksiksi, mutta demossa tekstit on kirjoitettu valmiiksi. '
-      + 'Vain Samin hyväksymät tiedot siirtyvät oikealle: terapeutille koottavaan profiiliin ja osin '
+      + 'Vain asiakkaan hyväksymät tiedot siirtyvät oikealle: terapeutille koottavaan profiiliin ja osin '
       + 'terapeutin valintaan.' },
   { key: 'kkt', label: 'Ohjattu KKT-harjoittelu chatissa', group: 'valituki',
-    tell: 'Sami kertoo jännittävänsä esitystä töissä. Jokainen viesti tarkistetaan ensin säännöillä kriisin '
+    tell: 'Asiakas kertoo jännittävänsä esitystä töissä. Jokainen viesti tarkistetaan ensin säännöillä kriisin '
       + 'merkkien varalta. Mieliluotsi ehdottaa ajatusten tutkimista kognitiivisen käyttäytymisterapian '
       + 'keinoin. Säännöt päättävät harjoituksen vaiheet, kielimalli saa vain muotoilla ja ehdottaa. Lopuksi '
-      + 'Sami rakentaa altistusportaat: tilannetta lähestytään pienin askelin.' },
+      + 'hän rakentaa altistusportaat: tilannetta lähestytään pienin askelin.' },
   { key: 'seuranta', label: 'Mielialan ja ahdistuksen seuranta', group: 'valituki',
-    tell: 'Viikot kuluvat, ja Sami vastaa lyhyisiin vointikyselyihin. Mielialaa verrataan hänen omaan '
+    tell: 'Viikot kuluvat, ja asiakas vastaa lyhyisiin vointikyselyihin. Mielialaa verrataan hänen omaan '
       + 'lähtötasoonsa, ei muihin. Jos mieliala on kolmesti peräkkäin vähintään pisteen alempana, '
-      + 'hoitokoordinaattori saa tarkistuspyynnön, ja Samille kerrotaan siitä. Koordinaattori näkee, mihin '
+      + 'hoitokoordinaattori saa tarkistuspyynnön, ja asiakkaalle kerrotaan siitä. Koordinaattori näkee, mihin '
       + 'sääntöön pyyntö perustuu. Vain ammattilainen voi muuttaa hoidon kiireellisyyttä.' },
   { key: 'tfp', label: 'Havainto tarkentaa terapeuttiprofiilia', group: 'valituki',
-    tell: 'Toinen sääntö on poiminut Samin vastauksista havainnon: työpäiviä edeltävinä iltoina ahdistusta on '
-      + 'enemmän. Sami hyväksyy sen. Jokaisella tiedolla on oma käyttölupa: tämä havainto näkyy terapeutille, '
+    tell: 'Toinen sääntö on poiminut asiakkaan vastauksista havainnon: työpäiviä edeltävinä iltoina ahdistusta on '
+      + 'enemmän. Asiakas hyväksyy sen. Jokaisella tiedolla on oma käyttölupa: tämä havainto näkyy terapeutille, '
       + 'mutta ei vaikuta terapeutin valintaan.' },
   { key: 'terapeutti', label: 'Sopivin saatavilla oleva terapeutti',
     tell: 'Kun terapeutilta vapautuu paikka, sopivuus lasketaan säännöillä, ei tekoälyllä. Ensin pakolliset '
-      + 'ehdot, sitten avoimesti painotetut kriteerit. Sami näkee perustelut sekä toteutumatta jäävät toiveet '
-      + 'ja valitsee itse Annan. Annalle kootaan yhteenveto ilman keskusteluhistoriaa, ja Sami voi muokata '
+      + 'ehdot, sitten avoimesti painotetut kriteerit. Asiakas näkee perustelut sekä toteutumatta jäävät toiveet '
+      + 'ja valitsee itse Annan. Annalle kootaan yhteenveto ilman keskusteluhistoriaa, ja asiakas voi muokata '
       + 'sitä, hyväksyä sen tai perua jakamisen.' },
   { key: 'terapia', label: 'Terapia + välitehtävät Mieliluotsissa',
-    tell: 'Ensimmäinen tapaaminen ei ala tyhjästä: Annan näkymässä on Samin hyväksymä yhteenveto. Anna päättää, '
-      + 'mitä Mieliluotsi saa tarjota tapaamisten välillä. Sami näkee puhelimessaan, mitä Anna on sallinut.' },
+    tell: 'Ensimmäinen tapaaminen ei ala tyhjästä: Annan näkymässä on asiakkaan hyväksymä yhteenveto. Anna '
+      + 'päättää, mitä Mieliluotsi saa tarjota tapaamisten välillä. Asiakas näkee puhelimessaan, mitä Anna on '
+      + 'sallinut.' },
   { key: 'jalkeen', label: 'Seuranta terapian jälkeen',
     tell: 'Annan ylläpitosuunnitelmassa ovat opitut keinot ja merkit, joihin reagoida. Vointia kysytään kerran '
       + 'viikossa, ja jos mieliala laskee, asia palaa ammattilaisen arvioitavaksi.' },
 ];
 
 /** The narration before the first press – the presenter's opening line, shown in the demo control beside the panel. */
-export const DEMO_INTRO = 'Kuvitteellinen asiakas Sami on saanut lähetteen lyhytterapiaan. Tavallisesti edessä olisi '
+export const DEMO_INTRO = 'Kuvitteellinen asiakas on saanut lähetteen lyhytterapiaan. Tavallisesti edessä olisi '
   + 'kuukausien passiivinen odotus.';
 
 type Where = { role: 'pitch' } | { role: 'client'; tab: ClientTab } | { role: 'professional'; client: string | null } | { role: 'therapist' };

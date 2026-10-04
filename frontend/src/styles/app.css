@@ -1960,7 +1960,9 @@ body {
   padding: 11px;
   border-radius: 46px;
   background: #0f1b21;
-  box-shadow: var(--shadow-lg), inset 0 0 0 2px #2a3a42;
+  /* A deep, layered shadow: the phone – the service itself – lifts off the page and draws the eye first. */
+  box-shadow: 0 60px 110px -24px rgba(10, 30, 38, 0.5), 0 34px 60px -30px rgba(10, 30, 38, 0.55),
+    0 12px 24px -8px rgba(10, 30, 38, 0.25), inset 0 0 0 2px #2a3a42;
 }
 
 .vt .phone-inner {
