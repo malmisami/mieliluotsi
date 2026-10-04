@@ -4,7 +4,6 @@ import { fmtNum } from '../format';
 import {
   AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon,
 } from '../icons';
-import { AISwitch } from '../components/DemoDock';
 import { useDockSlot } from '../components/dockPlace';
 import { AgentTimeline } from '../components/Timeline';
 import type { BackstageMatch, BackstageModality, ClientView, InsightRow } from '../types';
@@ -198,7 +197,6 @@ export default function Backstage({ client }: { client: ClientView }) {
         <span className="bs-bar-text">
           <strong>Taustalla – käyttäjä ei näe tätä</strong>
         </span>
-        <span className="stage-ai bs-ai"><AISwitch /></span>
       </header>
       <MatchCard match={match} fresh={fresh.has('match')} />
       <ModalityCard modality={modality} fresh={fresh.has('modality')} />

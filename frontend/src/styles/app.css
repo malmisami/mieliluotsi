@@ -1126,19 +1126,6 @@ body {
 
 
 
-/* The AI switch on the stage: top right of a view; in the client view at the top of the panel beside the phone. */
-.vt .bs-ai {
-  justify-content: flex-end;
-}
-
-.vt .stage-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px 16px;
-  margin-bottom: 14px;
-}
 
 
 
@@ -1229,16 +1216,17 @@ body {
   color: var(--brand);
 }
 
+/* The AI switch (Demo ↔ Claude) in the demo control's extra controls. */
 .vt .dock-ai {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   min-width: 0;
   padding: 2px 3px 2px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--line);
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #b9c7cd;
+  background: var(--surface-2);
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1253,7 +1241,7 @@ body {
   display: inline-flex;
   padding: 2px;
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(20, 35, 43, 0.08);
 }
 
 .vt .dock-seg button {
@@ -1261,14 +1249,15 @@ body {
   border: 0;
   border-radius: 5px;
   background: transparent;
-  color: #b9c7cd;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
 }
 
 .vt .dock-seg button[aria-pressed='true'] {
-  background: #eef4f6;
-  color: #13222b;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
+  color: var(--ink);
 }
 
 .vt .dock-seg button:disabled {
@@ -1300,7 +1289,7 @@ body {
 }
 
 .vt .dock-ai.is-live .dock-ai-status {
-  color: #9fe7c1;
+  color: #1d7a4f;
 }
 
 .vt .dock-ai.is-warn .dock-ai-dot {
@@ -1308,64 +1297,20 @@ body {
 }
 
 .vt .dock-ai.is-warn .dock-ai-status {
-  color: #f7d27f;
+  color: #8a5a00;
 }
 
 .vt .dock-ai-test {
   padding: 3px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--line);
   border-radius: 6px;
   background: transparent;
-  color: #eef4f6;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 650;
 }
 
 .vt .dock-ai-test:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* The AI switch on the stage: the same control in light colours. */
-.vt .stage-ai {
-  display: flex;
-  flex: 0 1 auto;
-  min-width: 0;
-}
-
-.vt .stage-ai .dock-ai {
-  border-color: var(--line);
-  background: var(--surface-2);
-  color: var(--muted);
-}
-
-.vt .stage-ai .dock-seg {
-  background: rgba(20, 35, 43, 0.08);
-}
-
-.vt .stage-ai .dock-seg button {
-  color: var(--muted);
-}
-
-.vt .stage-ai .dock-seg button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--ink);
-  box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
-}
-
-.vt .stage-ai .dock-ai.is-live .dock-ai-status {
-  color: #1d7a4f;
-}
-
-.vt .stage-ai .dock-ai.is-warn .dock-ai-status {
-  color: #8a5a00;
-}
-
-.vt .stage-ai .dock-ai-test {
-  border-color: var(--line);
-  color: var(--ink);
-}
-
-.vt .stage-ai .dock-ai-test:hover:not(:disabled) {
   background: var(--surface);
 }
 
@@ -1471,13 +1416,6 @@ body {
 
 .vt .dock-steps li.current button {
   min-width: 0;
-}
-
-@media (max-width: 1400px) {
-  /* Room for the steps: the AI switch keeps its buttons and status dot, the words move to the tooltip. */
-  .vt .dock-ai-text {
-    display: none;
-  }
 }
 
 .vt .dock-steps li.current button {
@@ -2141,10 +2079,6 @@ body {
   color: #13222b;
   font-size: 15px;
   font-weight: 800;
-}
-
-.vt .bs-bar .bs-ai {
-  flex: none;
 }
 
 @media (min-width: 641px) {

@@ -4,7 +4,6 @@ import type { ViewScope } from './api';
 import ClientApp from './client/ClientApp';
 import DemoDock from './components/DemoDock';
 import { setDockSlot, useDockRoomy, useDockSide, useDockSlot } from './components/dockPlace';
-import StageControls from './components/StageControls';
 import { ValitukiContext } from './context';
 import type { ClientTab, ProTab, ValitukiContextValue } from './context';
 import PitchScreen from './pitch/PitchScreen';
@@ -166,7 +165,6 @@ export default function ValitukiApp() {
             {role === 'client' ? <ClientApp /> : (
               <div className={`page-layout ${pageDock ? 'has-dock' : ''}`}>
                 <div className="page-main">
-                  <StageControls />
                   {role === 'professional' && <ProfessionalApp />}
                   {role === 'therapist' && <TherapistApp />}
                   {role === 'pitch' && <PitchScreen />}

@@ -25,18 +25,19 @@ function describeAI(result: AIStatus & { check: AICheck | null }): string {
   return `Claude ei vastannut (${check?.failure ?? 'tuntematon virhe'}). Käytetään demotekstejä.`;
 }
 
-/** Demo ↔ Claude. The model only phrases: rules, safety levels and matching stay deterministic in both modes. */
-export function AISwitch() {
+/** Demo ↔ Claude, in the demo control's extra controls. The model only phrases: rules, safety levels and matching stay
+    deterministic in both modes. */
+function AISwitch() {
   const { view, run, busy } = useValituki();
   const ai = view.meta.ai;
   const wantsLive = ai.configuredMode === 'LIVE_AI_MODE';
   const live = ai.effectiveMode === 'LIVE_AI_MODE';
   const failed = live && ai.lastCall.ok === false;
   const tone = !wantsLive ? '' : live && !failed ? 'is-live' : 'is-warn';
-  const status = !wantsLive ? 'valmiit tekstit'
-    : !ai.keyPresent ? 'API-avain puuttuu'
-      : failed ? (ai.lastCall.failure ?? 'virhe')
-        : [ai.lastCall.model ?? ai.model, ai.lastCall.ok ? seconds(ai.lastCall.ms) : ''].filter(Boolean).join(' · ');
+  // Only Claude mode has a status worth showing: the model and its reply time, or why it is not answering.
+  const status = !ai.keyPresent ? 'API-avain puuttuu'
+    : failed ? (ai.lastCall.failure ?? 'virhe')
+      : [ai.lastCall.model ?? ai.model, ai.lastCall.ok ? seconds(ai.lastCall.ms) : ''].filter(Boolean).join(' · ');
 
   function setMode(mode: AIStatus['configuredMode']) {
     if (mode === ai.configuredMode && mode === 'DEMO_AI_MODE') return;
@@ -50,9 +51,11 @@ export function AISwitch() {
         <button type="button" aria-pressed={!wantsLive} disabled={busy} onClick={() => setMode('DEMO_AI_MODE')}>Demo</button>
         <button type="button" aria-pressed={wantsLive} disabled={busy} onClick={() => setMode('LIVE_AI_MODE')}>Claude</button>
       </span>
-      <span className="dock-ai-status" title={status}><i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-text">{status}</span></span>
       {wantsLive && (
-        <button type="button" className="dock-ai-test" disabled={busy} onClick={() => run((s) => api.aiCheck(s), describeAI)}>Testaa</button>
+        <>
+          <span className="dock-ai-status" title={status}><i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-text">{status}</span></span>
+          <button type="button" className="dock-ai-test" disabled={busy} onClick={() => run((s) => api.aiCheck(s), describeAI)}>Testaa</button>
+        </>
       )}
     </div>
   );
@@ -207,6 +210,7 @@ export default function DemoDock() {
               {demo.clients.map((c) => <option key={c.id} value={c.id}>{c.displayName} – {c.persona}</option>)}
             </select>
           </label>
+          <div className="dock-group"><AISwitch /></div>
           <div className="dock-group" role="group" aria-label="Aika">
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 1), (r) => `+1 päivä – ${r.agentActions} agenttitoimintoa.`)}>+1 pv</button>
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 7), (r) => `+7 päivää – ${r.agentActions} agenttitoimintoa.`)}>+7 pv</button>
