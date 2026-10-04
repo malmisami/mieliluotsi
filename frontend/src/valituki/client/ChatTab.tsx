@@ -187,11 +187,6 @@ export default function ChatTab() {
           )}
           {!guided && (
             <div className="cx-quick" role="group" aria-label="Aloita ohjattu harjoitus">
-              {client.demoMessage && (
-                <button type="button" className="cx-demo-chip cx-demo-chip-sm" disabled={busy} onClick={() => run((s) => api.sendMessage(s, client.id, client.demoMessage ?? ''))}>
-                  <span className="cx-demo-tag">Demoviesti</span><span>{client.demoMessage}</span>
-                </button>
-              )}
               {tools.map((tool) => (
                 <button key={tool} type="button" className="cx-quick-chip" disabled={busy}
                   onClick={() => run((s) => api.startPractice(s, client.id, tool, {}, 'chat'))}>

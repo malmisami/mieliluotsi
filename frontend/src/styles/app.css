@@ -7075,44 +7075,6 @@ body {
   background: #cfc9c0;
 }
 
-.vt .cx-demo-chip {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px dashed #c9bfae;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.55);
-  color: var(--cx-ink-2);
-  font-size: 13.5px;
-  line-height: 1.4;
-  text-align: left;
-}
-
-.vt .cx-demo-chip:hover:not(:disabled) {
-  border-color: var(--cx-accent);
-}
-
-.vt .cx-demo-chip-sm {
-  width: auto;
-  max-width: 100%;
-  padding: 7px 10px;
-  font-size: 13px;
-}
-
-.vt .cx-demo-tag {
-  flex: none;
-  padding: 1px 7px;
-  border-radius: 6px;
-  background: #3a3f47;
-  color: #fff;
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 /* ---------- Koti ---------- */
 
 .vt .cx-home {

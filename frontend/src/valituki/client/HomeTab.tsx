@@ -97,11 +97,6 @@ export default function HomeTab() {
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) submit(e); }} />
         <button type="submit" className="cx-send" aria-label="Lähetä" disabled={busy || !text.trim()}><SendIcon size={18} /></button>
       </form>
-      {client.demoMessage && (
-        <button type="button" className="cx-demo-chip" disabled={busy} onClick={() => send(client.demoMessage ?? '')}>
-          <span className="cx-demo-tag">Demoviesti</span><span>{client.demoMessage}</span>
-        </button>
-      )}
 
       {guided && (
         <button type="button" className="cx-continue" onClick={() => openTab('keskustelu')}>

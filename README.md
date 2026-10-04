@@ -348,8 +348,8 @@ Press **Aloita demo** – the demo starts in Sami's home view (the Konsepti page
    focused follow-ups, one at a time). "**Ymmärsinkö tilanteesi oikein?**" – TAVOITE, TYÖSKENTELYTAPA, KÄYTÄNNÖN
    TOIVEET; nothing is saved yet → **Kyllä, tämä kuvaa tilannettani** → rhythm, message tone, today's mood → **Aloita
    Mieliluotsi**. Point at *Mieliluotsi taustalla*: plan, first step, Therapy Fit Profile v1.
-3. **The chat and CBT (0:55–1:25).** *Koti* → **Demoviesti** ("Tiistaina minun pitää esitellä projektin tilanne koko
-   tiimille, ja jännittää jo nyt ihan hirveästi.") → Mieliluotsi offers to look at it → **Kyllä, tutkitaan** → answer a few
+3. **The chat and CBT (0:55–1:25).** *Koti* → write the demo message ("Tiistaina minun pitää esitellä projektin tilanne
+   koko tiimille, ja jännittää jo nyt ihan hirveästi."; the demo control's → sends it for you) → Mieliluotsi offers to look at it → **Kyllä, tutkitaan** → answer a few
    questions (emotions, 0–10, thinking traps proposed by the rules) → **Toista demokeskustelu** → *Ajatuspäiväkirja* card
    (8/10 → 5/10) → an exposure ladder with the first step tomorrow.
 4. **Two weeks of support (1:25–1:40).** **Simuloi 14 päivää**. *Edistyminen*: mood and anxiety lines, 3 thought records,
