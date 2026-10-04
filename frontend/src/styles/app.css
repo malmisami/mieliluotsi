@@ -2006,6 +2006,8 @@ body {
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1;
+  /* The serif's letters sit high in their box: nudged down so that their middle meets the mark's middle. */
+  translate: 0 0.13em;
 }
 
 .vt .help-btn {
