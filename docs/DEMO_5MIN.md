@@ -40,7 +40,8 @@ merkitsee tilanteen tarkistetuksi ja muuttaa kiireellisyyden kiireelliseksi, ask
 yhden kohdan (*Mitä olen kokeillut*) ja hyväksyy loput. Aiempi, lyhyempi videon käsikirjoitus painallusvihjeineen on
 tiedostossa [DEMO_VIDEO.md](DEMO_VIDEO.md).
 
-- **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas on saanut lähetteen…").
+- **Ennen ensimmäistä painallusta** luetaan johdanto ("Kun ihminen saa lähetteen terapiaan, hoito ei ala…"). Aloita
+  tallennus *Alkutilaan*-painikkeen jälkeen, jolloin sarakkeessa näkyy johdanto; *Aloita demo alusta* tekee heti askeleen 1.
 - **Paina seuraavaa vasta, kun painikkeessa lukee taas Seuraava.** Jos siinä lukee *Kelaa*, painallus vain vie käynnissä
   olevan keskustelun loppuun.
 - **Tallenna Demo-tilassa,** jolloin keskustelut etenevät tasaisesti eivätkä odota kielimallia.

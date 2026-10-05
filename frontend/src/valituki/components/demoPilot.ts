@@ -29,8 +29,8 @@ export interface TellPart { from: number; heading?: string; text: string }
     that belong to what is on the screen, so the column shows the part to read now. */
 export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: TellPart[] }[] = [
   { key: 'haku', label: 'Avun haku', tell: [
-    { from: 1, text: 'Mieliluotsi-sovelluksessa tuki alkaa heti. Se ei korvaa terapeuttia eikä päivystystä. Aina esillä '
-      + 'oleva ”Apua nyt” -painike näyttää kriisinumerot. Puhelimen vieressä on taustanäkymä, jota asiakas ei näe.' },
+    { from: 1, text: 'Tässä on tyypillinen tilanne, jossa odotusaika on 20–25 viikkoa hoidon alkamiseen. Nyt Mieliluotsilla '
+      + 'tuki alkaa heti. Ensin päätän itse, mitä tietojani käytetään ja mitä hoitotiimi ja terapeutti näkevät.' },
   ] },
   { key: 'alku', label: 'AI-alkukeskustelu', tell: [
     { from: 2, text: 'Alkukartoitus tehdään keskustellen: kerron tilanteestani omin sanoin, ja tekoäly kysyy tarkentavia '
@@ -99,8 +99,7 @@ export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: T
 ];
 
 /** The narration before the first press – the presenter's opening line, shown in the demo control beside the panel. */
-export const DEMO_INTRO = 'Kuvitteellinen asiakas on saanut lähetteen lyhytterapiaan. Tavallisesti edessä olisi '
-  + 'kuukausien passiivinen odotus.';
+export const DEMO_INTRO = 'Kun ihminen saa lähetteen terapiaan, hoito ei ala. Alkaa kuukausien passiivinen odotus.';
 
 type Where = { role: 'pitch' } | { role: 'client'; tab: ClientTab } | { role: 'professional'; client: string | null } | { role: 'therapist' };
 
