@@ -35,7 +35,7 @@ export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: T
   { key: 'alku', label: 'AI-alkukeskustelu', tell: [
     { from: 2, text: 'Alkukartoitus tehdään keskustellen: kerron tilanteestani omin sanoin, ja tekoäly kysyy tarkentavia '
       + 'kysymyksiä. Lopuksi se tiivistää vastaukseni ehdotuksiksi: tavoitteeni, toivomani työskentelytapa, vaikeimmat '
-      + 'hetket ja se, mikä on aiemmin auttanut. Voin muokata niitä. Mitään ei tallenneta ennen kuin hyväksyn. Hyväksyn nämä.' },
+      + 'hetket ja se, mikä on aiemmin auttanut. Voin muokata niitä. Mitään ei tallenneta ennen kuin hyväksyn.' },
     { from: 4, text: 'Puhelimen oikealla puolella on taustanäkymä, jota asiakas ei näe. Vastaukseni ja toimintani '
       + 'sovelluksessa päivittävät koko ajan terapeutin ja terapiamuodon sopivuutta. Tällä on väliä, koska terapiamuodolla, '
       + 'työskentelytavalla ja yhteistyösuhteella on suurin vaikutus hoidon tuloksiin. Muutos nykyiseen on suuri, sillä nyt '
