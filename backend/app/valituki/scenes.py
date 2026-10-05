@@ -8,6 +8,8 @@ from app.valituki.seed import build_seed_state
 from app.valituki.store import get_client
 
 ORDER = ['start', 'intake', 'cbt', 'weeks', 'change', 'reviewed', 'matches', 'handover', 'therapy', 'aftercare']
+# The item Sami takes out of the first-session summary before approving it (DROPPED_SECTION in demoPilot.ts).
+DROPPED_SECTION = 'tried'
 
 
 class SceneError(ValueError):
@@ -45,6 +47,8 @@ def build_scene(name: str) -> ValitukiState:
                         if o.clientId == aino.id and o.status == 'open' and o.kind == 'trend_decline']:
         professional.review_observation(state, observation.id, 'mark_reviewed',
                                         'Soitettu Samille – jatketaan jonossa Mieliluotsin tuella.')
+    # The professional's decision, as in the demo's step 13: the urgency becomes urgent.
+    professional.set_clinical_urgency(state, aino, 'urgent', professional.ACTOR, 'Vointi kolmesti oman lähtötason alapuolella')
     if reached('matches'):
         return state
     simulation.open_next_pending(state)
@@ -55,6 +59,8 @@ def build_scene(name: str) -> ValitukiState:
         anna = next((c for c in matching_flow.decision_candidates(state, decision) if c.therapistId == 'th-anna'), None)
         if anna:
             client_actions.select_candidate(state, aino, anna.id)
+            # One item out before approving, as in the demo's step 19.
+            client_actions.update_handover(state, aino, {'action': 'remove', 'section': DROPPED_SECTION})
             client_actions.approve_handover(state, aino)
     if reached('therapy'):
         return state

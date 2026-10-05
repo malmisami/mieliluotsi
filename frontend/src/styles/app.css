@@ -1743,6 +1743,14 @@ body {
   line-height: 1.3;
 }
 
+/* A part of the stage with a name of its own in the pitch (e.g. "Hoitokoordinaattorin näkymä"). */
+.vt .pilot-tell-part {
+  margin-top: -4px;
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .vt .pilot-tell-say {
   color: var(--ink-2);
   font-size: 14px;

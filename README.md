@@ -358,12 +358,14 @@ Press **Aloita demo** – the demo starts in Sami's home view (the Konsepti page
 5. **A change → human review (1:40–2:05).** **Simuloi voinnin heikkeneminen**. Timeline: *09.00 check-in puuttuu ·
    09.01 muistutus · 14.40 check-in · 14.41 kolmatta kertaa oman lähtötason alapuolella · 14.41 tarkistuspyyntö*.
    **Ammattilainen**: TERAPIAJONO 1 000 / 647 / 164 / 31 / 118 / 40 (synthetic) → Sami → "**MIKSI AINO NOUSI
-   TARKISTETTAVAKSI?**" → "Mieliluotsi ei ole muuttanut hoidon kiireellisyyttä." → **Merkitse tarkistetuksi**.
+   TARKISTETTAVAKSI?**" → "Mieliluotsi ei ole muuttanut hoidon kiireellisyyttä." → **Merkitse tarkistetuksi** and set
+   the urgency to *Kiireellinen* (the demo control's step 13 does both).
 6. **A slot opens → matching (2:05–2:25).** **Avaa terapeutin vapaa aika** (Anna Laine). *Asiakas → Hoitopolku*:
    "Löysimme kolme tilanteeseesi sopivaa terapeuttia." – "Miksi Anna?", "Ti 17.11. klo 18.00", "Mitä toiveita ei
    pystytty täyttämään?".
 7. **Choice and handover (2:25–2:40).** **Valitse** → first session booked → "Yhteenveto ensimmäistä tapaamista
-   varten" (typed sections incl. *Mitä olen harjoitellut*, *Muokkaa* / *Poista kohta*) → **Hyväksy jaettavaksi**.
+   varten" (typed sections incl. *Mitä olen harjoitellut*, *Muokkaa* / *Poista kohta*) → remove *Mitä olen kokeillut* →
+   **Hyväksy jaettavaksi** (the demo control's step 19 does both). The therapist sees nothing before the approval.
 8. **Therapist (2:40–2:50).** **Terapeutti** → "Ensimmäinen tapaaminen 17.11. klo 18.00" and "Samin hyväksymä
    yhteenveto" → **Merkitse ensimmäinen tapaaminen pidetyksi (demo)**.
 9. **Therapist-guided support (2:50–3:00).** Päätavoite, KKT-harjoitukset, välitehtävä (*Ajatusten tutkiminen*), sallitut

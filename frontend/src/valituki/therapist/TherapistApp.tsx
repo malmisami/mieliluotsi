@@ -142,8 +142,7 @@ function HandoverCard({ row }: { row: TherapistClientRow }) {
             <div className="glance-full">
               <div className="ho-legend">
                 {LEGEND.map((type) => <TypeTag key={type} type={type} short />)}
-                <span className="ho-legend-note">{row.handoverStatus === 'approved' ? 'Tekoälyn tiivistelmä ei ole kliininen arvio.'
-                  : `Luonnos – ${row.firstName} ei ole vielä hyväksynyt yhteenvetoa, ja se voi muuttua.`}</span>
+                <span className="ho-legend-note">Tekoälyn tiivistelmä ei ole kliininen arvio.</span>
               </div>
               <HandoverDoc sections={row.sections} layout="grid" />
             </div>

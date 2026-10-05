@@ -107,11 +107,13 @@ export default function DemoDock() {
   const upcoming = BEATS[pilot.pointer] ?? null;
   const upcomingStage = upcoming ? STAGES.findIndex((s) => s.key === upcoming.stage) : -1;
   const stageKey = current?.stage ?? 'intro';
-  // The narration beside the panel is per stage: the stage, its presses (done ones filled) and the stage after it.
+  // The narration beside the panel: the stage, its presses (done ones filled), the part to read now and the next stage.
   const currentStage = STAGES.findIndex((s) => s.key === stageKey);
   const tellStage = STAGES[currentStage] ?? null;
   const nextStage = STAGES[currentStage + 1] ?? null;
   const stagePresses = tellStage ? BEATS.flatMap((b, i) => (b.stage === tellStage.key ? [i] : [])) : [];
+  // The part of the stage's narration that belongs to the step on the screen (steps are 1-based, like the pointer).
+  const tellPart = tellStage ? [...tellStage.tell].reverse().find((t) => t.from <= pilot.pointer) ?? tellStage.tell[0] : null;
   // Keep the current stage in view when the row is too narrow for all of them.
   const railRef = useRef<HTMLOListElement>(null);
   useEffect(() => {
@@ -178,7 +180,8 @@ export default function DemoDock() {
             )}
           </p>
           <p className="pilot-tell-title">{tellStage?.label ?? 'Mieliluotsi'}</p>
-          <p className="pilot-tell-say">{tellStage?.tell ?? DEMO_INTRO}</p>
+          {tellPart?.heading && <p className="pilot-tell-part">{tellPart.heading}</p>}
+          <p className="pilot-tell-say">{tellPart?.text ?? DEMO_INTRO}</p>
           {nextStage && <p className="pilot-tell-next">Seuraavaksi: {currentStage + 2}. {nextStage.label}</p>}
         </div>
         <ol className="dock-steps pilot-rail" ref={railRef} aria-label="Demon runko – siirry vaiheeseen">

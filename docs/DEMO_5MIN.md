@@ -30,18 +30,20 @@ terapeutti ja handover → terapia ja välitehtävät → seuranta terapian jäl
 
 ## Pitch-video: noin 3 minuuttia, kerronta ruudulla
 
-Kun ohjaus on paneelin vieressä, sarakkeessa näkyy vaihe (esim. *Vaihe 3/8*), vaiheen nimi ja luettava kerronta, joka
-kertoo yleisölle, mitä ratkaisu vaiheessa tekee. Kerronta on yksi teksti vaihetta kohden – ei jokaiselle painallukselle.
-Pisteet kertovat, montako painallusta vaiheessa on ja montako on tehty; alimpana näkyy seuraava vaihe. Tekstit ovat
-tiedostossa `frontend/src/valituki/components/demoPilot.ts` (`STAGES[].tell` ja `DEMO_INTRO`). Kerronta on yhteensä
-noin 270 sanaa, eli rauhallisesti luettuna noin 2:45. Videon puhuttu käsikirjoitus painallusvihjeineen on tiedostossa
-[DEMO_VIDEO.md](DEMO_VIDEO.md).
+Kun ohjaus on paneelin vieressä, sarakkeessa näkyy vaihe (esim. *Vaihe 3/8*), vaiheen nimi ja luettava kerronta.
+Kerronta on esittäjän pitch minämuodossa, asiakkaan roolissa. Vaiheen teksti on jaettu osiin, jotka vaihtuvat painallusten
+mukaan niin, että sarakkeessa on aina ruudulla näkyvään kuuluva osa – esimerkiksi *Vointikysely*, *Hoitokoordinaattorin
+näkymä* ja *Yhteenveto ensikäynnille*. Pisteet kertovat, montako painallusta vaiheessa on ja montako on tehty; alimpana
+näkyy seuraava vaihe. Tekstit ovat tiedostossa `frontend/src/valituki/components/demoPilot.ts` (`STAGES[].tell` ja
+`DEMO_INTRO`); kerronta on yhteensä noin 520 sanaa. Demo-ohjaus tekee pitchin teot itse: askeleella 13 ammattilainen
+merkitsee tilanteen tarkistetuksi ja muuttaa kiireellisyyden kiireelliseksi, askeleella 19 asiakas poistaa yhteenvedosta
+yhden kohdan (*Mitä olen kokeillut*) ja hyväksyy loput. Aiempi, lyhyempi videon käsikirjoitus painallusvihjeineen on
+tiedostossa [DEMO_VIDEO.md](DEMO_VIDEO.md).
 
 - **Ennen ensimmäistä painallusta** luetaan johdanto ("Kuvitteellinen asiakas on saanut lähetteen…").
 - **Paina seuraavaa vasta, kun painikkeessa lukee taas Seuraava.** Jos siinä lukee *Kelaa*, painallus vain vie käynnissä
   olevan keskustelun loppuun.
-- **Tallenna Demo-tilassa.** Kerronta sanoo, että demon tekstit on kirjoitettu valmiiksi; jos tallennat Claude-tilassa,
-  jätä tämä lause sanomatta.
+- **Tallenna Demo-tilassa,** jolloin keskustelut etenevät tasaisesti eivätkä odota kielimallia.
 
 | Vaihe | Painallukset | Aika | Vinkki |
 |---|---|---|---|
@@ -61,9 +63,9 @@ noin 270 sanaa, eli rauhallisesti luettuna noin 2:45. Videon puhuttu käsikirjoi
 | 1 · Avun haku | 1 | Sami on terapiajonossa, jonotiedot korostettuna | 0:00–0:35 |
 | 2 · AI-alkukeskustelu | 2–5 | Keskustelu alkaa → vastaukset toistuvat (noin 6 s) → ”Ymmärsinkö tilanteesi oikein?” → Sami hyväksyy, ja profiili täyttyy → check-in-rytmi → kotinäkymässä ”Miten voit tänään?” (oma lähtötaso) | 0:35–1:35 |
 | 3 · Mieliluotsi: KKT | 6–8 | Demoviesti → ”Kyllä, tutkitaan” → keskustelu etenee kuin terapeutin kanssa: Mieliluotsi vastaa lyhyin kuplin yksi kerrallaan ja kysyy yhden asian kerrallaan (noin 45 s, → kelaa loppuun) → altistusporras | 1:35–2:30 |
-| 4 · Mieliluotsi: seuranta ja muutosten tunnistus | 9–13 | Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä, ja vointi heikkenee → ”Huomasimme jotain” (havainto on vain ehdotus) → Ammattilainen: jono → ”Miksi Sami nousi tarkistettavaksi?” → merkitään tarkistetuksi | 2:20–3:10 |
+| 4 · Mieliluotsi: seuranta ja muutosten tunnistus | 9–13 | Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä, ja vointi heikkenee → ”Huomasimme jotain” (havainto on vain ehdotus) → Ammattilainen: jono → ”Miksi Sami nousi tarkistettavaksi?” → merkitään tarkistetuksi ja kiireellisyydeksi kiireellinen | 2:20–3:10 |
 | 5 · Mieliluotsi: havainto tarkentaa terapeuttiprofiilia | 14 | Sami hyväksyy havainnon, ja profiili päivittyy | 3:10–3:30 |
-| 6 · Sopivin terapeutti ja handover | 15–19 | Vapaa paikka → matching → ”Miksi Anna?” → valinta ja ensimmäinen aika → yhteenveto → hyväksytään jaettavaksi | 3:30–4:15 |
+| 6 · Sopivin terapeutti ja handover | 15–19 | Vapaa paikka → matching → ”Miksi Anna?” → valinta ja ensimmäinen aika → yhteenveto → yksi kohta poistetaan ja loput hyväksytään jaettavaksi | 3:30–4:15 |
 | 7 · Terapia + välitehtävät | 20–23 | Terapia alkaa: Anna näkee hyväksytyn yhteenvedon → välituen määritys → tallennus → Sami näkee suunnitelman | 4:15–4:50 |
 | 8 · Seuranta terapian jälkeen | 24 | Terapia päättyy – seuranta jatkuu | 4:50–5:00 |
 

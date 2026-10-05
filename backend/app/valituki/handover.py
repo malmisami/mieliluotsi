@@ -323,13 +323,11 @@ def therapist_clients(state: ValitukiState, therapist_id: str) -> list[dict[str,
 
 
 def _therapist_sections(state: ValitukiState, client: ClientProfile, record: Optional[HandoverSummary]) -> Optional[list[dict]]:
-    """Approved: exactly the snapshot the client shared. Draft: the current draft as the client sees it (without the parts they
-    removed), marked as a draft in the therapist view. Withdrawn: nothing."""
-    if record is None or record.status == 'withdrawn':
+    """Exactly the snapshot the client approved – nothing before the approval (the draft is the client's) and nothing after a
+    withdrawal, as the client is told: "Mitään ei jaeta ennen kuin hyväksyt sen."""
+    if record is None or record.status != 'approved' or not record.approvedSnapshot:
         return None
-    if record.status == 'approved' and record.approvedSnapshot:
-        return [s.model_dump() for s in record.approvedSnapshot]
-    return [s.model_dump() for s in build_sections(state, client, record) if s.available and not s.removed]
+    return [s.model_dump() for s in record.approvedSnapshot]
 
 
 def summary_line(record: Optional[HandoverSummary]) -> str:

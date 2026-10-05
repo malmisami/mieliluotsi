@@ -27,15 +27,15 @@ def test_handover_excludes_full_chat_history_by_default(scene):
     assert 'Jännittää huomista palaveria' not in snapshot_text
 
 
-def test_therapist_sees_the_draft_and_after_approval_exactly_what_the_client_shared(scene):
-    """Test 14 (demo: the draft is visible to the therapist, marked as a draft)."""
+def test_therapist_sees_nothing_before_approval_and_then_exactly_what_the_client_shared(scene):
+    """Test 14: the draft is the client's – the therapist sees nothing until the client approves it."""
     state = scene('matches')
     client = client_of(state)
     decision = next(d for d in state.matchDecisions if d.clientId == client.id and d.status == 'proposed_to_client')
     client_actions.select_candidate(state, client, decision.candidateIds[0])
     anna_view = view.therapist_view(state, 'th-anna')['selected']
     row = next(r for r in anna_view['clients'] if r['clientId'] == client.id)
-    assert row['handoverStatus'] == 'draft' and row['sections']
+    assert row['handoverStatus'] == 'draft' and row['sections'] is None
 
     helped = insights.for_client(state, client.id, kind='helped_before')[0]
     client_actions.set_insight_sharing(state, client, helped.id, professional=False, matching=False)
@@ -47,9 +47,10 @@ def test_therapist_sees_the_draft_and_after_approval_exactly_what_the_client_sha
     assert helped.text not in str(row['sections'])
     assert row['sections'] == [s.model_dump() for s in handover.find(state, client.id).approvedSnapshot]
 
+    # An edit makes it a draft again: shared only once the client approves the new version.
     client_actions.update_handover(state, client, {'action': 'edit', 'section': 'hopes', 'text': 'Haluan oppia jännityksen kanssa.'})
     row = next(r for r in view.therapist_view(state, 'th-anna')['selected']['clients'] if r['clientId'] == client.id)
-    assert row['handoverStatus'] == 'draft' and 'ai_summary' not in {s['key'] for s in row['sections']}
+    assert row['handoverStatus'] == 'draft' and row['sections'] is None
 
 
 def test_sections_distinguish_information_types(scene):
