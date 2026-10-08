@@ -6505,23 +6505,11 @@ body {
   }
 
   .vt.role-client .stage {
-    padding: 0 0 32px;
+    padding: 12px 0 32px;
   }
 
-  /* The app is the screen under the demo control: its whole screen, as on the desktop's phone, scaled to fit (the zoom is
+  /* The same phone as on the desktop, frame and all, scaled as a whole to the screen under the demo control (the zoom is
      measured in ValitukiApp) – top bar to tab bar on the screen at once. */
-  .vt .phone {
-    width: 374px;
-    height: 814px;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-  }
-
-  .vt .phone-inner {
-    border-radius: 0;
-  }
 
   .vt .backstage {
     width: calc(100% - 24px);
