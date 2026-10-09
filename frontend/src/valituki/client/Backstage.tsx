@@ -178,6 +178,15 @@ export default function Backstage({ client }: { client: ClientView }) {
       stage.style.setProperty('--stage-gap', `${gap}px`);
       if (dockSlot) stage.style.setProperty('--dock-zoom', Math.max(MIN_DOCK, panel).toFixed(3));
       else stage.style.removeProperty('--dock-zoom');
+      // Where the panel ends and the demo control begins: the other views put their page's right edge and the control in
+      // the same places, so nothing moves when the demo switches views (.page-layout.has-dock in styles/app.css).
+      window.requestAnimationFrame(() => {
+        const slot = stage.querySelector('.dock-slot');
+        const root = document.documentElement.style;
+        if (!slot) return;
+        root.setProperty('--compose-right', `${Math.round(aside.getBoundingClientRect().right)}px`);
+        root.setProperty('--compose-dock', `${Math.round(slot.getBoundingClientRect().left)}px`);
+      });
     };
     fit();
     const observer = new ResizeObserver(fit);

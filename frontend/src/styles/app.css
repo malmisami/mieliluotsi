@@ -1656,6 +1656,22 @@ body {
   max-width: calc(1360px + 352px);
 }
 
+/* The care team's and the therapist's page from the left edge to where the client view's panel ends, and the demo control
+   where it is in the client view (measured there, Backstage.tsx) – nothing moves when the demo switches views. */
+.vt .stage:has(> .page-layout.has-dock) {
+  max-width: none;
+  margin-left: 0;
+}
+
+.vt .page-layout.has-dock {
+  gap: calc(var(--compose-dock, 1132px) - var(--compose-right, 1100px));
+}
+
+.vt .page-layout.has-dock > .page-main {
+  flex: 0 1 auto;
+  width: calc(var(--compose-right, 1100px) - 20px);
+}
+
 .vt .page-layout > .dock-slot {
   top: 24px;
   align-self: flex-start;
