@@ -314,8 +314,9 @@ def _assess_mood(state: ValitukiState, client: ClientProfile, mood: int, actor: 
 
 
 def run_scripted(state: ValitukiState, client: ClientProfile, script: dict[str, Any], actor: str,
-                 provider: Optional[AIProvider] = None) -> None:
-    """Replays a whole intake through the same functions the UI uses (seed data and demo shortcuts)."""
+                 provider: Optional[AIProvider] = None, baseline: bool = True) -> None:
+    """Replays a whole intake through the same functions the UI uses (seed data and demo shortcuts). Without `baseline`
+    today's wellbeing is left for the home screen (record_baseline) – the live demo asks it after the first conversation."""
     provider = provider or DemoAIProvider()
     answers = script['answers']
     if client.journeyState == 'INVITED':
@@ -330,5 +331,6 @@ def run_scripted(state: ValitukiState, client: ClientProfile, script: dict[str, 
     if session and session.status == 'review':
         confirm(state, client, actor)
     if session and session.status == 'rhythm':
-        complete(state, client, script.get('rhythm', {'checkInDays': [0, 2, 5]}), int(script.get('baselineMood', 3)), actor, provider,
-                 anxiety=script.get('baselineAnxiety'))
+        complete(state, client, script.get('rhythm', {'checkInDays': [0, 2, 5]}),
+                 int(script.get('baselineMood', 3)) if baseline else None, actor, provider,
+                 anxiety=script.get('baselineAnxiety') if baseline else None)

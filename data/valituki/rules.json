@@ -4,7 +4,7 @@
   "clock": {"dailyTickTime": "09:00", "defaultAnswerTime": "20:00"},
   "checkins": {
     "defaultDays": [0, 2, 5],
-    "frequencyOptions": {"1": [2], "2": [0, 3], "3": [0, 2, 5]},
+    "frequencyOptions": {"1": [2], "2": [0, 4], "3": [0, 2, 5]},
     "missedForEngagementReview": 3,
     "engagementRuleId": "CHK-MISS-002",
     "reminderRuleId": "CHK-MISS-001",

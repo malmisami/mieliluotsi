@@ -102,7 +102,7 @@ def test_therapist_configuration_changes_agent_behaviour(scene):
     config = therapy.active_config(state, client.id)
     assert client.mode == 'therapy_support' and config is not None
     assert config.allowedActivityIds == ['act-grounding', 'act-values', 'act-activity-planning']
-    assert client.checkInDays == config.checkInDays == [0, 3]
+    assert client.checkInDays == config.checkInDays == [0, 4]
     summary = therapy.mode_summary(state, client)
     assert summary['statement'] == 'Terapeutti Anna on määrittänyt tämän suunnitelman.'
     simulation.advance(state, 7)

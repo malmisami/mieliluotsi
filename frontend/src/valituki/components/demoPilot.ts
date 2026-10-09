@@ -42,22 +42,22 @@ export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: T
       + 'terapeutti valikoituu saatavuuden, ei sopivuuden perusteella. Samalla keskustelujeni ja muiden tietojeni pohjalta '
       + 'rakentuu profiili, jonka tuleva terapeutti näkee: tavoitteeni, mikä minua auttaa ja miten vointini kehittyy '
       + 'odotusaikana.' },
-    { from: 5, heading: 'Vointikysely', text: 'Kotinäkymässä vastaan sovittuun tahtiin lyhyeen vointikyselyyn: mieliala ja '
-      + 'ahdistus asteikolla yhdestä viiteen. Näin vointiani seurataan koko odotusajan. Tämä tuo ammattilaisille koko jonosta '
-      + 'näkyvyyden.' },
   ] },
   { key: 'kkt', label: 'Ohjattu KKT-harjoittelu chatissa', group: 'valituki', tell: [
-    { from: 6, text: 'Avaan keskustelun ja kerron, että tiistain esitys tiimille jännittää jo nyt. Mieliluotsi ei ala '
+    { from: 5, text: 'Avaan keskustelun ja kerron, että tiistain esitys tiimille jännittää jo nyt. Mieliluotsi ei ala '
       + 'neuvoa. Se kysyy, haluanko tutkia ajatusta yhdessä. Vastaan kyllä.' },
-    { from: 7, text: 'Harjoitus on kognitiivista käyttäytymisterapiaa. Se sopii odotusaikaan, koska se keskittyy '
+    { from: 6, text: 'Harjoitus on kognitiivista käyttäytymisterapiaa. Se sopii odotusaikaan, koska se keskittyy '
       + 'haitallisten ajatus- ja toimintamallien muuttamiseen. Se ei siis mene ongelmien alkulähteisiin, kuten lapsuuden '
       + 'traumoihin. Keskustelu pysyy turvarajojen sisällä eikä haittaa tulevaa hoitoa. Keskeistä on saada yleisten '
       + 'tekoälypalveluiden kanssa käytävät keskustelut valvotulle alustalle: keskustelut ilman turvarajoja, joissa '
       + 'vaikeista aiheista avaudutaan liian nopeasti, ovat haitallisia toipumiselle.' },
-    { from: 8, text: 'Harjoituksen lopussa jännitys on laskenut kahdeksasta viiteen. Sitten rakennamme altistusportaat: '
+    { from: 7, text: 'Harjoituksen lopussa jännitys on laskenut kahdeksasta viiteen. Sitten rakennamme altistusportaat: '
       + 'lähestyn esitystä pienin askelin, helpoimmasta vaikeimpaan.' },
   ] },
   { key: 'seuranta', label: 'Mielialan ja ahdistuksen seuranta', group: 'valituki', tell: [
+    { from: 8, heading: 'Vointikysely', text: 'Kotinäkymässä vastaan sovittuun tahtiin lyhyeen vointikyselyyn: mieliala ja '
+      + 'ahdistus asteikolla yhdestä viiteen. Näin vointiani seurataan koko odotusajan. Tämä tuo ammattilaisille koko jonosta '
+      + 'näkyvyyden.' },
     { from: 9, text: 'Edistyminen-näkymässä näen mielialani ja ahdistukseni kehityksen. Se on itsearvio, ei diagnoosi. '
       + 'Keskustelut kertyvät ajatuspäiväkirjaksi, joka näkyy vain minulle. Voin jakaa siitä yksittäisen merkinnän '
       + 'terapeutille. Viikot kuluvat. Kolmessa peräkkäisessä kyselyssä vointini on vähintään pisteen oman lähtötasoni '
@@ -182,25 +182,16 @@ export const BEATS: Beat[] = [
     act: playIntake,
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
   { stage: 'alku', title: 'Sami hyväksyy tulkinnat → Therapy Fit Profile syntyy',
-    say: 'Vasta hyväksytyt tiedot siirtyvät terapeutin profiiliin ja matchingiin (oikealla). Viimeisenä rytmi ja tämän päivän vointi.',
-    act: async (p) => ok(await p.mutate((s) => api.intakeConfirm(s, AINO))),
-    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
-
-  { stage: 'alku', title: 'Check-in-rytmi ja oma lähtötaso – Mieliluotsi käynnistyy',
-    say: 'Mieliala ja ahdistus 1–5 kolmesti viikossa. Vointia verrataan Samin omaan lähtötasoon, ei muihin ihmisiin.',
+    say: 'Vasta hyväksytyt tiedot siirtyvät terapeutin profiiliin ja matchingiin (oikealla). Viimeisenä check-in-rytmi.',
     act: async (p) => {
+      if (p.view().client?.intake.status === 'review' && !ok(await p.mutate((s) => api.intakeConfirm(s, AINO)))) return false;
+      // The rhythm closes the intake; today's wellbeing is asked on the home screen after the first conversation.
       const intake = p.view().client?.intake;
       const rhythm = intake?.demoRhythm;
-      if (intake?.status === 'rhythm' && !ok(await p.mutate((s) => api.intakeComplete(s, AINO, {
-        checkInDays: rhythm?.checkInDays ?? [0, 2, 5], communicationStyle: rhythm?.communicationStyle ?? 'brief' })))) return false;
-      if (!p.view().client?.checkIn.needsBaseline) return true;
-      // "Miten voit tänään?" on the home screen: the card is on screen for a moment, then Sami answers.
-      p.go({ role: 'client', tab: 'koti' });
-      await p.spot('.cx-baseline', 'center');
-      await p.pause(1600);
-      return ok(await p.mutate((s) => api.recordBaseline(s, AINO, { mood: intake?.demoMood ?? 3, anxiety: 3 })));
+      return intake?.status !== 'rhythm' || ok(await p.mutate((s) => api.intakeComplete(s, AINO, {
+        checkInDays: rhythm?.checkInDays ?? [0, 2, 5], communicationStyle: rhythm?.communicationStyle ?? 'brief' })));
     },
-    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.cx-teaser', 'center'); } },
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
 
   // 3 · Mieliluotsi: ohjattu KKT-harjoittelu chatissa
   { stage: 'kkt', title: 'Sami kertoo jännittävästä tilanteesta',
@@ -232,7 +223,18 @@ export const BEATS: Beat[] = [
     act: playGuided,
     show: async (p) => { p.go({ role: 'client', tab: 'keskustelu' }); } },
 
-  // 4 · Mieliluotsi: mielialan ja ahdistuksen seuranta – kun dataa on kertynyt
+  // 4 · Mieliluotsi: mielialan ja ahdistuksen seuranta – vointikysely ja oma lähtötaso, sitten kun dataa on kertynyt
+  { stage: 'seuranta', title: 'Vointikysely: mieliala ja ahdistus 1–5 – oma lähtötaso',
+    say: 'Mieliala ja ahdistus 1–5 kolmesti viikossa. Vointia verrataan Samin omaan lähtötasoon, ei muihin ihmisiin.',
+    act: async (p) => {
+      if (!p.view().client?.checkIn.needsBaseline) return true;
+      // "Miten voit tänään?" on the home screen: the card is on screen for a moment, then Sami answers.
+      p.go({ role: 'client', tab: 'koti' });
+      await p.spot('.cx-baseline', 'center');
+      await p.pause(1600);
+      return ok(await p.mutate((s) => api.recordBaseline(s, AINO, { mood: p.view().client?.intake.demoMood ?? 3, anxiety: 3 })));
+    },
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.cx-teaser', 'center'); } },
   { stage: 'seuranta', title: 'Kaksi viikkoa myöhemmin: mieliala ja ahdistus käyrällä – vointi laskee alle oman lähtötason',
     say: 'Check-init kolmesti viikossa ja harjoittelu kertyvät, ja jokaista check-iniä verrataan Samin omaan lähtötasoon. Sitten '
       + 'check-in jää väliin ja uni heikkenee: havaintoagentti tunnistaa muutoksen ja pyytää ammattilaista katsomaan.',
@@ -273,7 +275,12 @@ export const BEATS: Beat[] = [
     say: 'Profiili terapeutille rakentuu vain hyväksytyistä tiedoista, ja jokaisella tiedolla on oma käyttöoikeus.',
     act: async (p) => {
       const pattern = p.view().client?.memory.pending.find((i) => i.kind === 'pattern');
-      return pattern ? ok(await p.mutate((s) => api.decideInsight(s, AINO, pattern.id, 'approve'))) : true;
+      if (!pattern) return true;
+      // The observation stays on the home screen until Sami presses "Tämä tuntuu oikealta": first a moment to read it.
+      p.go({ role: 'client', tab: 'koti' });
+      await p.spot(['.cx-insight .cx-btn-dark', '.cx-insight'], 'center');
+      await p.pause(3200);
+      return ok(await p.mutate((s) => api.decideInsight(s, AINO, pattern.id, 'approve')));
     },
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.bp-doc'); } },
 
@@ -359,8 +366,7 @@ function progress(view: ValitukiView): number {
   const intake = client.intake.status;
   if (intake === 'not_started' || intake === 'consent') return 0;
   if (intake === 'conversation') return 1;
-  if (intake === 'review') return 2;
-  if (intake === 'rhythm' || client.checkIn.needsBaseline) return 3;
+  if (intake === 'review' || intake === 'rhythm') return 2;
   const row = view.therapist.selected?.clients.find((c) => c.clientId === AINO);
   const stage = client.matching.stage;
   if (stage === 'aftercare' || client.modeKey === 'aftercare_support') return 23;
@@ -375,19 +381,21 @@ function progress(view: ValitukiView): number {
     return client.memory.pending.some((i) => i.kind === 'pattern') ? 12 : 13;
   }
   if (daysBetween(view.meta.demoStartDate, view.meta.currentDate) >= 14) return 7;  // the decline is still to come
-  if (client.practice.thoughtRecords.length > 0) return 7;
-  if (client.guided?.tool === 'thought_record') return 6;
-  if (client.chat.some((m) => m.role === 'client')) return 5;
-  return 4;
+  // The wellbeing check-in comes after the first conversation (step 8); answered early by hand, the conversation still plays.
+  if (client.practice.thoughtRecords.length > 0) return client.checkIn.needsBaseline ? 6 : 7;
+  if (client.guided?.tool === 'thought_record') return 5;
+  if (client.chat.some((m) => m.role === 'client')) return 4;
+  return 3;
 }
 
 function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(to.slice(0, 10)) - Date.parse(from.slice(0, 10))) / 86_400_000);
 }
 
-/** The prepared scenes and the step whose state each one equals – a jump rebuilds the nearest one and replays the rest. */
+/** The prepared scenes and the step whose state each one equals – a jump rebuilds the nearest one and replays the rest.
+    ('reviewed' leaves the observation for step 14, where Sami approves it on the home screen.) */
 const SCENE_AFTER: [scene: string, beat: number][] = [
-  ['start', 0], ['intake', 4], ['cbt', 7], ['reviewed', 13], ['matches', 14], ['handover', 18], ['therapy', 21],
+  ['start', 0], ['intake', 3], ['cbt', 6], ['reviewed', 12], ['matches', 14], ['handover', 18], ['therapy', 21],
   ['aftercare', 23],
 ];
 

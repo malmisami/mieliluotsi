@@ -4,7 +4,7 @@ import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtShort } from '../format';
 import {
-  AlertIcon, ArrowRightIcon, CalendarIcon, ChatIcon, CheckIcon, ChevronRightIcon, CrossIcon, FlaskIcon, LeafIcon, SendIcon,
+  ArrowRightIcon, CalendarIcon, ChatIcon, CheckIcon, ChevronRightIcon, CrossIcon, FlaskIcon, LeafIcon, SendIcon,
   SparkleIcon, StairsIcon, StethoscopeIcon, ThoughtIcon,
 } from '../icons';
 import { LogoMark } from '../components/Logo';
@@ -52,7 +52,6 @@ export default function HomeTab() {
   const guided = client.guided;
   const due = client.checkIn.due;
   const checkedInToday = client.progress.series.some((p) => p.date === today);
-  const mode = client.modeKey;
   const todayTasks = practice.tasks.filter((t) => t.dueDate && t.dueDate <= today);
   const nextTask = practice.tasks.find((t) => t.dueDate && t.dueDate > today);
   const activity = client.today;
@@ -73,11 +72,6 @@ export default function HomeTab() {
 
   return (
     <div className="cx-screen cx-home">
-      <p className="cx-mode">
-        {mode === 'therapy_support' ? <><StethoscopeIcon size={14} /> Terapian välituki · {client.mode.therapistName}</>
-          : mode === 'aftercare_support' ? <><CheckIcon size={14} /> Seuranta terapian jälkeen</>
-            : <><SparkleIcon size={14} /> Odotusajan tuki</>}
-      </p>
       <h1 className="cx-greeting">Hei {client.firstName},<br />{askMood ? 'miten voit tänään?' : 'mitä mielessäsi on?'}</h1>
 
       {needsBaseline ? <BaselineCard /> : askMood && (
@@ -97,6 +91,25 @@ export default function HomeTab() {
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) submit(e); }} />
         <button type="submit" className="cx-send" aria-label="Lähetä" disabled={busy || !text.trim()}><SendIcon size={18} /></button>
       </form>
+
+      {/* A new observation waits for the client's decision: right below the writing box. */}
+      {pattern && (
+        <section className="cx-insight">
+          <p className="cx-eyebrow"><SparkleIcon size={14} /> Huomasimme jotain</p>
+          <p className="cx-insight-text">{pattern.text}</p>
+          <p className="cx-fine">Perustuu: {(pattern.evidence.basis ?? []).filter(Boolean).join(' · ')}</p>
+          <div className="cx-row">
+            <button type="button" className="cx-btn cx-btn-dark cx-btn-sm" disabled={busy}
+              onClick={() => run((s) => api.decideInsight(s, client.id, pattern.id, 'approve'), () => 'Havainto tallennettiin Therapy Fit Profileen. Voit muuttaa sen käyttöoikeutta Tietoni-sivulla.')}>
+              <CheckIcon size={15} /> Tämä tuntuu oikealta
+            </button>
+            <button type="button" className="cx-btn cx-btn-ghost cx-btn-sm" disabled={busy}
+              onClick={() => run((s) => api.decideInsight(s, client.id, pattern.id, 'reject'), () => 'Kiitos – havaintoa ei käytetä mihinkään.')}>
+              <CrossIcon size={15} /> Ei kuvaa tilannettani
+            </button>
+          </div>
+        </section>
+      )}
 
       {guided && (
         <button type="button" className="cx-continue" onClick={() => openTab('keskustelu')}>
@@ -132,34 +145,6 @@ export default function HomeTab() {
       </section>
 
       <ProgressTeaser />
-
-      {client.waiting.reviewPending && (
-        <section className="cx-note cx-note-warn" role="status">
-          <AlertIcon size={18} />
-          <div>
-            <p className="cx-note-title">Mieliluotsi huomasi muutoksen</p>
-            <p>{client.trend.text} {client.waiting.reviewText}</p>
-          </div>
-        </section>
-      )}
-
-      {pattern && (
-        <section className="cx-insight">
-          <p className="cx-eyebrow"><SparkleIcon size={14} /> Huomasimme jotain</p>
-          <p className="cx-insight-text">{pattern.text}</p>
-          <p className="cx-fine">Perustuu: {(pattern.evidence.basis ?? []).filter(Boolean).join(' · ')}</p>
-          <div className="cx-row">
-            <button type="button" className="cx-btn cx-btn-dark cx-btn-sm" disabled={busy}
-              onClick={() => run((s) => api.decideInsight(s, client.id, pattern.id, 'approve'), () => 'Havainto tallennettiin Therapy Fit Profileen. Voit muuttaa sen käyttöoikeutta Tietoni-sivulla.')}>
-              <CheckIcon size={15} /> Tämä tuntuu oikealta
-            </button>
-            <button type="button" className="cx-btn cx-btn-ghost cx-btn-sm" disabled={busy}
-              onClick={() => run((s) => api.decideInsight(s, client.id, pattern.id, 'reject'), () => 'Kiitos – havaintoa ei käytetä mihinkään.')}>
-              <CrossIcon size={15} /> Ei kuvaa tilannettani
-            </button>
-          </div>
-        </section>
-      )}
 
       {feedbackPending && (
         <button type="button" className="cx-note cx-note-brand cx-note-btn" onClick={() => openTab('polku')}>

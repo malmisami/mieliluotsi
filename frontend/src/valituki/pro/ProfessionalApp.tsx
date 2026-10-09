@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useValituki } from '../context';
 import type { ProTab } from '../context';
+import { Logo } from '../components/Logo';
 import { BarsIcon, ClockIcon, ListIcon, UsersIcon } from '../icons';
 import AgentLog from './AgentLog';
 import ClientReview from './ClientReview';
@@ -21,20 +22,19 @@ export default function ProfessionalApp() {
   return (
     <div className="pro">
       <header className="pro-head">
-        <div>
-          <p className="eyebrow">Hoitotiimin näkymä · {pro.coordinatorName}</p>
-          <h1 className="pro-title">Älykäs terapiajono</h1>
-          <p className="muted">Jonosta ei tule passiivista odottamista. Mieliluotsi nostaa muutokset tarkistettaviksi – ammattilainen päättää.</p>
-        </div>
-        <nav className="pro-tabs" aria-label="Ammattilaisen näkymät">
-          {TABS.map((tab) => (
-            <button key={tab.key} type="button" aria-current={proTab === tab.key && !proClientId ? 'page' : undefined}
-              onClick={() => { setProTab(tab.key); setProClientId(null); }}>
-              {tab.icon} {tab.label}{tab.key === 'jono' && pro.openTasks > 0 && <span className="count">{pro.openTasks}</span>}
-            </button>
-          ))}
-        </nav>
+        <div className="pro-brand"><Logo size={32} /></div>
+        <p className="pro-kicker"><span className="pro-kicker-dot" aria-hidden="true" />Hoitotiimin näkymä · {pro.coordinatorName}</p>
+        <h1 className="pro-title">Älykäs terapiajono</h1>
+        <p className="pro-lede">Jonosta ei tule passiivista odottamista. Mieliluotsi nostaa muutokset tarkistettaviksi – ammattilainen päättää.</p>
       </header>
+      <nav className="pro-tabs" aria-label="Ammattilaisen näkymät">
+        {TABS.map((tab) => (
+          <button key={tab.key} type="button" aria-current={proTab === tab.key && !proClientId ? 'page' : undefined}
+            onClick={() => { setProTab(tab.key); setProClientId(null); }}>
+            {tab.icon} {tab.label}{tab.key === 'jono' && pro.openTasks > 0 && <span className="count">{pro.openTasks}</span>}
+          </button>
+        ))}
+      </nav>
       {proClientId && pro.details[proClientId] ? <ClientReview client={pro.details[proClientId]} /> : (
         <>
           {proTab === 'jono' && <Queue />}

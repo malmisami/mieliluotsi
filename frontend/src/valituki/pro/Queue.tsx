@@ -9,6 +9,9 @@ type SortKey = 'review' | 'name' | 'waitingDays' | 'lastCheckIn' | 'trend' | 'ma
 const REVIEW_ORDER: Record<string, number> = { safety: 0, requested: 1, contact: 2, matching_review: 3, task: 4, reviewed: 5, none: 6 };
 const TREND_ORDER: Record<string, number> = { declining: 0, insufficient: 1, stable: 2, improving: 3 };
 
+const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const share = (value: number, total: number) => `${Math.round((value / Math.max(1, total)) * 100)} % jonosta`;
+
 export default function Queue() {
   const { view, setProClientId } = useValituki();
   const pro = view.professional;
@@ -55,15 +58,22 @@ export default function Queue() {
           <span className="kpi-label">Aktiivisia asiakkaita</span>
           <span className="kpi-value">{fmtThousands(pro.overview.total)}</span>
           <span className="kpi-sub">terapiajonossa, Mieliluotsi käytössä</span>
+          {/* The whole queue as one bar: each group's share, in the group's colour. */}
+          <span className="kpi-stack" aria-hidden="true">
+            {buckets.map((b) => <i key={b.key} className={`kpi-seg kpi-${b.key}`} style={{ flexGrow: b.value }} />)}
+          </span>
         </button>
-        {buckets.map((b) => (
-          <button key={b.key} type="button" className={`kpi kpi-${b.key}`} aria-pressed={filter === b.key}
-            onClick={() => setFilter(filter === b.key ? null : b.key)}>
-            <span className="kpi-label">{b.label}</span>
-            <span className="kpi-value">{fmtThousands(b.value)}</span>
-            <span className="kpi-sub">{b.live ? `joista demossa ${b.live}` : ' '}</span>
-          </button>
-        ))}
+        <div className="kpi-groups">
+          {buckets.map((b) => (
+            <button key={b.key} type="button" className={`kpi kpi-${b.key}`} aria-pressed={filter === b.key}
+              onClick={() => setFilter(filter === b.key ? null : b.key)}>
+              <span className="kpi-label"><span className="kpi-dot" aria-hidden="true" />{b.label}</span>
+              <span className="kpi-value">{fmtThousands(b.value)}</span>
+              <span className="kpi-share" aria-hidden="true"><i style={{ width: `${(b.value / Math.max(1, pro.overview.total)) * 100}%` }} /></span>
+              <span className="kpi-sub">{share(b.value, pro.overview.total)}{b.live ? ` · demossa ${b.live}` : ''}</span>
+            </button>
+          ))}
+        </div>
       </section>
       <Synthetic>{pro.overview.syntheticNote} Luvut kertovat tilanteen – eivät kliinistä priorisointia. Mieliluotsi ei ole priorisoinut asiakkaita.</Synthetic>
 
@@ -101,8 +111,11 @@ export default function Queue() {
                 <tr key={row.clientId} className={`${row.demoPrimary ? 'row-primary' : ''} review-${row.reviewKey}`} onClick={() => setProClientId(row.clientId)}>
                   <td>
                     <button type="button" className="row-link" onClick={(e) => { e.stopPropagation(); setProClientId(row.clientId); }}>
-                      <span className="row-name">{row.name}</span>
-                      <span className="row-sub">{row.stateLabel}</span>
+                      <span className="row-avatar" aria-hidden="true">{initials(row.name)}</span>
+                      <span className="row-who">
+                        <span className="row-name">{row.name}</span>
+                        <span className="row-sub">{row.stateLabel}</span>
+                      </span>
                     </button>
                   </td>
                   <td className="num">{row.waitingDays !== null ? `${row.waitingDays} pv` : '–'}</td>
@@ -120,8 +133,13 @@ export default function Queue() {
               {samples.map((sample) => (
                 <tr key={sample.name} className={`row-sample review-${sample.reviewKey}`}>
                   <td>
-                    <span className="row-name">{sample.name} <span className="sample-tag">Esimerkki</span></span>
-                    <span className="row-sub">{sample.age} v · taustakohortti</span>
+                    <span className="row-link">
+                      <span className="row-avatar" aria-hidden="true">{initials(sample.name)}</span>
+                      <span className="row-who">
+                        <span className="row-name">{sample.name} <span className="sample-tag">Esimerkki</span></span>
+                        <span className="row-sub">{sample.age} v · taustakohortti</span>
+                      </span>
+                    </span>
                   </td>
                   <td className="num">{sample.waitingDays} pv</td>
                   <td>{fmtShort(sample.lastCheckIn)}</td>

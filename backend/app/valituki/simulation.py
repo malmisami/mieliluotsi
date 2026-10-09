@@ -12,7 +12,7 @@ from app.valituki import adapters, client_actions, content, journey, practice, r
 from app.valituki.agents import navigation, orchestrator
 from app.valituki.ai import DemoAIProvider
 from app.valituki.models import ClientProfile, ValitukiState
-from app.valituki.store import add_days, days_between, get_client, get_therapist, now
+from app.valituki.store import add_days, days_between, get_client, get_therapist, now, weekday
 
 STABLE_OFFSETS = [0, 1, 0, 0, -1, 0, 1]
 PROFILE_LABELS = {'scripted': 'Käsikirjoitettu demopolku', 'stable': 'Vakaa', 'deteriorating': 'Heikkenevä',
@@ -54,7 +54,7 @@ def simulated_anxiety(entry: dict[str, Any]) -> int:
     return max(1, min(5, value))
 
 
-def next_answer(client: ClientProfile, default_time: str) -> Optional[dict[str, Any]]:
+def next_answer(client: ClientProfile, default_time: str, day: Optional[str] = None) -> Optional[dict[str, Any]]:
     """The simulated answer to the client's next due check-in, or None when the check-in is left undone."""
     spec = _spec(client)
     profile = client.simulationProfile
@@ -75,7 +75,11 @@ def next_answer(client: ClientProfile, default_time: str) -> Optional[dict[str, 
             entry = script[index]
             return None if entry.get('skip') else {**entry, 'time': entry.get('time', time)}
         return {'mood': max(1, int(round(client.baseline or 3)) - 1), 'changes': {'sleep': 'worse'}, 'note': '', 'time': time}
-    if profile == 'scripted':
+    if profile == 'scripted' and day and _rhythm_changed(client):
+        entry = _by_evening(client, spec.get('checkIns', []), day)
+        if entry is not None:
+            return {**entry, 'time': entry.get('time', time)}
+    elif profile == 'scripted':
         script = spec.get('checkIns', [])
         index = _cursor(client, 'checkIns')
         if index < len(script):
@@ -91,6 +95,25 @@ def next_answer(client: ClientProfile, default_time: str) -> Optional[dict[str, 
     return _generic_stable(client, index, time)
 
 
+def _rhythm_changed(client: ClientProfile) -> bool:
+    """The client chose another check-in rhythm than the one the scripted answers were written for."""
+    designed = (content.client_spec(client.id).get('intake') or {}).get('rhythm', {}).get('checkInDays')
+    return bool(designed) and sorted(client.checkInDays) != sorted(designed)
+
+
+def _by_evening(client: ClientProfile, script: list[dict[str, Any]], day: str) -> Optional[dict[str, Any]]:
+    """The scripted answers by the evening they belong to, for another rhythm: the tense answers on evenings before a
+    workday, the calmer ones before a day off – so the story (and the pattern drawn from it) stays the same on any days."""
+    before_work = weekday(day) not in (4, 5)
+    pool = [e for e in script if not e.get('skip') and (e.get('changes', {}).get('anxiety') == 'worse') == before_work]
+    key = 'checkIns-work' if before_work else 'checkIns-off'
+    index = _cursor(client, key)
+    if index >= len(pool):
+        return None
+    _advance_cursor(client, key)
+    return pool[index]
+
+
 def _day_actions(state: ValitukiState, client: ClientProfile) -> list[tuple[str, Callable[[], None]]]:
     """The client's simulated actions for the current demo day, each with its clock time."""
     if client.journeyState not in journey.ACTIVE_STATES or (client.safetyLock and not client.safetyLock.dismissedAt):
@@ -99,7 +122,7 @@ def _day_actions(state: ValitukiState, client: ClientProfile) -> list[tuple[str,
     actions: list[tuple[str, Callable[[], None]]] = []
     due = next((c for c in state.checkIns if c.clientId == client.id and c.status == 'due' and c.dueDate == state.currentDate), None)
     if due is not None:
-        entry = next_answer(client, default_time)
+        entry = next_answer(client, default_time, state.currentDate)
         if entry is not None:
             config = therapy.active_config(state, client.id) if client.mode == 'therapy_support' else None
 
@@ -213,8 +236,22 @@ def _require_active(client: ClientProfile) -> None:
         raise SimulationError('Check-init eivät ole käytössä tällä asiakkaalla (suostumus tai tauko).')
 
 
+# The decline comes after this many ordinary days with Mieliluotsi – as in the demo's story ("Kaksi viikkoa myöhemmin").
+ORDINARY_DAYS_BEFORE_DECLINE = 14
+
+
 def simulate_deterioration(state: ValitukiState, client: ClientProfile, max_days: int = 14) -> dict[str, Any]:
     _require_active(client)
+    from app.valituki import intake
+
+    # The ordinary weeks first, when they have not been simulated yet: the check-ins the "Huomasimme jotain" pattern is
+    # drawn from come before the decline, so the observation is on the home screen once wellbeing has declined.
+    session = intake.session_for(state, client)
+    started = (session.completedAt if session and session.completedAt else state.currentDate)[:10]
+    ordinary = 0
+    while days_between(started, state.currentDate) < ORDINARY_DAYS_BEFORE_DECLINE:
+        simulate_day(state)
+        ordinary += 1
     start_seq = state.events[-1].seq if state.events else 0
     client.simulationProfile = 'deteriorating'
     client.simulationCursor['deterioration'] = 0
@@ -227,7 +264,7 @@ def simulate_deterioration(state: ValitukiState, client: ClientProfile, max_days
     triggered = bool(_events_since(state, start_seq, client.id, 'WELLBEING_TREND_CHANGED'))
     if triggered:
         client.simulationProfile = 'stable'
-    return {'days': days, 'trendChanged': triggered, 'currentDate': state.currentDate, 'journeyState': client.journeyState}
+    return {'days': ordinary + days, 'trendChanged': triggered, 'currentDate': state.currentDate, 'journeyState': client.journeyState}
 
 
 def simulate_stable(state: ValitukiState, client: ClientProfile, max_days: int = 7) -> dict[str, Any]:

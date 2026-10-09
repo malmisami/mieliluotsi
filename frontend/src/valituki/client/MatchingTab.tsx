@@ -176,6 +176,9 @@ function Choose() {
   );
 }
 
+// Summary items shown only in the therapist's view.
+const CLIENT_HIDDEN = new Set(['sources', 'ai_summary']);
+
 function Booked() {
   const { view, run, busy } = useValituki();
   const { client } = useClientUI();
@@ -212,7 +215,8 @@ function Booked() {
           <div className="type-legend" aria-label="Tietotyypit">
             {(['user_said', 'measured', 'ai_summary', 'professional_note'] as const).map((t) => <TypeTag key={t} type={t} />)}
           </div>
-          <HandoverDoc sections={handover.sections} editable busy={busy}
+          {/* The sources list and the AI summary are for the therapist's view – the client sees the items themselves. */}
+          <HandoverDoc sections={handover.sections.filter((x) => !CLIENT_HIDDEN.has(x.key))} editable busy={busy}
             onRemove={(section) => run((s) => api.updateHandover(s, client.id, { action: 'remove', section }), () => 'Kohta poistettiin yhteenvedosta.')}
             onRestore={(section) => run((s) => api.updateHandover(s, client.id, { action: 'restore', section }))}
             onEditText={(section, text) => run((s) => api.updateHandover(s, client.id, { action: 'edit', section, text }), () => 'Muokkaus tallennettiin.')}
@@ -232,19 +236,6 @@ function Booked() {
         </section>
       )}
 
-      {!therapy && matching.checklist.length > 0 && (
-        <section className="card">
-          <h3 className="card-title">Valmistaudu ensimmäiseen tapaamiseen</h3>
-          <ul className="checklist">
-            {matching.checklist.map((item) => (
-              <li key={item.id}>
-                <label><input type="checkbox" checked={item.done} disabled={busy}
-                  onChange={(e) => run((s) => api.toggleChecklist(s, client.id, item.id, e.target.checked))} /> {item.text}</label>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
     </>
   );
 }

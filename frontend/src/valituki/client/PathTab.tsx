@@ -1,5 +1,5 @@
 import { fmtDate } from '../format';
-import { ArrowRightIcon, ChatIcon, CheckIcon, GridIcon, StethoscopeIcon, TargetIcon } from '../icons';
+import { ArrowRightIcon, CheckIcon, GridIcon, StethoscopeIcon } from '../icons';
 import { Pill } from '../components/ui';
 import { useClientUI } from './ClientApp';
 import { PathSteps } from './HomeTab';
@@ -9,7 +9,7 @@ import MatchingTab from './MatchingTab';
    therapist-guided support between sessions, and follow-up after therapy. */
 
 export default function PathTab() {
-  const { client, openSheet } = useClientUI();
+  const { client } = useClientUI();
   return (
     <div className="cx-screen cx-path-screen">
       <h1 className="cx-title">Hoitopolku</h1>
@@ -22,20 +22,6 @@ export default function PathTab() {
         <h2 className="cx-h2">Terapeutti</h2>
         <MatchingTab embedded />
       </section>
-
-      <section className="cx-section">
-        <h2 className="cx-h2"><TargetIcon size={17} /> Tavoitteeni</h2>
-        <ul className="cx-goals">
-          {client.plan.goals.map((g) => (
-            <li key={g.id}><span className="cx-tag">{g.priority === 'primary' ? 'Päätavoite' : 'Tavoite'}</span>{g.text}</li>
-          ))}
-        </ul>
-        <p className="cx-fine">Omin sanoin tai hyväksymäsi tulkinta. Muokkaa Tietoni-sivulla.</p>
-      </section>
-
-      <button type="button" className="cx-btn cx-btn-ghost cx-btn-block" onClick={() => openSheet({ type: 'contact' })}>
-        <ChatIcon size={18} /> Haluan keskustella ammattilaisen kanssa
-      </button>
     </div>
   );
 }

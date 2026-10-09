@@ -29,17 +29,18 @@ def build_scene(name: str) -> ValitukiState:
 
     if reached('intake'):
         return state
-    intake.run_scripted(state, aino, content.client_spec(aino.id)['intake'], who)
+    # The demo goes from the intake straight to the first conversation: the wellbeing check-in comes after it.
+    spec = content.client_spec(aino.id)['intake']
+    intake.run_scripted(state, aino, spec, who, baseline=False)
     if reached('cbt'):
         return state
     practice.demo_cbt(state, aino, who)
     if reached('weeks'):
         return state
+    intake.record_baseline(state, aino, int(spec.get('baselineMood', 3)), who, anxiety=spec.get('baselineAnxiety', 3))
     simulation.advance(state, 14)
     if reached('change'):
         return state
-    for item in [i for i in state.insights if i.clientId == aino.id and i.kind == 'pattern' and i.status == 'proposed']:
-        client_actions.decide_insight(state, aino, item.id, 'approve')
     simulation.simulate_deterioration(state, aino)
     if reached('reviewed'):
         return state
@@ -51,6 +52,9 @@ def build_scene(name: str) -> ValitukiState:
     professional.set_clinical_urgency(state, aino, 'urgent', professional.ACTOR, 'Vointi kolmesti oman lähtötason alapuolella')
     if reached('matches'):
         return state
+    # "Tämä tuntuu oikealta" – the demo's step 14: the observation stays on the home screen until the client approves it.
+    for item in [i for i in state.insights if i.clientId == aino.id and i.kind == 'pattern' and i.status == 'proposed']:
+        client_actions.decide_insight(state, aino, item.id, 'approve')
     simulation.open_next_pending(state)
     if reached('handover'):
         return state

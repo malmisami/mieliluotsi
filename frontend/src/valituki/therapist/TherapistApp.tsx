@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
-import { fmtDate, fmtDateTime, fmtNum, fmtShort } from '../format';
+import { fmtDate, fmtDateTime, fmtNum, fmtShort, fmtTime } from '../format';
 import { CalendarIcon, CheckIcon, ChevronDownIcon, FlagIcon, LockIcon, PlayIcon, PulseIcon, QuoteIcon, SparkleIcon, StethoscopeIcon,
   VideoIcon } from '../icons';
 import { MoodAnxietyChart, Sparkline } from '../components/charts';
 import { HandoverDoc } from '../components/HandoverDoc';
+import { Logo } from '../components/Logo';
 import { Milestones } from '../components/Milestones';
 import { Empty, Pill, Segmented, TypeTag } from '../components/ui';
 import type { AftercareInput, PlanInput, PracticeStats, TherapistClientRow } from '../types';
@@ -18,6 +19,12 @@ export default function TherapistApp() {
   const current = clients.find((c) => c.clientId === selectedId) ?? clients.find((c) => c.clientId === 'cl-aino') ?? clients[0];
   return (
     <div className="therapist">
+      <header className="pro-head th-head">
+        <div className="pro-brand"><Logo size={32} /></div>
+        <p className="pro-kicker"><span className="pro-kicker-dot" aria-hidden="true" />Terapeutin näkymä{therapist ? ` · ${therapist.name}` : ''}</p>
+        <h1 className="pro-title">Terapeutin työpöytä</h1>
+        <p className="pro-lede">Asiakkaan hyväksymä yhteenveto ja Mieliluotsin tuki tapaamisten välillä – terapeutti päättää, missä rajoissa tekoäly toimii.</p>
+      </header>
       <aside className="th-side">
         {current && current.milestones.length > 0 && (
           <section className="th-milestones">
@@ -39,28 +46,51 @@ function ClientSummary({ row, clients, onSelect }: { row: TherapistClientRow; cl
   const status = row.therapy.episodeStatus;
   const active = status === 'active';
   const ended = status === 'ended';
+  // The direction of wellbeing from the summary the client approved – nothing is shown before the approval.
+  const wellbeing = (row.sections ?? []).find((x) => x.key === 'wellbeing' && x.available && !x.removed)?.content as WellbeingFacts | undefined;
   return (
     <div className="th-summary">
-      <section className="session-banner">
-        <p className="eyebrow"><CalendarIcon size={14} /> {ended ? 'Terapia päättynyt – seuranta' : active ? 'Terapia käynnissä' : 'Ensimmäinen tapaaminen'}</p>
-        {clients.length > 1 && (
-          <div className="th-switch" role="group" aria-label="Asiakkaat">
-            {clients.map((c) => (
-              <button key={c.clientId} type="button" aria-pressed={c.clientId === row.clientId} onClick={() => onSelect(c.clientId)}>{c.clientName}</button>
-            ))}
+      <section className="session-banner review-head">
+        <div className="review-who">
+          <span className="review-avatar" aria-hidden="true">{initials(row.clientName)}</span>
+          <div>
+            <p className="session-kicker"><CalendarIcon size={14} /> {ended ? 'Terapia päättynyt – seuranta' : active ? 'Terapia käynnissä' : 'Ensimmäinen tapaaminen tulossa'}</p>
+            <h2 className="review-name">{row.clientName}</h2>
+            <p className="review-meta"><VideoIcon size={15} /> {row.format === 'remote' ? 'Etävastaanotto' : 'Lähivastaanotto'} · {row.age} v</p>
+            {clients.length > 1 && (
+              <div className="th-switch" role="group" aria-label="Asiakkaat">
+                {clients.map((c) => (
+                  <button key={c.clientId} type="button" aria-pressed={c.clientId === row.clientId} onClick={() => onSelect(c.clientId)}>{c.clientName}</button>
+                ))}
+              </div>
+            )}
+            {row.therapy.canHoldFirstSession && (
+              <button type="button" className="btn btn-secondary btn-sm session-action" disabled={busy}
+                onClick={() => run((s) => api.holdFirstSession(s, therapistId, row.clientId), (r) =>
+                  `Ensimmäinen tapaaminen pidettiin (demo: ${r.days} pv eteenpäin). Mieliluotsi siirtyi terapian välitueksi.`)}>
+                <PlayIcon size={14} /> Merkitse ensimmäinen tapaaminen pidetyksi (demo)
+              </button>
+            )}
           </div>
-        )}
-        <h1 className="pro-title">{row.clientName} – {ended ? `terapia päättyi ${fmtDate(row.therapy.endedAt)}`
-          : active ? `terapia alkoi ${fmtDateTime(row.firstSession)}` : `ensimmäinen tapaaminen ${fmtDateTime(row.firstSession)}`}</h1>
-        <p className="muted"><VideoIcon size={15} /> {row.format === 'remote' ? 'Etävastaanotto' : 'Lähivastaanotto'} · {row.age} v
-          {row.therapy.sessionsHeld > 0 && ` · ${row.therapy.sessionsHeld} tapaamista`}</p>
-        {row.therapy.canHoldFirstSession && (
-          <button type="button" className="btn btn-secondary btn-sm" disabled={busy}
-            onClick={() => run((s) => api.holdFirstSession(s, therapistId, row.clientId), (r) =>
-              `Ensimmäinen tapaaminen pidettiin (demo: ${r.days} pv eteenpäin). Mieliluotsi siirtyi terapian välitueksi.`)}>
-            <PlayIcon size={14} /> Merkitse ensimmäinen tapaaminen pidetyksi (demo)
-          </button>
-        )}
+        </div>
+        <dl className="review-stats">
+          <div>
+            <dt>{ended ? 'Terapia päättyi' : active ? 'Terapia alkoi' : 'Ensimmäinen tapaaminen'}</dt>
+            <dd><span className="review-stat review-stat-word">{fmtShort(ended ? row.therapy.endedAt : row.firstSession)}</span>
+              {!ended && <span className="review-stat-sub">klo {fmtTime(row.firstSession)}</span>}</dd>
+          </div>
+          <div>
+            <dt>Tapaamisia</dt>
+            <dd><span className="review-stat">{row.therapy.sessionsHeld}</span></dd>
+          </div>
+          {wellbeing && wellbeing.recent !== null && (
+            <div className={`trend-${wellbeing.direction}`}>
+              <dt>Vointi odotusaikana</dt>
+              <dd><span className="review-stat">{fmtNum(wellbeing.recent)}</span> / 5
+                {wellbeing.baseline !== null && <span className="review-stat-sub">oma lähtötaso {fmtNum(wellbeing.baseline)}</span>}</dd>
+            </div>
+          )}
+        </dl>
       </section>
 
       <HandoverCard row={row} />
@@ -73,6 +103,8 @@ function ClientSummary({ row, clients, onSelect }: { row: TherapistClientRow; cl
     </div>
   );
 }
+
+const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
 const LEGEND = ['user_said', 'measured', 'ai_summary', 'professional_note'] as const;
 const DIRECTION_ARROWS: Record<string, string> = { improving: '↑', stable: '→', declining: '↓', insufficient: '·' };

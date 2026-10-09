@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
-import { fmtDate, fmtDateTime, fmtShort, genitive } from '../format';
+import { fmtDate, fmtDateTime, fmtNum, fmtShort, genitive } from '../format';
 import { AlertIcon, ArrowLeftIcon, CheckIcon, ChatIcon, CrossIcon, EyeIcon, LockIcon, PuzzleIcon, ShieldIcon, SparkleIcon } from '../icons';
 import { Meter, WellbeingChart } from '../components/charts';
 import { AgentTimeline } from '../components/Timeline';
@@ -19,25 +19,50 @@ export default function ClientReview({ client }: { client: ProfessionalClient })
     <div className="review-page">
       <button type="button" className="back-link" onClick={() => setProClientId(null)}><ArrowLeftIcon size={16} /> Terapiajono</button>
       <header className="review-head">
-        <div>
-          <h1 className="pro-title">{client.displayName}</h1>
-          <p className="muted">{client.age} v · {client.municipality} · {client.referral?.serviceLabel} · hain apua {fmtDate(client.referral?.soughtHelpAt)}
-            {' '}· odottanut {client.waitingDays} pv</p>
-          <div className="row-gap">
-            <Pill tone="brand">{client.stateLabel}</Pill>
-            {client.mode === 'therapy_support' && <Pill tone="violet">Terapian välituki</Pill>}
-            {client.safetyLockActive && <Pill tone="rose" icon={<AlertIcon size={13} />}>Turvallisuusohjeet näkyvissä</Pill>}
+        <div className="review-who">
+          <span className="review-avatar" aria-hidden="true">{client.firstName[0]}{client.displayName.split(' ').slice(-1)[0]?.[0]}</span>
+          <div>
+            <h1 className="review-name">{client.displayName}</h1>
+            <p className="review-meta">{client.age} v · {client.municipality} · {client.referral?.serviceLabel} · hain apua {fmtDate(client.referral?.soughtHelpAt)}</p>
+            <div className="review-chips">
+              <span className="review-chip">{client.stateLabel}</span>
+              {client.mode === 'therapy_support' && <span className="review-chip">Terapian välituki</span>}
+              {client.safetyLockActive && <span className="review-chip is-alert"><AlertIcon size={13} /> Turvallisuusohjeet näkyvissä</span>}
+            </div>
           </div>
         </div>
+        <dl className="review-stats">
+          <div>
+            <dt>Odottanut</dt>
+            <dd><span className="review-stat">{client.waitingDays ?? '–'}</span> pv</dd>
+          </div>
+          {client.monitoring && client.trend.recent !== null && (
+            <div className={`trend-${client.trend.direction}`}>
+              <dt>Vointi nyt</dt>
+              <dd><span className="review-stat">{fmtNum(client.trend.recent)}</span> / 5
+                {client.trend.baseline !== null && <span className="review-stat-sub">oma lähtötaso {fmtNum(client.trend.baseline)}</span>}</dd>
+            </div>
+          )}
+          {client.urgency && (
+            <div className={`urgency-${client.urgency.value}`}>
+              <dt>Kiireellisyys</dt>
+              <dd><span className="review-stat review-stat-word">{client.urgency.label}</span>
+                <span className="review-stat-sub">ammattilaisen päätös</span></dd>
+            </div>
+          )}
+        </dl>
       </header>
 
       <div className="review-grid">
         <div className="review-main">
           {review ? <WhyCard client={client} observation={review} /> : lastReviewed ? (
             <section className="card reviewed-card">
-              <p className="eyebrow eyebrow-ok"><CheckIcon size={14} /> Tarkistettu {fmtDateTime(lastReviewed.reviewedAt)}</p>
-              <p><strong>{lastReviewed.title}</strong> → {lastReviewed.reviewOutcome}</p>
-              <p className="muted small">{lastReviewed.reviewedBy}{lastReviewed.reviewNote ? ` – ${lastReviewed.reviewNote}` : ''}</p>
+              <span className="reviewed-mark" aria-hidden="true"><CheckIcon size={20} /></span>
+              <div>
+                <p className="reviewed-when">Tarkistettu {fmtDateTime(lastReviewed.reviewedAt)}</p>
+                <p className="reviewed-what"><strong>{lastReviewed.title}</strong> → {lastReviewed.reviewOutcome}</p>
+                <p className="muted small">{lastReviewed.reviewedBy}{lastReviewed.reviewNote ? ` – ${lastReviewed.reviewNote}` : ''}</p>
+              </div>
             </section>
           ) : (
             <section className="card calm-card">
@@ -49,7 +74,7 @@ export default function ClientReview({ client }: { client: ProfessionalClient })
           <section className="card">
             {client.monitoring ? (
               <>
-                <WellbeingChart title={`${genitive(client.firstName)} vointi suhteessa omaan lähtötasoon`} points={client.trend.series}
+                <WellbeingChart title={`${genitive(client.firstName)} vointi suhteessa omaan lähtötasoon`} points={client.trend.series} height={230}
                   baseline={client.trend.baseline} events={events} note="itse raportoitu 1–5 · ei diagnoosi" />
                 <p className="small">{client.trend.text}</p>
                 <CheckInTable client={client} />
@@ -142,7 +167,7 @@ function UrgencyBox({ client }: { client: ProfessionalClient }) {
   const urgency = client.urgency;
   if (!urgency) return null;
   return (
-    <section className="card urgency-box">
+    <section className={`card urgency-box urgency-${urgency.value}`}>
       <p className="eyebrow"><ShieldIcon size={14} /> Hoidon kiireellisyys</p>
       <p className="urgency-value">{urgency.label}</p>
       <p className="small muted">Määrittänyt: {urgency.setBy} · {fmtDate(urgency.setAt)}</p>
@@ -167,10 +192,12 @@ function WhyCard({ client, observation }: { client: ProfessionalClient; observat
   const describe = (r: { outcome: string }) => `${client.firstName}: ${r.outcome}. Mieliluotsi jatkaa tukea – hoidon kiireellisyys ennallaan.`;
   return (
     <section className={`card why-card ${safety ? 'why-safety' : ''}`}>
-      <p className="why-eyebrow">{safety ? 'Turvallisuushavainto' : 'Tarkistuspyyntö'} · {fmtDateTime(observation.createdAt)}</p>
+      <p className="why-eyebrow"><span className="why-pulse" aria-hidden="true" />{safety ? 'Turvallisuushavainto' : 'Tarkistuspyyntö'} · {fmtDateTime(observation.createdAt)}</p>
       <h2 className="why-title">Miksi {client.firstName} nousi tarkistettavaksi?</h2>
       <ul className="why-list">
-        {observation.explanation.map((row) => <li key={row.text}><span className="why-mark" aria-hidden="true" />{row.text}</li>)}
+        {observation.explanation.map((row, i) => (
+          <li key={row.text}><span className="why-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>{row.text}</li>
+        ))}
       </ul>
       <p className="why-basis">
         <AgentBadge agent={observation.agent} /> Sääntö <code>{observation.ruleId}</code> · deterministinen · itse raportoidut tiedot · ei diagnoosi

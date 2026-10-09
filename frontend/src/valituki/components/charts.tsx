@@ -35,6 +35,7 @@ export function WellbeingChart({ title, points, baseline, events = [], height = 
   const [showTable, setShowTable] = useState(false);
   const [plotRef, plotWidth] = useElementWidth(360);
   const tableId = useId();
+  const fadeId = useId();
   const data = points.filter((p): p is WellbeingPoint & { mood: number } => p.mood !== null);
   if (data.length < 2) {
     return (
@@ -97,7 +98,14 @@ export function WellbeingChart({ title, points, baseline, events = [], height = 
                 textAnchor={mark.anchor}>{mark.label}</text>}
             </g>
           ))}
-          <path className="viz-area" d={area} />
+          {/* The area fades out downwards: the line carries the reading, the fill only its weight. */}
+          <defs>
+            <linearGradient id={fadeId} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" className="viz-fade-top" />
+              <stop offset="100%" className="viz-fade-bottom" />
+            </linearGradient>
+          </defs>
+          <path className="viz-area" d={area} style={{ fill: `url(#${CSS.escape(fadeId)})` }} />
           {baseline !== null && (
             <g>
               <line className="viz-baseline" x1={pad.left} x2={W - pad.right} y1={y(baseline)} y2={y(baseline)} />
