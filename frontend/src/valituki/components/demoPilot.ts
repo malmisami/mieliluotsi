@@ -288,7 +288,11 @@ export const BEATS: Beat[] = [
   { stage: 'terapeutti', title: 'Terapeutilta vapautuu paikka – matching ajetaan heti',
     say: 'Ensin kovat ehdot, sitten läpinäkyvä pisteytys. Sami näkee kolme tilanteeseensa sopivinta terapeuttia.',
     act: async (p) => ok(await p.mutate((s) => api.openSlot(s))),
-    show: async (p) => { p.go({ role: 'client', tab: 'polku' }); await p.spot('.matching'); } },
+    show: async (p) => {
+      p.go({ role: 'client', tab: 'polku' });
+      // Scrolled to, without the golden pulse: the whole section is new on the screen anyway.
+      (await p.spot('.matching'))?.classList.remove('pilot-spot');
+    } },
   { stage: 'terapeutti', title: '”Miksi Anna?” – perustelut, vapaa aika ja täyttymättömät toiveet',
     say: 'Ei todennäköisyyksiä: Sami näkee, mihin suositus perustuu ja mitä toiveita ei voitu täyttää.',
     show: async (p) => {

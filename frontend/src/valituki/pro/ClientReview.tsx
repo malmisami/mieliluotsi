@@ -89,6 +89,7 @@ export default function ClientReview({ client }: { client: ProfessionalClient })
 
         <aside className="review-side">
           {client.urgency && <UrgencyBox client={client} />}
+          <NoteForm client={client} />
           {openTasks.length > 0 && (
             <section className="card">
               <h2 className="card-title">Avoimet tehtävät</h2>
@@ -138,7 +139,6 @@ export default function ClientReview({ client }: { client: ProfessionalClient })
             </section>
           )}
 
-          <NoteForm client={client} />
           <p className="muted small">{view.meta.syntheticNotice}</p>
         </aside>
       </div>

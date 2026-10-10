@@ -86,6 +86,14 @@ def next_answer(client: ClientProfile, default_time: str, day: Optional[str] = N
             _advance_cursor(client, 'checkIns')
             entry = script[index]
             return None if entry.get('skip') else {**entry, 'time': entry.get('time', time)}
+    recovery = spec.get('recovery') or []
+    if recovery and client.mode in ('therapy_support', 'aftercare_support'):
+        # From the start of therapy: a steady recovery above the own baseline – the script once, then its calm tail again.
+        index = _cursor(client, 'recovery')
+        _advance_cursor(client, 'recovery')
+        tail = recovery[len(recovery) // 2:]
+        entry = recovery[index] if index < len(recovery) else tail[(index - len(recovery)) % len(tail)]
+        return {**entry, 'time': entry.get('time', time)}
     stable = spec.get('stable') or []
     index = _cursor(client, 'stable')
     _advance_cursor(client, 'stable')

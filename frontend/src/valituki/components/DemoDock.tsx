@@ -27,7 +27,7 @@ function describeAI(result: AIStatus & { check: AICheck | null }): string {
 
 /** Demo ↔ Claude, in the demo control's extra controls. The model only phrases: rules, safety levels and matching stay
     deterministic in both modes. */
-function AISwitch() {
+export function AISwitch() {
   const { view, run, busy } = useValituki();
   const ai = view.meta.ai;
   const wantsLive = ai.configuredMode === 'LIVE_AI_MODE';
@@ -213,7 +213,6 @@ export default function DemoDock() {
               {demo.clients.map((c) => <option key={c.id} value={c.id}>{c.displayName} – {c.persona}</option>)}
             </select>
           </label>
-          <div className="dock-group"><AISwitch /></div>
           <div className="dock-group" role="group" aria-label="Aika">
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 1), (r) => `+1 päivä – ${r.agentActions} agenttitoimintoa.`)}>+1 pv</button>
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 7), (r) => `+7 päivää – ${r.agentActions} agenttitoimintoa.`)}>+7 pv</button>

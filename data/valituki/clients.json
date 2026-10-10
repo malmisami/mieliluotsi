@@ -225,6 +225,16 @@
             "anxiety": 2
           }
         ],
+        "recovery": [
+          {"mood": 3, "changes": {}, "note": "", "time": "20:10", "anxiety": 3},
+          {"mood": 4, "changes": {"sleep": "better"}, "note": "Nukuin paremmin kuin aikoihin.", "time": "20:20", "anxiety": 3},
+          {"mood": 4, "changes": {}, "note": "", "time": "20:05", "anxiety": 4},
+          {"mood": 4, "changes": {"work": "better"}, "note": "Palaveri meni hyvin, vaikka jännitti.", "time": "19:50", "anxiety": 3},
+          {"mood": 4, "changes": {}, "note": "", "time": "20:15", "anxiety": 4},
+          {"mood": 4, "changes": {}, "note": "", "time": "20:10", "anxiety": 3},
+          {"mood": 4, "changes": {"social": "better"}, "note": "", "time": "19:40", "anxiety": 4},
+          {"mood": 4, "changes": {}, "note": "", "time": "20:20", "anxiety": 3}
+        ],
         "practice": [
           {
             "dayOffset": 1,
