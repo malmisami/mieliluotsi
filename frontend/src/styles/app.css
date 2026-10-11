@@ -1319,6 +1319,71 @@ body {
 
 
 
+/* The phone's compact bar (DemoDock): "Demo" and the stage on the left, opening the rest – shown only on a phone. */
+.vt .dock-now,
+.vt .dock-phone-only {
+  display: none;
+}
+
+.vt .dock-now {
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 10px 0 12px;
+  border: 1.5px dashed #a3b5bc;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vt .dock-now > .ico {
+  flex: none;
+  color: var(--ink-2);
+  transition: transform 0.15s ease;
+}
+
+.vt .dock-now[aria-expanded='true'] > .ico {
+  transform: rotate(180deg);
+}
+
+.vt .dock-now-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.vt .dock-now-kicker {
+  overflow: hidden;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.vt .dock-now-kicker.is-warn {
+  color: var(--rose);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vt .dock-now-stage {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .vt .dock-toggle {
   display: inline-flex;
   align-items: center;
@@ -7258,39 +7323,57 @@ body {
 }
 
 @media (max-width: 640px) {
-  /* On a phone the demo control fits the screen's width: the controls on the first row, the stages with the step
-     number and the chevron on the second; the words that do not fit move to the tooltips. */
+  /* On a phone the demo control is one row: "Demo" with the stage on the left (it opens the stages and the other
+     controls), back and Seuraava on the right. The stages, the step count and "Vaihe loppuun" show when it is open. */
   .vt .dock-row {
     gap: 8px;
     padding: 8px 12px;
   }
 
-  .vt .dock-steps {
-    flex: 1 1 160px;
-    order: 3;
+  .vt .dock:not(.is-side) .dock-now {
+    display: flex;
+    order: 1;
   }
 
-  .vt .dock-row > .pilot-buttons,
-  .vt .dock-row > .dock-toggle {
-    order: 4;
+  .vt .dock-row > .dock-pilot {
+    order: 2;
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 
-  .vt .dock-pilot {
-    margin-right: 0;
-    padding-left: 8px;
-  }
-
-  .vt .dock-pilot-text,
-  .vt .pilot-stage-text {
+  .vt .dock-pilot-label,
+  .vt .dock-btn.pilot-stage,
+  .vt .dock-row > .dock-toggle,
+  .vt .dock:not(.is-open) .dock-row > .dock-steps,
+  .vt .dock:not(.is-open) .dock-row > .pilot-buttons {
     display: none;
   }
 
-  .vt .dock-btn.pilot-next {
-    padding: 0 12px;
+  /* Open: the stages and the step count on a row of their own under the bar. */
+  .vt .dock-row > .dock-steps {
+    flex: 1 1 calc(100% - 90px);
+    order: 3;
   }
 
-  .vt .dock-btn.pilot-stage {
-    padding: 0 9px;
+  .vt .dock-row > .pilot-buttons {
+    order: 4;
+  }
+
+  .vt .dock-btn.pilot-next {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+  }
+
+  .vt .dock-btn.pilot-prev {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
+  }
+
+  .vt .dock-phone-only {
+    display: inline-flex;
   }
 
   .vt .dock-group + .dock-group {

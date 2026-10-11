@@ -144,8 +144,20 @@ export default function DemoDock() {
   };
 
   const dock = (
-    <section className={`dock ${place ? 'is-side' : ''}`} aria-label="Demo-ohjaus (ei osa palvelua)">
+    <section className={`dock ${place ? 'is-side' : ''} ${more ? 'is-open' : ''}`} aria-label="Demo-ohjaus (ei osa palvelua)">
       <div className="dock-row">
+        {/* On a phone the bar is one row: "Demo" and where the demo is – a press opens the stages and the other controls –
+            then back and Seuraava. Elsewhere hidden (styles/app.css). */}
+        <button type="button" className="dock-now" aria-expanded={more} onClick={() => setMore(!more)}
+          aria-label={`Demo: ${tellStage ? `vaihe ${currentStage + 1}/${STAGES.length}, ${tellStage.label}` : 'ei vielä aloitettu'}. Avaa vaiheet ja muut ohjaimet.`}>
+          <span className="dock-now-text">
+            <span className={`dock-now-kicker ${pilot.failed ? 'is-warn' : ''}`}>
+              {pilot.failed ? 'Ei onnistunut – paina uudelleen' : `Demo${tellStage ? ` · vaihe ${currentStage + 1}/${STAGES.length}` : ''}`}
+            </span>
+            <span className="dock-now-stage">{tellStage?.label ?? 'Alkutilassa'}</span>
+          </span>
+          <ChevronDownIcon size={16} />
+        </button>
         {/* Demo-ohjaus: back, Seuraava and "Vaihe loppuun" in one control at the start of the bar. */}
         <div className="dock-pilot" role="group" aria-label="Demo-ohjaus – ei osa palvelua">
           <span className="dock-pilot-label" title="Demon ohjaus – ei osa palvelua. Seuraava tai → vie demon eteenpäin.">
@@ -206,6 +218,12 @@ export default function DemoDock() {
       </div>
       {more && (
         <div className="dock-row dock-actions">
+          {/* On a phone "Vaihe loppuun" is here: the bar keeps room for back and Seuraava. */}
+          {upcomingStage >= 0 && (
+            <button type="button" className="dock-btn dock-phone-only" disabled={pilot.running} onClick={() => void pilot.finishStage()}>
+              <ForwardIcon size={14} /> Vaihe {upcomingStage + 1} loppuun
+            </button>
+          )}
           <ViewSwitch />
           <label className="dock-select">
             <span className="visually-hidden">Demoasiakas</span>
