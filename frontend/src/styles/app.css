@@ -7376,6 +7376,10 @@ body {
     display: inline-flex;
   }
 
+  .vt .bs-bar .dock-ai {
+    display: none;
+  }
+
   .vt .dock-group + .dock-group {
     padding-left: 0;
     border-left: 0;

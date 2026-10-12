@@ -224,6 +224,8 @@ export default function DemoDock() {
               <ForwardIcon size={14} /> Vaihe {upcomingStage + 1} loppuun
             </button>
           )}
+          {/* On a phone the AI switch is here, above the phone – beside it there is no room for it in the panel's header. */}
+          <div className="dock-group dock-phone-only"><AISwitch /></div>
           <ViewSwitch />
           <label className="dock-select">
             <span className="visually-hidden">Demoasiakas</span>
