@@ -1161,44 +1161,89 @@ body {
 }
 
 
+/* The flow on the first row: the tag, back, Seuraava and the rest of the stage – one group without a frame of its own. */
 .vt .dock-pilot {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 5px;
-  margin-right: 4px;
-  padding: 3px 3px 3px 11px;
-  border: 1.5px dashed #a3b5bc;
-  border-radius: 13px;
+  gap: 6px;
 }
 
+/* The one mark that the bar is the presenter's and not the service: a dashed tag, like the frame of the panel beside the
+   phone. */
 .vt .dock-pilot-label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-right: 3px;
+  height: 30px;
+  margin-right: 6px;
+  padding: 0 12px;
+  border: 1.5px dashed #a3b5bc;
+  border-radius: 999px;
   color: var(--brand);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.vt .dock-views {
+/* The second row: what stays as it is while the demo runs – whose view, and whether AI writes the replies. Its hairline
+   runs the whole width; the contents line up with the row above. */
+.vt .dock-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 7px max(20px, calc((100% - 1360px) / 2 + 20px));
+  border-top: 1px solid var(--line);
+}
+
+.vt .dock-views-row,
+.vt .dock-ai-row {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+}
+
+/* The two switches look alike: a framed control with its label (or the AI state) first, then the switch. */
+.vt .dock-views-row {
+  gap: 12px;
+  padding: 1px 1px 1px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-2);
+}
+
+.vt .dock-ctx-label {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* Both switches look alike: a grey track, the chosen option a white pill. */
+.vt .dock-views,
+.vt .dock-seg {
   display: inline-flex;
   flex: none;
   gap: 2px;
-  padding: 2px;
-  border-radius: 8px;
+  padding: 3px;
+  border-radius: 10px;
   background: rgba(20, 35, 43, 0.07);
 }
 
-.vt .dock-views button {
+.vt .dock-views button,
+.vt .dock-seg button {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 11px;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
   color: var(--muted);
   font-size: 13px;
@@ -1206,82 +1251,65 @@ body {
   white-space: nowrap;
 }
 
-.vt .dock-views button:hover {
+.vt .dock-views button:hover:not([aria-pressed='true']),
+.vt .dock-seg button:hover:not([aria-pressed='true']):not(:disabled) {
   color: var(--ink);
 }
 
-.vt .dock-views button[aria-pressed='true'] {
+.vt .dock-views button[aria-pressed='true'],
+.vt .dock-seg button[aria-pressed='true'] {
   background: var(--surface);
   box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
   color: var(--brand);
 }
 
-/* The AI switch (Demo ↔ Claude), always in view in the demo control. */
-.vt .dock-ai-row {
-  display: flex;
-  flex: none;
-  min-width: 0;
+.vt .dock-seg button:disabled {
+  opacity: 0.6;
 }
 
-.vt .dock.is-side .dock-ai-row {
-  grid-column: 1 / -1;
-  grid-row: 5;
+/* The AI switch: the state in one sentence, then the switch – the frame tinted by the state (below). */
+.vt .dock-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 1px 1px 1px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+/* Beside the panel the two switches stack at the bottom of the column, the views as icons. */
+.vt .dock.is-side .dock-context {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 12px 12px;
+  border-top: 0;
+}
+
+.vt .dock.is-side .dock-ctx-label {
+  display: none;
+}
+
+.vt .dock.is-side .dock-views-row {
+  padding-left: 1px;
+}
+
+.vt .dock.is-side .dock-views-row .dock-views,
+.vt .dock.is-side .dock-ai {
+  flex: 1;
 }
 
 .vt .dock.is-side .dock-ai {
-  flex: 1;
   flex-wrap: wrap;
+  padding: 6px 2px 2px 10px;
 }
 
 .vt .dock.is-side .dock-seg {
   margin-left: auto;
-}
-
-.vt .dock-ai {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-  padding: 2px 3px 2px 8px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.vt .dock-ai-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 700;
-}
-
-.vt .dock-seg {
-  display: inline-flex;
-  padding: 2px;
-  border-radius: 7px;
-  background: rgba(20, 35, 43, 0.08);
-}
-
-.vt .dock-seg button {
-  padding: 3px 9px;
-  border: 0;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.vt .dock-seg button[aria-pressed='true'] {
-  background: var(--surface);
-  box-shadow: 0 1px 2px rgba(20, 35, 43, 0.14);
-  color: var(--ink);
-}
-
-.vt .dock-seg button:disabled {
-  opacity: 0.6;
 }
 
 .vt .dock-ai-status {
@@ -1295,10 +1323,15 @@ body {
   white-space: nowrap;
 }
 
-.vt .dock-ai-legend {
+.vt .dock-ai-legend,
+.vt .dock-ai-short {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.vt .dock-ai-short {
+  display: none;
 }
 
 /* The state at a glance – a hollow grey dot when the replies are ready-made texts, a pulsing green one when Claude
@@ -1426,11 +1459,13 @@ body {
 .vt .dock-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  height: 34px;
-  padding: 0 9px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface);
   color: var(--ink-2);
   font-size: 12.5px;
@@ -1544,16 +1579,28 @@ body {
 
 .vt .pilot-rail .pilot-group {
   gap: 2px;
-  padding: 2px 6px 2px 10px;
-  border: 1.5px dashed #a3b5bc;
+  padding: 3px 4px;
   border-radius: 999px;
+  background: rgba(13, 95, 111, 0.08);
+}
+
+/* The track itself separates the Mieliluotsi steps: no connector line into it or out of it. */
+.vt .pilot-rail > .pilot-group::before,
+.vt .pilot-rail > .pilot-group + li::before {
+  display: none;
+}
+
+.vt .pilot-rail > .pilot-group {
+  margin: 0 6px;
 }
 
 .vt .pilot-group-label {
-  margin-right: 4px;
+  margin: 0 6px;
   color: var(--brand);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .vt .pilot-group:has(li.current) .pilot-group-label {
@@ -1561,7 +1608,7 @@ body {
 }
 
 @media (max-width: 1250px) {
-  /* Room for the current step's whole name: the dashed frame still marks the Mieliluotsi steps (name on hover). */
+  /* Room for the current step's whole name: the tinted track still marks the Mieliluotsi steps (name on hover). */
   .vt .pilot-group-label {
     display: none;
   }
@@ -1582,23 +1629,27 @@ body {
 }
 
 .vt .dock-btn.pilot-next {
-  gap: 7px;
-  height: 34px;
-  padding: 0 15px;
+  gap: 8px;
+  min-width: 128px;
+  height: 36px;
+  padding: 0 16px;
+  justify-content: center;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 700;
 }
 
 .vt .dock-btn.pilot-prev {
-  height: 34px;
-  padding: 0 9px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border-radius: 10px;
 }
 
 .vt .dock-btn.pilot-stage {
   gap: 6px;
-  height: 34px;
+  height: 36px;
   padding: 0 12px;
   border-color: var(--brand-200);
   border-radius: 10px;
@@ -1611,15 +1662,38 @@ body {
   display: inline-flex;
   flex: none;
   align-items: center;
-  height: 34px;
-  padding: 0 11px;
+  gap: 5px;
+  height: 36px;
+  padding: 0 14px;
   border-radius: 999px;
-  background: var(--brand-50);
+  background: linear-gradient(90deg, var(--brand-100) var(--p, 0%), var(--brand-50) var(--p, 0%));
   color: var(--brand);
   font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   cursor: default;
+}
+
+.vt .pilot-count-k {
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0.8;
+}
+
+/* The stages in the middle of the free room – auto margins, so a long rail still scrolls from its start. */
+.vt .dock:not(.is-side) .dock-steps > li:first-child {
+  margin-left: auto;
+}
+
+.vt .dock:not(.is-side) .dock-steps > li:last-child {
+  margin-right: auto;
+}
+
+@media (max-width: 1250px) {
+  .vt .dock:not(.is-side) .pilot-stage-text {
+    display: none;
+  }
 }
 
 .vt .pilot-warn {
@@ -1659,9 +1733,6 @@ body {
   border-left: 1px solid var(--line);
 }
 
-.vt .dock-end {
-  margin-left: auto;
-}
 
 .vt .dock-btn {
   display: inline-flex;
@@ -1694,31 +1765,6 @@ body {
 
 .vt .dock-next:hover:not(:disabled) {
   background: var(--brand-strong);
-}
-
-.vt .dock-warn {
-  border-color: var(--rose-200);
-  background: var(--rose-50);
-  color: var(--rose);
-}
-
-.vt .dock-warn:hover:not(:disabled) {
-  background: #f7dbe3;
-}
-
-.vt .dock-select select {
-  max-width: 300px;
-  padding: 4px 28px 4px 10px;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  background-color: var(--surface);
-  color: var(--ink);
-  font-size: 13px;
-}
-
-.vt .dock-select select:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(13, 95, 111, 0.18);
 }
 
 /* Beside the backstage panel – the presenter's choice in the client's view when the window has room (dockPlace.ts): the
@@ -1801,7 +1847,7 @@ body {
   display: grid;
   flex: 1 0 auto;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto 1fr auto auto auto;
+  grid-template-rows: auto 1fr auto auto;
   align-items: stretch;
   gap: 10px;
   max-width: none;
@@ -1913,8 +1959,14 @@ body {
 }
 
 .vt .dock.is-side .dock-pilot-label {
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
   font-size: 15px;
   font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .vt .dock.is-side .dock-btn.pilot-next,
@@ -1994,10 +2046,6 @@ body {
   display: none;
 }
 
-.vt .dock.is-side .dock-select select {
-  width: 100%;
-  max-width: none;
-}
 
 .vt .dock.is-side .dock-group + .dock-group {
   padding: 8px 0 0;
@@ -2005,9 +2053,6 @@ body {
   border-left: 0;
 }
 
-.vt .dock.is-side .dock-end {
-  margin-left: 0;
-}
 
 .vt .stage {
   flex: 1;
@@ -7331,13 +7376,22 @@ body {
   /* On a phone the demo control is one row: "Demo" with the stage on the left (it opens the stages and the other
      controls), back and Seuraava on the right. The stages, the step count and "Vaihe loppuun" show when it is open. */
   .vt .dock-row {
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 6px 8px;
+    padding: 6px 12px;
   }
 
   .vt .dock:not(.is-side) .dock-now {
     display: flex;
     order: 1;
+    height: 38px;
+  }
+
+  .vt .dock-now-kicker {
+    font-size: 10px;
+  }
+
+  .vt .dock-now-stage {
+    font-size: 13.5px;
   }
 
   .vt .dock-row > .dock-pilot {
@@ -7355,41 +7409,75 @@ body {
     display: none;
   }
 
+  /* The view and AI switches share a row under the bar: the views as icons on the left (their names in the tooltips),
+     the AI state in short on the right. */
+  .vt .dock-context {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 0 12px 6px;
+    border-top: 0;
+  }
+
+  .vt .dock-views,
+  .vt .dock-seg {
+    padding: 2px;
+  }
+
+  .vt .dock-views button,
+  .vt .dock-seg button {
+    height: 26px;
+  }
+
+  .vt .dock-ctx-label,
+  .vt .dock-views-row .dock-view-t,
+  .vt .dock-ai-legend {
+    display: none;
+  }
+
+  .vt .dock-ai-short {
+    display: inline;
+  }
+
+  .vt .dock-views-row {
+    flex: none;
+    padding-left: 1px;
+  }
+
+  .vt .dock-views-row .dock-views button {
+    width: 34px;
+    padding: 0;
+  }
+
+  .vt .dock-ai {
+    gap: 8px;
+    padding-left: 10px;
+  }
+
+  .vt .dock-ai .dock-seg button {
+    padding: 0 9px;
+  }
+
   /* Open: the stages and the step count on a row of their own under the bar. */
-  .vt .dock-row > .dock-ai-row {
-    flex: 1 1 100%;
+  .vt .dock-row > .dock-steps {
+    flex: 1 1 calc(100% - 110px);
     order: 3;
   }
 
-  .vt .dock-ai-row .dock-ai {
-    flex-wrap: wrap;
-    width: 100%;
-    min-height: 34px;
-  }
-
-  .vt .dock-ai-row .dock-seg {
-    margin-left: auto;
-  }
-
-  .vt .dock-row > .dock-steps {
-    flex: 1 1 calc(100% - 90px);
+  .vt .dock-row > .pilot-buttons {
     order: 4;
   }
 
-  .vt .dock-row > .pilot-buttons {
-    order: 5;
-  }
-
   .vt .dock-btn.pilot-next {
-    height: 44px;
+    min-width: 0;
+    height: 38px;
     padding: 0 14px;
-    border-radius: 12px;
+    border-radius: 11px;
   }
 
   .vt .dock-btn.pilot-prev {
-    height: 44px;
-    padding: 0 12px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
   }
 
   .vt .dock .dock-phone-only {
@@ -7401,13 +7489,7 @@ body {
     border-left: 0;
   }
 
-  .vt .dock-end {
-    margin-left: 0;
-  }
 
-  .vt .dock-select select {
-    max-width: calc(100vw - 32px);
-  }
 
   .vt .stage {
     padding: 16px 16px 40px;

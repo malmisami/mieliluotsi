@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtNum } from '../format';
 import {
-  AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PanelRightIcon, PanelTopIcon, PersonIcon,
-  PresentIcon, ResetIcon, StethoscopeIcon, UsersIcon,
+  ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PersonIcon, PresentIcon, StethoscopeIcon, UsersIcon,
 } from '../icons';
 import { useDemoActions } from './demoActions';
-import { setDockSide, useDockRoomy, useDockSide, useDockSlot } from './dockPlace';
+import { useDockRoomy, useDockSide, useDockSlot } from './dockPlace';
 import { BEATS, DEMO_INTRO, STAGES, stageEnd, stageStart, useDemoPilot } from './demoPilot';
 import type { AICheck, AIStatus } from '../types';
 
@@ -38,6 +38,8 @@ export function AISwitch() {
   const legend = !wantsLive ? 'Tekoäly pois · valmiit tekstit'
     : live && !failed ? 'Tekoäly päällä · Claude vastaa'
       : 'Claude ei vastaa · valmiit tekstit';
+  // On a phone, where the switch shares its row with the view switch.
+  const short = !wantsLive ? 'AI pois' : live && !failed ? 'AI päällä' : 'AI ei vastaa';
   // The details on hover: the model and its reply time, or why Claude is not answering.
   const status = !wantsLive ? ai.note : !ai.keyPresent ? 'API-avain puuttuu'
     : failed ? (ai.lastCall.failure ?? 'virhe')
@@ -53,6 +55,7 @@ export function AISwitch() {
       {/* The state in one sentence first, then the switch. */}
       <span className="dock-ai-status" title={status} aria-live="polite">
         <i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-legend">{legend}</span>
+        <span className="dock-ai-short" aria-hidden="true">{short}</span>
       </span>
       <span className="dock-seg">
         <button type="button" aria-pressed={!wantsLive} disabled={busy} onClick={() => setMode('DEMO_AI_MODE')}>Demo</button>
@@ -62,7 +65,7 @@ export function AISwitch() {
   );
 }
 
-/** Whose view is on the screen – client, care coordinator or therapist; in the demo dock's extra controls. */
+/** Whose view is on the screen – client, care coordinator or therapist; always in view in the demo control. */
 function ViewSwitch() {
   const { view, role, setRole, scope } = useValituki();
   const clientName = view.demo.clients.find((c) => c.id === scope.clientId)?.firstName;
@@ -91,7 +94,7 @@ type Stage = (typeof STAGES)[number];
     opens from the chevron. → / PageDown = Seuraava, ← / PageUp = back, Shift+→ = the rest of the stage. It can sit in a
     column on the right instead (dockPlace.ts), with the stage's narration for the pitch video. */
 export default function DemoDock() {
-  const { view, run, busy, scope, setClientId, setProClientId } = useValituki();
+  const { view, run, busy } = useValituki();
   const [more, setMore] = useState(false);
   // A column beside the content – the backstage panel in the client's view, the page in the others – when the presenter
   // has chosen so and the window has room for it. Only the markup moves (a portal): the demo's state stays in this
@@ -100,9 +103,7 @@ export default function DemoDock() {
   const canSide = useDockRoomy();
   const slot = useDockSlot();
   const place = side && canSide ? slot : null;
-  const demo = view.demo;
-  const clientId = scope.clientId ?? 'cl-aino';
-  const { weeks, deteriorate, crisis, jump: jumpScene } = useDemoActions();
+  const { weeks } = useDemoActions();
   const pilot = useDemoPilot();
   const current = pilot.pointer > 0 ? BEATS[pilot.pointer - 1] : null;
   const upcoming = BEATS[pilot.pointer] ?? null;
@@ -207,18 +208,22 @@ export default function DemoDock() {
         </ol>
         <div className="pilot-buttons">
           {pilot.failed && <span className="pilot-warn" role="alert">Ei onnistunut – paina uudelleen</span>}
-          <span className="pilot-count" aria-live="polite"
+          {/* The step count, its pill filled as far as the demo has come. */}
+          <span className="pilot-count" aria-live="polite" style={{ '--p': `${(pilot.pointer / BEATS.length) * 100}%` } as CSSProperties}
             title={current ? `Nyt: ${current.title} – ${current.say}` : 'Paina Aloita demo tai →'}>
-            {pilot.pointer}/{BEATS.length}
+            <span className="pilot-count-k">Askel</span> {pilot.pointer}/{BEATS.length}
           </span>
         </div>
-        {/* The AI switch is always in view in the demo control – outside the product and the backstage panel: in the bar,
-            on a phone on its own row under it, beside the panel at the bottom of the column. */}
-        <div className="dock-ai-row"><AISwitch /></div>
         <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"
           onClick={() => setMore(!more)}>
           <ChevronDownIcon size={16} />
         </button>
+      </div>
+      {/* The settings that stay as they are while the demo runs – whose view is on the screen and whether AI writes the
+          replies – always in view: a row of their own under the flow, at the bottom of the column beside the panel. */}
+      <div className="dock-context">
+        <div className="dock-views-row"><span className="dock-ctx-label">Näkymä</span><ViewSwitch /></div>
+        <div className="dock-ai-row"><AISwitch /></div>
       </div>
       {more && (
         <div className="dock-row dock-actions">
@@ -228,13 +233,6 @@ export default function DemoDock() {
               <ForwardIcon size={14} /> Vaihe {upcomingStage + 1} loppuun
             </button>
           )}
-          <ViewSwitch />
-          <label className="dock-select">
-            <span className="visually-hidden">Demoasiakas</span>
-            <select value={clientId} onChange={(e) => { setClientId(e.target.value); setProClientId(null); }} disabled={busy}>
-              {demo.clients.map((c) => <option key={c.id} value={c.id}>{c.displayName} – {c.persona}</option>)}
-            </select>
-          </label>
           <div className="dock-group" role="group" aria-label="Aika">
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 1), (r) => `+1 päivä – ${r.agentActions} agenttitoimintoa.`)}>+1 pv</button>
             <button type="button" className="dock-btn" disabled={busy} onClick={() => run((s) => api.advance(s, 7), (r) => `+7 päivää – ${r.agentActions} agenttitoimintoa.`)}>+7 pv</button>
@@ -245,28 +243,6 @@ export default function DemoDock() {
               title="Toistaa auki olevan alkukeskustelun tai harjoituksen loppuun demovastauksilla" onClick={() => void pilot.replay()}>
               <ForwardIcon size={14} /> Toista demokeskustelu
             </button>
-          </div>
-          <div className="dock-group" role="group" aria-label="Skenaariot">
-            <button type="button" className="dock-btn" disabled={busy} onClick={() => deteriorate(clientId)}>Vointi heikkenee</button>
-            <button type="button" className="dock-btn" disabled={busy}
-              onClick={() => run((s) => api.stabilize(s, clientId), (r) => `Vakaa tilanne: ${r.checkIns} check-iniä omalla tasolla.`)}>Vakaa tilanne</button>
-            <button type="button" className="dock-btn dock-warn" disabled={busy} onClick={crisis}><AlertIcon size={14} /> Kriisipolku</button>
-          </div>
-          <div className="dock-group dock-end" role="group" aria-label="Demon tila">
-            <button type="button" className="dock-btn" disabled={pilot.running} title="Demo alkuun: Sami on terapiajonossa"
-              onClick={() => void pilot.enter(0)}>
-              <PresentIcon size={14} /> Aloita demo alusta
-            </button>
-            <button type="button" className="dock-btn" disabled={busy} onClick={() => { pilot.restart(); void jumpScene('start'); }}>
-              <ResetIcon size={14} /> Alkutilaan
-            </button>
-            {canSide && (
-              <button type="button" className="dock-btn" onClick={() => setDockSide(!side)}
-                title={side ? 'Demo-ohjaus takaisin yläpalkkiin'
-                  : 'Demo-ohjaus omaksi sarakkeekseen oikealle, asiakasnäkymässä Taustalla-paneelin viereen – vaiheen kerronta näkyy koko demon ajan'}>
-                {side ? <PanelTopIcon size={14} /> : <PanelRightIcon size={14} />} {side ? 'Ohjaus yläpalkkiin' : 'Ohjaus paneelin viereen'}
-              </button>
-            )}
           </div>
         </div>
       )}
