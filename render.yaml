@@ -9,6 +9,7 @@ services:
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
-      # Demo texts only – no API key is stored on the server.
+      # Claude by default. The key is set in Render's dashboard (ANTHROPIC_API_KEY), never in this file; without it the
+      # demo texts are used and the AI switch says so.
       - key: VALITUKI_AI_MODE
-        value: DEMO_AI_MODE
+        value: LIVE_AI_MODE

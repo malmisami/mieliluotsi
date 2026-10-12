@@ -5,7 +5,7 @@ import { useValituki } from '../context';
 import { fmtNum } from '../format';
 import {
   AlertIcon, ArrowLeftIcon, ArrowRightIcon, CheckIcon, ChevronDownIcon, ForwardIcon, PanelRightIcon, PanelTopIcon, PersonIcon,
-  PresentIcon, ResetIcon, SparkleIcon, StethoscopeIcon, UsersIcon,
+  PresentIcon, ResetIcon, StethoscopeIcon, UsersIcon,
 } from '../icons';
 import { useDemoActions } from './demoActions';
 import { setDockSide, useDockRoomy, useDockSide, useDockSlot } from './dockPlace';
@@ -20,12 +20,12 @@ function describeAI(result: AIStatus & { check: AICheck | null }): string {
   const check = result.check;
   if (check?.ok) return `Claude vastasi (${seconds(check.ms)}): "${check.reply ?? ''}" Keskustelu käyttää nyt Claudea.`;
   if (!result.keyPresent) {
-    return 'API-avain puuttuu: lisää se projektin .env-tiedoston riville ANTHROPIC_API_KEY= ja paina Testaa. Siihen asti käytetään demotekstejä.';
+    return 'API-avain puuttuu: lisää se projektin .env-tiedoston riville ANTHROPIC_API_KEY= ja valitse Claude uudelleen. Siihen asti käytetään demotekstejä.';
   }
   return `Claude ei vastannut (${check?.failure ?? 'tuntematon virhe'}). Käytetään demotekstejä.`;
 }
 
-/** Demo ↔ Claude, in the demo control's extra controls. The model only phrases: rules, safety levels and matching stay
+/** Demo ↔ Claude, always in view in the demo control. The model only phrases: rules, safety levels and matching stay
     deterministic in both modes. */
 export function AISwitch() {
   const { view, run, busy } = useValituki();
@@ -33,9 +33,13 @@ export function AISwitch() {
   const wantsLive = ai.configuredMode === 'LIVE_AI_MODE';
   const live = ai.effectiveMode === 'LIVE_AI_MODE';
   const failed = live && ai.lastCall.ok === false;
-  const tone = !wantsLive ? '' : live && !failed ? 'is-live' : 'is-warn';
-  // Only Claude mode has a status worth showing: the model and its reply time, or why it is not answering.
-  const status = !ai.keyPresent ? 'API-avain puuttuu'
+  const tone = !wantsLive ? 'is-off' : live && !failed ? 'is-live' : 'is-warn';
+  // Whether AI writes the replies right now – said in words beside the switch, not only by its colour.
+  const legend = !wantsLive ? 'Tekoäly pois · valmiit tekstit'
+    : live && !failed ? 'Tekoäly päällä · Claude vastaa'
+      : 'Claude ei vastaa · valmiit tekstit';
+  // The details on hover: the model and its reply time, or why Claude is not answering.
+  const status = !wantsLive ? ai.note : !ai.keyPresent ? 'API-avain puuttuu'
     : failed ? (ai.lastCall.failure ?? 'virhe')
       : [ai.lastCall.model ?? ai.model, ai.lastCall.ok ? seconds(ai.lastCall.ms) : ''].filter(Boolean).join(' · ');
 
@@ -45,18 +49,15 @@ export function AISwitch() {
   }
 
   return (
-    <div className={`dock-ai ${tone}`} role="group" aria-label="Tekoäly" title={ai.note}>
-      <span className="dock-ai-label"><SparkleIcon size={13} /> <span className="dock-ai-text">Tekoäly</span></span>
+    <div className={`dock-ai ${tone}`} role="group" aria-label={legend}>
+      {/* The state in one sentence first, then the switch. */}
+      <span className="dock-ai-status" title={status} aria-live="polite">
+        <i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-legend">{legend}</span>
+      </span>
       <span className="dock-seg">
         <button type="button" aria-pressed={!wantsLive} disabled={busy} onClick={() => setMode('DEMO_AI_MODE')}>Demo</button>
         <button type="button" aria-pressed={wantsLive} disabled={busy} onClick={() => setMode('LIVE_AI_MODE')}>Claude</button>
       </span>
-      {wantsLive && (
-        <>
-          <span className="dock-ai-status" title={status}><i className="dock-ai-dot" aria-hidden="true" /><span className="dock-ai-text">{status}</span></span>
-          <button type="button" className="dock-ai-test" disabled={busy} onClick={() => run((s) => api.aiCheck(s), describeAI)}>Testaa</button>
-        </>
-      )}
     </div>
   );
 }
@@ -211,6 +212,9 @@ export default function DemoDock() {
             {pilot.pointer}/{BEATS.length}
           </span>
         </div>
+        {/* The AI switch is always in view in the demo control – outside the product and the backstage panel: in the bar,
+            on a phone on its own row under it, beside the panel at the bottom of the column. */}
+        <div className="dock-ai-row"><AISwitch /></div>
         <button type="button" className="dock-toggle" aria-expanded={more} aria-label="Lisää demo-ohjaimia" title="Lisää demo-ohjaimia"
           onClick={() => setMore(!more)}>
           <ChevronDownIcon size={16} />
@@ -224,8 +228,6 @@ export default function DemoDock() {
               <ForwardIcon size={14} /> Vaihe {upcomingStage + 1} loppuun
             </button>
           )}
-          {/* On a phone the AI switch is here, above the phone – beside it there is no room for it in the panel's header. */}
-          <div className="dock-group dock-phone-only"><AISwitch /></div>
           <ViewSwitch />
           <label className="dock-select">
             <span className="visually-hidden">Demoasiakas</span>

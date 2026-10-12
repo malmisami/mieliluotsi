@@ -49,13 +49,13 @@ npm --prefix frontend run build
 backend/.venv/bin/python -m uvicorn app.main:app --app-dir backend --port 8020   # → http://127.0.0.1:8020
 ```
 
-**AI mode (Claude in the conversation).** Without configuration the app runs in `DEMO_AI_MODE`: deterministic,
-pre-approved texts, **no API key needed**. With `VALITUKI_AI_MODE=LIVE_AI_MODE` and your own key in `.env` (project root;
+**AI mode (Claude in the conversation).** The app starts in `LIVE_AI_MODE`: with your own key in `.env` (project root;
 `ANTHROPIC_API_KEY`, or `ANTHROPIC_AUTH_TOKEN`), Claude phrases the chat replies, the guided CBT questions (reflection,
-thinking-trap proposals, alternative thoughts, exposure steps) and the other bounded texts. The demo dock's **Tekoäly**
+thinking-trap proposals, alternative thoughts, exposure steps) and the other bounded texts. Without a key – or with
+`VALITUKI_AI_MODE=DEMO_AI_MODE` – it uses deterministic, pre-approved texts, **no API key needed**. The **Tekoäly**
 switch (Demo / Claude) changes the mode at runtime: "Claude" re-reads the key from `.env` – no restart needed – and makes
-a small test call; "Testaa" repeats it and shows the model and reply time, or the reason for a failure (e.g. "API-avain
-ei kelpaa (401)"). The switch lasts until the server restarts; `.env` decides the mode at start-up. If the key is missing
+a small test call that shows the model and reply time, or the reason for a failure (e.g. "API-avain ei kelpaa (401)");
+the switch stays green while Claude answers and turns amber when it does not. The switch lasts until the server restarts; `.env` decides the mode at start-up. If the key is missing
 or a call fails or is rejected by the output guard, the demo text is used automatically (the chat marks it "Valmis
 tekstipohja – tekoälyn vastausta ei käytetty"; live texts are marked "Tekoälyn muotoilema"). Never commit a real key.
 
@@ -71,8 +71,8 @@ cd frontend && npm run typecheck && npm run lint && npm run build
 
 `Dockerfile` builds the frontend and serves it from the FastAPI backend, so one web service is enough; `render.yaml`
 describes it. On render.com: **New → Blueprint →** this GitHub repository **→ Apply**. The address is
-`https://<service-name>.onrender.com`, and every push to `main` deploys again. The service runs in `DEMO_AI_MODE` and
-stores no API key. Everyone who opens the address shares one demo state, which starts over when the service restarts
+`https://<service-name>.onrender.com`, and every push to `main` deploys again. The service starts in `LIVE_AI_MODE`; the
+API key is set in Render's dashboard (`ANTHROPIC_API_KEY`), never in the repository – without it the demo texts are used. Everyone who opens the address shares one demo state, which starts over when the service restarts
 (the free plan sleeps when idle; the first request then takes about half a minute).
 
 ---

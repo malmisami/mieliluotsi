@@ -1,9 +1,9 @@
 """AI provider abstraction. UI components never call a language model; only the agents call this module.
 
 Two modes:
-  DEMO_AI_MODE – deterministic, pre-approved texts and rule-based interpretation. Works without an API key (default).
+  DEMO_AI_MODE – deterministic, pre-approved texts and rule-based interpretation. Works without an API key.
   LIVE_AI_MODE – Claude via ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN (from the environment or the project's .env, never
-                 hard-coded). Every output is validated (JSON schema, allowed ids, the deterministic output guard); anything
+                 hard-coded) – the default. Every output is validated (JSON schema, allowed ids, the deterministic output guard); anything
                  that fails falls back to the DEMO_AI_MODE result.
 
 The model only phrases and proposes. It never decides a journey state, a safety level (its safetyHint can only raise the

@@ -2,11 +2,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { fmtNum } from '../format';
 import {
-  AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, LayersIcon, LeafIcon, ListIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon,
+  AlertIcon, CheckIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, LayersIcon, LeafIcon, PuzzleIcon, PulseIcon, SlidersIcon, TargetIcon,
 } from '../icons';
-import { AISwitch } from '../components/DemoDock';
 import { useDockSlot } from '../components/dockPlace';
-import { AgentTimeline } from '../components/Timeline';
 import type { BackstageMatch, BackstageModality, ClientView, InsightRow } from '../types';
 import { DataFlow } from './DataFlow';
 import type { Flow } from './DataFlow';
@@ -143,8 +141,7 @@ export default function Backstage({ client }: { client: ClientView }) {
         return;
       }
       const zoom = Number.parseFloat(aside.style.getPropertyValue('--bs-zoom')) || 1;
-      const parts = [aside.querySelector('.bs-bar'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc'),
-        aside.querySelector('.bs-log summary')];
+      const parts = [aside.querySelector('.bs-bar'), ...aside.querySelectorAll('.bm-card'), aside.querySelector('.bp-doc')];
       const box = getComputedStyle(aside);
       const frame = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'] as const;
       const height = parts.reduce((sum, el) => sum + (el ? el.getBoundingClientRect().height / zoom : 0), 0)
@@ -208,15 +205,10 @@ export default function Backstage({ client }: { client: ClientView }) {
         <span className="bs-bar-text">
           <strong>Taustalla – käyttäjä ei näe tätä</strong>
         </span>
-        <AISwitch />
       </header>
       <MatchCard match={match} fresh={fresh.has('match')} />
       <ModalityCard modality={modality} fresh={fresh.has('modality')} />
       <ProfileCard client={client} rows={rows} fresh={fresh} />
-      <details className="bs-log">
-        <summary><ListIcon size={14} /> Agenttien loki – mitä Mieliluotsi teki</summary>
-        <Log client={client} />
-      </details>
       <DataFlow flows={flows} asideRef={asideRef} />
     </aside>
   );
@@ -382,16 +374,5 @@ function ModalityCard({ modality, fresh }: { modality: BackstageModality; fresh:
       </div>
       <p className="bm-scale">sopivin ylimpänä · sopivuus 0–100 säännöillä tavoitteista ja työtapatoiveista</p>
     </section>
-  );
-}
-
-/* ---------- Log: every agent action ---------- */
-
-function Log({ client }: { client: ClientView }) {
-  return (
-    <div className="bs-feed">
-      <AgentTimeline limit={14} items={client.timeline.map((e) => ({ id: e.id, at: e.at, agent: e.agent, title: e.title,
-        detail: e.detail, ruleId: e.ruleId, aiSource: e.aiSource, kind: e.kind }))} />
-    </div>
   );
 }

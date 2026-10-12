@@ -1216,7 +1216,27 @@ body {
   color: var(--brand);
 }
 
-/* The AI switch (Demo ↔ Claude) in the demo control's extra controls. */
+/* The AI switch (Demo ↔ Claude), always in view in the demo control. */
+.vt .dock-ai-row {
+  display: flex;
+  flex: none;
+  min-width: 0;
+}
+
+.vt .dock.is-side .dock-ai-row {
+  grid-column: 1 / -1;
+  grid-row: 5;
+}
+
+.vt .dock.is-side .dock-ai {
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.vt .dock.is-side .dock-seg {
+  margin-left: auto;
+}
+
 .vt .dock-ai {
   display: inline-flex;
   align-items: center;
@@ -1267,52 +1287,71 @@ body {
 .vt .dock-ai-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
   max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding-left: 3px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
+.vt .dock-ai-legend {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The state at a glance – a hollow grey dot when the replies are ready-made texts, a pulsing green one when Claude
+   writes them, amber when Claude was chosen but does not answer – and the whole switch tinted the same way. */
 .vt .dock-ai-dot {
   flex: none;
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid #7d8f97;
   border-radius: 50%;
-  background: #7d8f97;
+  background: transparent;
 }
 
-.vt .dock-ai.is-live .dock-ai-dot {
-  background: #5fd49a;
-  box-shadow: 0 0 0 3px rgba(95, 212, 154, 0.22);
-}
-
-.vt .dock-ai.is-live .dock-ai-status {
+.vt .dock-ai.is-live {
+  border-color: #a8dcc0;
+  background: #e8f7ef;
   color: #1d7a4f;
 }
 
-.vt .dock-ai.is-warn .dock-ai-dot {
-  background: #f3c35b;
+.vt .dock-ai.is-live .dock-ai-dot {
+  border-color: #2f9a66;
+  background: #2f9a66;
+  animation: dock-ai-live 1.8s ease-out infinite;
 }
 
-.vt .dock-ai.is-warn .dock-ai-status {
+.vt .dock-ai.is-live .dock-seg button[aria-pressed='true'] {
+  background: #2f9a66;
+  color: #fff;
+}
+
+@keyframes dock-ai-live {
+  0% { box-shadow: 0 0 0 0 rgba(47, 154, 102, 0.45); }
+  100% { box-shadow: 0 0 0 7px rgba(47, 154, 102, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt .dock-ai.is-live .dock-ai-dot {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(47, 154, 102, 0.22);
+  }
+}
+
+.vt .dock-ai.is-warn {
+  border-color: var(--warn-200);
+  background: var(--warn-50);
   color: #8a5a00;
 }
 
-.vt .dock-ai-test {
-  padding: 3px 8px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 650;
+.vt .dock-ai.is-warn .dock-ai-dot {
+  border-color: #e0901f;
+  background: #f3c35b;
 }
 
-.vt .dock-ai-test:hover:not(:disabled) {
-  background: var(--surface);
-}
 
 
 
@@ -1321,7 +1360,7 @@ body {
 
 /* The phone's compact bar (DemoDock): "Demo" and the stage on the left, opening the rest – shown only on a phone. */
 .vt .dock-now,
-.vt .dock-phone-only {
+.vt .dock .dock-phone-only {
   display: none;
 }
 
@@ -1762,7 +1801,7 @@ body {
   display: grid;
   flex: 1 0 auto;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto 1fr auto auto auto;
   align-items: stretch;
   gap: 10px;
   max-width: none;
@@ -2140,8 +2179,9 @@ body {
 
 .vt .bs-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px 10px;
   padding: 0 0 0 2px;
 }
 
@@ -2159,7 +2199,7 @@ body {
 
 .vt .bs-bar-text {
   display: flex;
-  flex: 1;
+  flex: 1 1 180px;
   flex-direction: column;
   min-width: 0;
   line-height: 1.25;
@@ -2196,8 +2236,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-.vt .bs-card,
-.vt .bs-feed {
+.vt .bs-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -2205,13 +2244,6 @@ body {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
-}
-
-.vt .bs-feed {
-  gap: 10px;
-  max-height: 540px;
-  overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .vt .bs-row {
@@ -2617,30 +2649,6 @@ body {
 }
 
 
-
-.vt .bs-log {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-}
-
-.vt .bs-log summary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  color: var(--ink-2);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.vt .bs-log .bs-feed {
-  max-height: none;
-  border: 0;
-  border-top: 1px solid var(--line);
-  border-radius: 0 0 12px 12px;
-}
 
 /* Data travelling from the phone to the profile and matching (drawn by DataFlow.tsx) */
 
@@ -7286,9 +7294,6 @@ body {
     display: none;
   }
 
-  .vt .bs-feed {
-    max-height: none;
-  }
 }
 
 @media (max-width: 1000px) {
@@ -7351,13 +7356,28 @@ body {
   }
 
   /* Open: the stages and the step count on a row of their own under the bar. */
-  .vt .dock-row > .dock-steps {
-    flex: 1 1 calc(100% - 90px);
+  .vt .dock-row > .dock-ai-row {
+    flex: 1 1 100%;
     order: 3;
   }
 
-  .vt .dock-row > .pilot-buttons {
+  .vt .dock-ai-row .dock-ai {
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 34px;
+  }
+
+  .vt .dock-ai-row .dock-seg {
+    margin-left: auto;
+  }
+
+  .vt .dock-row > .dock-steps {
+    flex: 1 1 calc(100% - 90px);
     order: 4;
+  }
+
+  .vt .dock-row > .pilot-buttons {
+    order: 5;
   }
 
   .vt .dock-btn.pilot-next {
@@ -7372,12 +7392,8 @@ body {
     border-radius: 12px;
   }
 
-  .vt .dock-phone-only {
+  .vt .dock .dock-phone-only {
     display: inline-flex;
-  }
-
-  .vt .bs-bar .dock-ai {
-    display: none;
   }
 
   .vt .dock-group + .dock-group {

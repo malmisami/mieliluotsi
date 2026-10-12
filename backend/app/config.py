@@ -75,9 +75,10 @@ class Settings:
     # Mieliluotsi – waiting-list companion (the primary application)
     VALITUKI_DATA_DIR = _get_env_str('VALITUKI_DATA_DIR', str(BASE_DIR / 'data' / 'valituki'))
     VALITUKI_STATE_PATH = _get_env_str('VALITUKI_STATE_PATH', str(BASE_DIR / 'runtime' / 'valituki' / 'state.json'))
-    # DEMO_AI_MODE = deterministic, safe mock texts (default, needs no API key)
-    # LIVE_AI_MODE = Claude via ANTHROPIC_API_KEY; falls back to DEMO_AI_MODE texts when the key is missing or a call fails
-    VALITUKI_AI_MODE = _get_env_str('VALITUKI_AI_MODE', 'DEMO_AI_MODE')
+    # LIVE_AI_MODE = Claude via ANTHROPIC_API_KEY (default); falls back to DEMO_AI_MODE texts when the key is missing or a
+    #                call fails
+    # DEMO_AI_MODE = deterministic, safe mock texts, needs no API key
+    VALITUKI_AI_MODE = _get_env_str('VALITUKI_AI_MODE', 'LIVE_AI_MODE')
     VALITUKI_AI_MODEL = _get_env_str('VALITUKI_AI_MODEL', 'claude-opus-5')
     VALITUKI_AI_TIMEOUT_SECONDS = _get_env_int('VALITUKI_AI_TIMEOUT_SECONDS', 30)
     # The earlier OmaGenomi features (DNA analysis, genetic-risk loop, care plans, Apple Health) are kept in the
