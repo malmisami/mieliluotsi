@@ -26,6 +26,7 @@ import re
 import time
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
@@ -788,9 +789,15 @@ def effective_mode() -> str:
     return LIVE if settings.VALITUKI_AI_MODE == LIVE and key_present() else DEMO
 
 
+# A step the demo control plays with its scripted answers uses the ready-made texts even in Claude mode, so that Seuraava
+# moves the demo on at once; what anyone types by hand still goes to Claude. Set per request (main.py, X-Demo-Pilot).
+scripted_step: ContextVar[bool] = ContextVar('scripted_step', default=False)
+
+
 def get_provider(interactive: bool = True) -> AIProvider:
-    """The live model is used for interactive actions only; seeding and simulations stay deterministic."""
-    if interactive and effective_mode() == LIVE:
+    """The live model is used for interactive actions only; seeding, simulations and the demo control's scripted steps
+    stay deterministic."""
+    if interactive and not scripted_step.get() and effective_mode() == LIVE:
         return ClaudeAIProvider()
     return DemoAIProvider()
 

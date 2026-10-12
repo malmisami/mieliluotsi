@@ -122,3 +122,29 @@ def test_system_prompt_states_the_boundaries():
                  'Only recommend activities from the approved activity library', 'Vaikuttaa siltä, että',
                  'Never say "I am always here for you"', 'Ask at most one meaningful follow-up question at a time'):
         assert rule in prompt
+
+
+def test_the_demo_controls_scripted_steps_use_the_ready_made_texts_in_claude_mode(monkeypatch):
+    """Seuraava must not wait for Claude: a request marked X-Demo-Pilot gets the demo provider, a hand-typed one Claude."""
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+    from app.valituki import client_actions
+
+    monkeypatch.setattr(settings, 'VALITUKI_AI_MODE', 'LIVE_AI_MODE')
+    monkeypatch.setenv('ANTHROPIC_API_KEY', 'test-key')
+    seen = []
+    original = client_actions.send_message
+
+    def spy(state, client, text, provider, *args, **kwargs):
+        seen.append(type(provider).__name__)
+        return original(state, client, text, ai.DemoAIProvider(), *args, **kwargs)
+
+    monkeypatch.setattr(client_actions, 'send_message', spy)
+    api = TestClient(app)
+    q = {'clientId': 'cl-aino'}
+    assert api.post('/api/valituki/demo/scene', params=q, json={'scene': 'intake'}).status_code == 200
+    body = {'text': 'Hei'}
+    assert api.post('/api/valituki/clients/cl-aino/messages', params=q, json=body, headers={'X-Demo-Pilot': '1'}).status_code == 200
+    assert api.post('/api/valituki/clients/cl-aino/messages', params=q, json=body).status_code == 200
+    assert seen == ['DemoAIProvider', 'ClaudeAIProvider']

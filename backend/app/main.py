@@ -26,6 +26,16 @@ app.add_middleware(
 app.include_router(valituki_router)
 
 
+@app.middleware('http')
+async def demo_control_steps(request, call_next):
+    """The demo control marks the requests of its scripted steps: they use the ready-made texts (ai.scripted_step)."""
+    token = ai.scripted_step.set(request.headers.get('x-demo-pilot') == '1')
+    try:
+        return await call_next(request)
+    finally:
+        ai.scripted_step.reset(token)
+
+
 @app.get('/api/health')
 def health() -> dict:
     return {

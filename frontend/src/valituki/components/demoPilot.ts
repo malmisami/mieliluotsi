@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { asPilotStep } from '../../lib/http';
 import { api } from '../api';
 import type { ViewScope } from '../api';
 import { useValituki } from '../context';
@@ -504,7 +505,7 @@ export function useDemoPilot(): DemoPilot {
     mutate: async (call) => {
       let fresh: ValitukiView | null = null;
       await ctxRef.current.run(async () => {
-        const response = await call(SCOPE);
+        const response = await asPilotStep(() => call(SCOPE));
         fresh = response.view;
         return response;
       });
