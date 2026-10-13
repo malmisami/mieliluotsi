@@ -92,6 +92,9 @@ export default function ClientApp() {
     const timer = window.setTimeout(() => setCalling(true), 1500);
     return () => window.clearTimeout(timer);
   }, [callDue, calling, callDoneOn, today]);
+  // The demo going back (or another client) can take the phone channel away mid-call: the call screen closes with it.
+  const canCall = Boolean(client && client.checkIn.channel === 'phone' && client.intake.status === 'completed');
+  if (calling && !canCall) setCalling(false);
 
   if (!client) return <p className="muted">Valitse demoasiakas demo-ohjauksesta.</p>;
   const current = client;
