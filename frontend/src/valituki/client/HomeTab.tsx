@@ -4,7 +4,7 @@ import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtShort } from '../format';
 import {
-  ArrowRightIcon, CalendarIcon, ChatIcon, CheckIcon, ChevronRightIcon, CrossIcon, FlaskIcon, LeafIcon, SendIcon,
+  ArrowRightIcon, CalendarIcon, ChatIcon, CheckIcon, ChevronRightIcon, CrossIcon, FlaskIcon, LeafIcon, PhoneIcon, SendIcon,
   SparkleIcon, StairsIcon, StethoscopeIcon, ThoughtIcon,
 } from '../icons';
 import { LogoMark } from '../components/Logo';
@@ -18,6 +18,28 @@ const MOODS: { value: number; short: string }[] = [
 ];
 
 /** Today's mood and anxiety right after the intake – the first point of the client's own baseline, not a comparison with others. */
+function callClock(time: string | null): string {
+  return (time ?? '18:30').replace(':', '.');
+}
+
+/* Calls by phone (contactChannel 'phone'): when Mieliluotsi calls next, and a call at once on request. */
+function CallCard({ dueNow, onCall }: { dueNow: boolean; onCall: () => void }) {
+  const { client } = useClientUI();
+  const check = client.checkIn;
+  const when = dueNow ? `Soitan sinulle tänään klo ${callClock(check.callTime)}`
+    : check.nextLabel ? `Seuraava puhelu ${check.nextLabel} klo ${callClock(check.callTime)}` : 'Soitan sovittuina päivinä';
+  return (
+    <section className="cx-call-card">
+      <span className="cx-call-icon" aria-hidden="true"><PhoneIcon size={20} /></span>
+      <div className="cx-call-text">
+        <p className="cx-call-title">{check.needsBaseline ? 'Ensimmäinen vointipuhelu' : 'Vointipuhelu'}</p>
+        <p className="cx-fine">{when} · {check.frequencyText}</p>
+      </div>
+      <button type="button" className="cx-btn cx-btn-dark cx-btn-sm" onClick={onCall}><PhoneIcon size={14} /> Soita nyt</button>
+    </section>
+  );
+}
+
 function BaselineCard() {
   const { view, run, busy } = useValituki();
   const { client } = useClientUI();
@@ -45,7 +67,7 @@ function BaselineCard() {
 
 export default function HomeTab() {
   const { view, run, busy } = useValituki();
-  const { client, openSheet, openTab, startTool, send, answerMood, doTask } = useClientUI();
+  const { client, openSheet, openTab, startTool, send, answerMood, doTask, phoneMode, startCall } = useClientUI();
   const [text, setText] = useState('');
   const today = view.meta.currentDate;
   const practice = client.practice;
@@ -74,7 +96,7 @@ export default function HomeTab() {
     <div className="cx-screen cx-home">
       <h1 className="cx-greeting">Hei {client.firstName},<br />{askMood ? 'miten voit tänään?' : 'mitä mielessäsi on?'}</h1>
 
-      {needsBaseline ? <BaselineCard /> : askMood && (
+      {phoneMode ? <CallCard dueNow={askMood} onCall={startCall} /> : needsBaseline ? <BaselineCard /> : askMood && (
         <div className="cx-moods" role="group" aria-label="Miten voit tänään? Valitse 1–5">
           {MOODS.map((m) => (
             <button key={m.value} type="button" className={`cx-mood cx-mood-${m.value}`} disabled={busy} onClick={() => answerMood(m.value)}>
@@ -125,11 +147,14 @@ export default function HomeTab() {
       <section className="cx-section">
         <h2 className="cx-h2">Päiväsi</h2>
         <ol className="cx-day">
-          {due && (
+          {due && (phoneMode ? (
+            <DayItem icon={<PhoneIcon size={16} />} tag="Vointipuhelu" title={`Soitan sinulle klo ${callClock(client.checkIn.callTime)}`}
+              text="Mieliala, ahdistus ja lyhyt ajatusharjoitus puhuen" action="Soita nyt" busy={busy} onAction={startCall} />
+          ) : (
             <DayItem icon={<ChatIcon size={16} />} tag={due.kind === 'extra' ? 'Lisä-check-in' : 'Check-in'} title="Miten voit tänään?"
               text="Mieliala ja ahdistus – alle minuutin" action={guided?.tool === 'checkin' ? 'Jatka' : 'Aloita'} busy={busy}
               onAction={() => (guided?.tool === 'checkin' ? openTab('keskustelu') : startTool('checkin', {}, 'home'))} />
-          )}
+          ))}
           {todayTasks.map((task) => <TaskItem key={task.id} task={task} busy={busy} onAction={() => doTask(task.id)} />)}
           {activity && (
             <DayItem icon={<LeafIcon size={16} />} tag="Päivän askel" title={activity.title}
@@ -141,7 +166,11 @@ export default function HomeTab() {
             <li className="cx-day-empty">Ei sovittua tälle päivälle. {nextTask ? `Seuraava: ${nextTask.title} (${nextTask.dueLabel.toLowerCase()}).` : 'Voit aloittaa harjoituksen milloin tahansa.'}</li>
           )}
         </ol>
-        {client.checkIn.nextLabel && !due && <p className="cx-fine"><CalendarIcon size={13} /> Seuraava check-in {client.checkIn.nextLabel} · {client.checkIn.frequencyText}</p>}
+        {client.checkIn.nextLabel && !due && (
+          <p className="cx-fine"><CalendarIcon size={13} /> {phoneMode
+            ? `Seuraava vointipuhelu ${client.checkIn.nextLabel} klo ${callClock(client.checkIn.callTime)}`
+            : `Seuraava check-in ${client.checkIn.nextLabel}`} · {client.checkIn.frequencyText}</p>
+        )}
       </section>
 
       <ProgressTeaser />

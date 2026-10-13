@@ -17,6 +17,7 @@ import HomeTab from './HomeTab';
 import Intake from './Intake';
 import NoticesPage from './NoticesPage';
 import PathTab from './PathTab';
+import PhoneCall from './PhoneCall';
 import ProgressTab from './ProgressTab';
 import ToolsTab from './ToolsTab';
 
@@ -40,6 +41,9 @@ interface ClientUI {
   answerMood: (mood: number) => Promise<void>;
   /** "Kerro, miten meni" / "Tein tämän" / "Aloita" on an agreed task. */
   doTask: (taskId: string) => Promise<void>;
+  /** The client chose calls (contactChannel 'phone'): Mieliluotsi calls – now, on request. */
+  phoneMode: boolean;
+  startCall: () => void;
 }
 
 const ClientUIContext = createContext<ClientUI | null>(null);
@@ -62,6 +66,9 @@ export default function ClientApp() {
   const { view, clientTab, setClientTab, run, busy } = useValituki();
   const [sheet, setSheet] = useState<SheetState>(null);
   const [pending, setPending] = useState<string | null>(null);
+  // The call screen over the app, and the day the client last let a call go (it does not ring again that day by itself).
+  const [calling, setCalling] = useState(false);
+  const [callDoneOn, setCallDoneOn] = useState<string | null>(null);
   const [opened, setOpened] = useState<{ page: PageState; clientId: string | null }>({ page: null, clientId: null });
   const scrollRef = useRef<HTMLDivElement>(null);
   // The presenter may move the demo control beside the panel: its place is the column after the panel.
@@ -74,6 +81,17 @@ export default function ClientApp() {
 
   // A new tab, client, intake step or matching stage starts from the top of the screen.
   useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [clientTab, client?.id, client?.intake.status, client?.matching.stage]);
+
+  // Calls by phone: on a day with a check-in due (or the first wellbeing question right after the intake) the phone rings by
+  // itself, once a day – a moment after the app opens, as a call would.
+  const today = view.meta.currentDate;
+  const callDue = Boolean(client && client.checkIn.channel === 'phone' && client.intake.status === 'completed'
+    && !client.safety.lockActive && client.guided?.tool !== 'checkin' && (client.checkIn.needsBaseline || client.checkIn.due));
+  useEffect(() => {
+    if (!callDue || calling || callDoneOn === today) return undefined;
+    const timer = window.setTimeout(() => setCalling(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [callDue, calling, callDoneOn, today]);
 
   if (!client) return <p className="muted">Valitse demoasiakas demo-ohjauksesta.</p>;
   const current = client;
@@ -128,7 +146,9 @@ export default function ClientApp() {
     if (result && result.started) openTab('keskustelu');
   }
 
-  const ui: ClientUI = { client: current, openSheet: setSheet, openPage, openTab, startTool, send, pending, withPending, answerMood, doTask };
+  const phoneMode = current.checkIn.channel === 'phone';
+  const ui: ClientUI = { client: current, openSheet: setSheet, openPage, openTab, startTool, send, pending, withPending, answerMood, doTask,
+    phoneMode, startCall: () => setCalling(true) };
   const initial = current.firstName.slice(0, 1);
 
   return (
@@ -194,6 +214,7 @@ export default function ClientApp() {
                 onContact={() => setSheet({ type: 'contact' })}
                 onHelpNow={() => { setSheet(null); void run((s) => api.helpNow(s, current.id), () => 'Turvallisuusohjeet näytettiin. Hoitotiimin työjonoon syntyi hälytys.'); }} />
             )}
+            {calling && !locked && <PhoneCall onClose={() => { setCalling(false); setCallDoneOn(today); }} />}
             {locked && (
               <SafetyScreen safety={view.meta.safety} busy={busy}
                 onDismiss={() => run((s) => api.dismissSafety(s, current.id), () => 'Ohjeet kuitattu. Ne löytyvät aina "Apua nyt" -painikkeesta.')} />

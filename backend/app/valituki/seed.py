@@ -111,7 +111,7 @@ def build_seed_state() -> ValitukiState:
                 _enroll(state, spec, today)
             script = spec.get('intake') or {}
             if script.get('mode') == 'seed' and script.get('offset') == offset:
-                intake.run_scripted(state, get_client(state, spec['id']), script, records.client_actor(spec['id']))
+                intake.run_scripted(state, get_client(state, spec['id']), script, records.client_actor(spec['id']), from_records=True)
             for step in [s for s in spec.get('script', []) if s['offset'] == offset]:
                 _script(state, get_client(state, spec['id']), step)
         if offset < 0:  # today's check-ins are left open for the live demo

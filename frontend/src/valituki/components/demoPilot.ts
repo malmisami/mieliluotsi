@@ -9,7 +9,7 @@ import { chatRevealing, hurryChat } from '../client/chatPace';
 
 /* DEMO-OHJAIN – the presenter presses "Seuraava" (or →) and the demo takes the next step of the concept's story: it
    types the demo text, presses the right button and opens the right view. Every step goes through the same API as a
-   click in the app. The stages follow the Konsepti page: avun haku → AI-alkukeskustelu → Mieliluotsi (KKT, seuranta
+   click in the app. The stages follow the Konsepti page: avun haku → käyttöönotto esitiedoilla → Mieliluotsi (KKT, seuranta
    ja muutosten tunnistus, Therapy Fit Profile) → terapeutti ja handover → terapia → seuranta terapian jälkeen. */
 
 const AINO = 'cl-aino';
@@ -33,10 +33,12 @@ export const STAGES: { key: StageKey; label: string; group?: 'valituki'; tell: T
     { from: 1, text: 'Tässä on tyypillinen tilanne, jossa odotusaika on 20–25 viikkoa hoidon alkamiseen. Nyt Mieliluotsilla '
       + 'tuki alkaa heti. Ensin päätän itse, mitä tietojani käytetään ja mitä hoitotiimi ja terapeutti näkevät.' },
   ] },
-  { key: 'alku', label: 'AI-alkukeskustelu', tell: [
-    { from: 2, text: 'Alkukartoitus tehdään keskustellen: kerron tilanteestani omin sanoin, ja tekoäly kysyy tarkentavia '
-      + 'kysymyksiä. Lopuksi se tiivistää vastaukseni ehdotuksiksi: tavoitteeni, toivomani työskentelytapa, vaikeimmat '
-      + 'hetket ja se, mikä on aiemmin auttanut. Voin muokata niitä. Mitään ei tallenneta ennen kuin hyväksyn.' },
+  { key: 'alku', label: 'Käyttöönotto esitiedoilla', tell: [
+    { from: 2, text: 'Uutta alkukartoitusta ei tehdä. Kerroin jo tilanteestani lähetteessä ja arviointikäynnillä, joten '
+      + 'samoja asioita ei kysytä uudelleen. Luvallani Mieliluotsi käyttää näitä tietoja: tavoitteeni, toivomani '
+      + 'työskentelytapa, vaikeimmat hetket ja se, mikä on aiemmin auttanut. Voin tarkistaa ja muokata niitä Tietoni-sivulla.' },
+    { from: 3, text: 'Valitsen, miten Mieliluotsi pitää minuun yhteyttä: vastaanko sovelluksessa kirjoittaen, vai soittaako '
+      + 'Mieliluotsi minulle sovittuina päivinä, kysyy vointiani ja tekee kanssani lyhyen ajatusharjoituksen puhuen.' },
     { from: 4, text: 'Puhelimen oikealla puolella on taustanäkymä, jota asiakas ei näe. Vastaukseni ja toimintani '
       + 'sovelluksessa päivittävät koko ajan terapeutin ja terapiamuodon sopivuutta. Tällä on väliä, koska terapiamuodolla, '
       + 'työskentelytavalla ja yhteistyösuhteella on suurin vaikutus hoidon tuloksiin. Muutos nykyiseen on suuri, sillä nyt '
@@ -172,19 +174,20 @@ export const BEATS: Beat[] = [
     act: async (p) => ok(await p.mutate((s) => api.scene(s, 'start'))),
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.wait-card'); } },
 
-  // 2 · AI-alkukeskustelu
-  { stage: 'alku', title: 'Alkukeskustelu alkaa – lomakkeen sijaan',
-    say: 'Sami päätti ensin itse, mitä Mieliluotsi saa tehdä. Mieliluotsi kysyy yhden asian kerrallaan: ”Kerro omin sanoin, miksi hait apua.”',
+  // 2 · Käyttöönotto esitiedoilla – no separate intake conversation
+  { stage: 'alku', title: 'Ei uutta kartoitusta – esitiedot käyttöön',
+    say: 'Lähetteessä ja arviointikäynnillä Sami on jo kertonut tilanteestaan. Hänen luvallaan Mieliluotsi käyttää näitä tietoja – samoja asioita ei kysytä uudelleen.',
     act: async (p) => ok(await p.mutate((s) => api.intakeStart(s, AINO, p.view().client?.intake.consentDefaults ?? {
       proactiveCheckins: true, storeHistory: true, professionalMonitoring: true, sharePractice: true }))),
     show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
-  { stage: 'alku', title: 'Sami kertoo omin sanoin → ”Ymmärsinkö tilanteesi oikein?”',
-    say: 'Kuusi tarkentavaa kysymystä: tavoite, vaikeat hetket, mikä on auttanut ja toiveet terapialta. Tulkinnat ovat vasta ehdotuksia.',
-    act: playIntake,
-    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); } },
-  { stage: 'alku', title: 'Sami hyväksyy tulkinnat → Therapy Fit Profile syntyy',
-    say: 'Vasta hyväksytyt tiedot siirtyvät terapeutin profiiliin ja matchingiin (oikealla). Viimeisenä check-in-rytmi.',
+  { stage: 'alku', title: 'Sovelluksessa vai puhelulla?',
+    say: 'Sami valitsee, miten Mieliluotsi pitää yhteyttä: kirjoittaen sovelluksessa tai niin, että Mieliluotsi soittaa, kysyy vointia ja tekee lyhyen ajatusharjoituksen.',
+    show: async (p) => { p.go({ role: 'client', tab: 'koti' }); await p.spot('.rhythm-screen .radio-cards'); } },
+  { stage: 'alku', title: 'Esitiedoista Therapy Fit Profile – Sami voi muokata',
+    say: 'Tavoite, työskentelytapa ja se, mikä on auttanut, ovat terapeutin profiilissa ja matchingissa (oikealla). Sami voi muokata niitä Tietoni-sivulla.',
     act: async (p) => {
+      // A conversation left open in an older saved state is played to the end first.
+      if (p.view().client?.intake.status === 'conversation' && !(await playIntake(p))) return false;
       if (p.view().client?.intake.status === 'review' && !ok(await p.mutate((s) => api.intakeConfirm(s, AINO)))) return false;
       // The rhythm closes the intake; today's wellbeing is asked on the home screen after the first conversation.
       const intake = p.view().client?.intake;

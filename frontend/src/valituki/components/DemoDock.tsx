@@ -240,7 +240,7 @@ export default function DemoDock() {
           </div>
           <div className="dock-group" role="group" aria-label="Keskustelu">
             <button type="button" className="dock-btn" disabled={pilot.running || !(view.client?.intake.status === 'conversation' || view.client?.guided)}
-              title="Toistaa auki olevan alkukeskustelun tai harjoituksen loppuun demovastauksilla" onClick={() => void pilot.replay()}>
+              title="Toistaa auki olevan harjoituksen loppuun demovastauksilla" onClick={() => void pilot.replay()}>
               <ForwardIcon size={14} /> Toista demokeskustelu
             </button>
           </div>

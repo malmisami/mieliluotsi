@@ -3,7 +3,7 @@ import { useValituki } from '../context';
 import { ArrowDownIcon, ArrowRightIcon, CheckIcon, ClockIcon, EyeIcon, HandHeartIcon, NodesIcon, PuzzleIcon, ShieldIcon, SparkleIcon, StethoscopeIcon, ThoughtIcon } from '../icons';
 
 const BEFORE = ['Avun haku', 'Jono', 'Odotus', 'Odotus', 'Terapia'];
-const AFTER_TOP = ['Avun haku', 'AI-alkukeskustelu'];
+const AFTER_TOP = ['Avun haku', 'Käyttöönotto esitiedoilla'];
 const AFTER_BOX = ['Mielialan ja ahdistuksen seuranta', 'Ohjattu KKT-harjoittelu chatissa', 'Muutosten tunnistus', 'Therapy Fit Profile'];
 const AFTER_BOTTOM = ['Sopivin saatavilla oleva terapeutti', 'Valmis, asiakkaan hyväksymä handover', 'Terapia + välitehtävät Mieliluotsissa',
   'Seuranta terapian jälkeen'];

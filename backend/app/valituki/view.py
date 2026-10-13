@@ -40,7 +40,7 @@ DISCLAIMERS = [
 CLIENT_ORDER = ['cl-aino', 'cl-mikko', 'cl-sara', 'cl-crisis', 'cl-juha', 'cl-maria', 'cl-pekka', 'cl-leena', 'cl-noora']
 SCENES = [
     {'key': 'start', 'label': '1. Sami jonossa – alkutila'},
-    {'key': 'intake', 'label': '2. Alkukeskustelu tehty'},
+    {'key': 'intake', 'label': '2. Mieliluotsi otettu käyttöön'},
     {'key': 'cbt', 'label': '3. Ajatusten tutkiminen chatissa'},
     {'key': 'weeks', 'label': '4. 14 päivää tukea ja harjoittelua'},
     {'key': 'change', 'label': '5. Muutos havaittu'},
@@ -129,10 +129,10 @@ def presenter_steps(state: ValitukiState) -> dict[str, Any]:
     configured = config is not None or any(c.clientId == aino.id for c in state.therapistConfigs)
     steps = [
         {'n': 1, 'key': 'start', 'title': 'Sami on jonossa terapiaan', 'done': aino.journeyState != 'INVITED',
-         'hint': 'Asiakas → Aloita alkukeskustelu'},
-        {'n': 2, 'key': 'intake', 'title': 'Alkukeskustelu ja hyväksytyt tulkinnat',
+         'hint': 'Asiakas → Jatka'},
+        {'n': 2, 'key': 'intake', 'title': 'Käyttöönotto: esitiedot ja yhteydenpito',
          'done': bool(session and session.status == 'completed'),
-         'hint': 'Käy keskustelu (tai "Toista demokeskustelu") ja hyväksy tulkinnat'},
+         'hint': 'Valitse, pidetäänkö yhteyttä sovelluksessa vai puhelulla, ja kuinka usein'},
         {'n': 3, 'key': 'cbt', 'title': 'Ajatusten tutkiminen chatissa', 'done': practiced,
          'hint': 'Koti → Demoviesti (tai kirjoita tilanne) → "Kyllä, tutkitaan" → vastaa tai "Toista demokeskustelu"'},
         {'n': 4, 'key': 'weeks', 'title': 'Simuloi 14 päivää', 'done': len(checkins) >= 6 or bool(decline),
@@ -203,6 +203,8 @@ def _timeline_entries(state: ValitukiState, client: ClientProfile, *, audience: 
             activity = content.activity(payload.get('activityId'))
             title = ('Teit harjoituksen' if you else f'{client.firstName} teki harjoituksen') + f': {activity.title if activity else ""}' \
                 + (f' ({payload["rating"]}/5)' if payload.get('rating') else '')
+        elif event.type == 'INSIGHTS_APPROVED' and str(payload.get('reason', '')).startswith('Esitiedot'):
+            title = 'Annoit luvan käyttää esitietoja' if you else f'{client.firstName} antoi luvan käyttää esitietoja'
         elif event.type == 'INSIGHTS_APPROVED':
             title = 'Hyväksyit tiedot' if you else f'{client.firstName} hyväksyi tiedot'
         elif event.type == 'MATCH_SELECTED':
@@ -480,6 +482,7 @@ def client_view(state: ValitukiState, client: ClientProfile) -> dict[str, Any]:
             if client.nextCheckInDate else None, 'days': client.checkInDays, 'frequencyText': labels.frequency_text(client.checkInDays),
             'trackLabel': config.track if config else None, 'proactive': client.consent.proactiveCheckins,
             'needsBaseline': intake.needs_baseline(state, client),
+            'channel': client.contactChannel, 'callTime': client.callTime,
         },
         'trend': {'direction': trend.direction, 'label': trends.DIRECTION_LABELS[trend.direction], 'text': trend.client_text,
                   'arrow': trends.DIRECTION_ARROWS[trend.direction], 'baseline': client.baseline,

@@ -82,3 +82,7 @@ export const ThoughtIcon = (p: IconProps) => <Icon {...p}><path d="M7.5 15.5a4.5
 export const CopyIcon = (p: IconProps) => <Icon {...p}><rect x="8.5" y="8.5" width="11" height="11" rx="2.2" /><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" /></Icon>;
 export const StopIcon = (p: IconProps) => <Icon {...p}><rect x="6.5" y="6.5" width="11" height="11" rx="2" /></Icon>;
 export const BookIcon = (p: IconProps) => <Icon {...p}><path d="M5 4.5h11a2 2 0 0 1 2 2v13H7a2 2 0 0 1-2-2Z" /><path d="M5 17.5a2 2 0 0 1 2-2h11M9 8.5h5" /></Icon>;
+export const MicIcon = (p: IconProps) => <Icon {...p}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></Icon>;
+export const MicOffIcon = (p: IconProps) => <Icon {...p}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M4 4l16 16" /></Icon>;
+export const SpeakerIcon = (p: IconProps) => <Icon {...p}><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4Z" /><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" /></Icon>;
+export const SpeakerOffIcon = (p: IconProps) => <Icon {...p}><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4Z" /><path d="m16 10 4 4M20 10l-4 4" /></Icon>;

@@ -20,7 +20,9 @@ export const api = {
   view: (scope: ViewScope) => request<ValitukiView>(`${BASE}/view${qs(scope)}`),
 
   // client – conversational intake
-  intakeStart: (s: ViewScope, id: string, consent: ConsentScope) => post<Mutation>(`${BASE}/clients/${id}/intake/start${qs(s)}`, consent),
+  // No separate intake conversation: the starting profile comes from the referral and the assessment visit, with consent.
+  intakeStart: (s: ViewScope, id: string, consent: ConsentScope) =>
+    post<Mutation>(`${BASE}/clients/${id}/intake/start${qs(s)}`, { ...consent, fromRecords: true }),
   intakeAnswer: (s: ViewScope, id: string, text: string) =>
     post<Mutation<{ safety?: { level: number } }>>(`${BASE}/clients/${id}/intake/answer${qs(s)}`, { text }),
   intakeSkip: (s: ViewScope, id: string) => post<Mutation>(`${BASE}/clients/${id}/intake/skip${qs(s)}`),
@@ -28,7 +30,8 @@ export const api = {
   updateProposal: (s: ViewScope, id: string, proposalId: string, changes: { text?: string; included?: boolean; structured?: Record<string, unknown> }) =>
     put<Mutation>(`${BASE}/clients/${id}/intake/proposals/${proposalId}${qs(s)}`, changes),
   intakeConfirm: (s: ViewScope, id: string) => post<Mutation>(`${BASE}/clients/${id}/intake/confirm${qs(s)}`),
-  intakeComplete: (s: ViewScope, id: string, body: { checkInDays: number[]; communicationStyle: 'brief' | 'warm'; mood?: number; anxiety?: number | null }) =>
+  intakeComplete: (s: ViewScope, id: string, body: { checkInDays: number[]; communicationStyle: 'brief' | 'warm'; mood?: number; anxiety?: number | null;
+    contactChannel?: 'app' | 'phone'; callTime?: string }) =>
     post<Mutation>(`${BASE}/clients/${id}/intake/complete${qs(s)}`, body),
   /** "Miten voit tänään?" on the home screen right after the intake – the first point of the client's own baseline. */
   recordBaseline: (s: ViewScope, id: string, body: { mood: number; anxiety: number | null }) =>

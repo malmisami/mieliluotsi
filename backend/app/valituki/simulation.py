@@ -239,7 +239,7 @@ def _events_since(state: ValitukiState, seq: int, client_id: str, event_type: st
 
 def _require_active(client: ClientProfile) -> None:
     if client.journeyState not in journey.ACTIVE_STATES:
-        raise SimulationError(f'{client.firstName} ei vielä käytä Mieliluotsia – tee ensin alkukeskustelu.')
+        raise SimulationError(f'{client.firstName} ei vielä käytä Mieliluotsia – ota se ensin käyttöön.')
     if not client.consent.proactiveCheckins or client.automationPaused:
         raise SimulationError('Check-init eivät ole käytössä tällä asiakkaalla (suostumus tai tauko).')
 

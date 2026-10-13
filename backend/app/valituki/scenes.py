@@ -31,7 +31,7 @@ def build_scene(name: str) -> ValitukiState:
         return state
     # The demo goes from the intake straight to the first conversation: the wellbeing check-in comes after it.
     spec = content.client_spec(aino.id)['intake']
-    intake.run_scripted(state, aino, spec, who, baseline=False)
+    intake.run_scripted(state, aino, spec, who, baseline=False, from_records=True)
     if reached('cbt'):
         return state
     practice.demo_cbt(state, aino, who)

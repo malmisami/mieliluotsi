@@ -17,7 +17,7 @@ STATES: tuple[str, ...] = ('INVITED', 'INTAKE', 'WAITING_ACTIVE', 'HUMAN_REVIEW_
 
 STATE_LABELS = {
     'INVITED': 'Jonossa – Mieliluotsi odottaa käyttöönottoa',
-    'INTAKE': 'Alkukeskustelu kesken',
+    'INTAKE': 'Käyttöönotto kesken',
     'WAITING_ACTIVE': 'Jonossa – Mieliluotsi aktiivinen',
     'HUMAN_REVIEW_NEEDED': 'Odottaa ammattilaisen tarkistusta',
     'MATCHING_READY': 'Jonossa – terapeuttia etsitään',
@@ -30,7 +30,7 @@ STATE_LABELS = {
 
 EVENT_LABELS = {
     'CLIENT_ENROLLED': 'Asiakas liitettiin Mieliluotsiin',
-    'INTAKE_STARTED': 'Alkukeskustelu alkoi',
+    'INTAKE_STARTED': 'Mieliluotsin käyttöönotto alkoi',
     'INSIGHTS_APPROVED': 'Asiakas hyväksyi tulkinnat',
     'BASELINE_COMPLETED': 'Lähtötaso ja check-in-rytmi kirjattiin',
     'CONSENT_UPDATED': 'Suostumuksia muutettiin',

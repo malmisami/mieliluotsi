@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { useValituki } from '../context';
 import { fmtShort } from '../format';
-import { ArrowRightIcon, CheckIcon, ClockIcon, EditIcon, InfoIcon, QuoteIcon, SendIcon, SparkleIcon } from '../icons';
+import { ArrowRightIcon, ChatIcon, CheckIcon, ClockIcon, EditIcon, InfoIcon, PhoneIcon, QuoteIcon, SendIcon, SparkleIcon } from '../icons';
 import { LogoMark } from '../components/Logo';
 import { Pill, Segmented } from '../components/ui';
 import type { ConsentScope, IntakeProposal, ValitukiView } from '../types';
@@ -40,7 +40,8 @@ function Welcome() {
         <p className="wait-hero-value">{client.waiting.estimatedWait}</p>
         <p className="wait-hero-meta">Hait apua {fmtShort(client.waiting.soughtHelpAt)} · {client.waiting.service}</p>
       </div>
-      <p className="iw-text">Aloitetaan lyhyellä keskustelulla. Lopuksi näet yhteenvedon ja päätät itse, mitä tallennetaan.</p>
+      <p className="iw-text">Kerroit jo tilanteestasi lähetteessä ja arviointikäynnillä, joten samoja asioita ei kysytä uudelleen.
+        Luvallasi Mieliluotsi käyttää näitä tietoja. Voit tarkistaa ja muokata niitä Tietoni-sivulla.</p>
       <div className="card consent-card iw-consent">
         <h3 className="card-title">Tietojesi käyttö</h3>
         {(Object.keys(labels) as (keyof ConsentScope)[]).map((key) => (
@@ -60,7 +61,7 @@ function Welcome() {
       <p className="iw-notice"><InfoIcon size={14} /> Ei terapeutti eikä päivystys – hätätilanteessa soita 112.</p>
       <button type="button" className="btn btn-primary btn-lg btn-block" disabled={busy}
         onClick={() => run((s) => api.intakeStart(s, client.id, consent))}>
-        Aloita keskustelu <ArrowRightIcon size={18} />
+        Jatka <ArrowRightIcon size={18} />
       </button>
     </div>
   );
@@ -238,25 +239,47 @@ function Review() {
   );
 }
 
+/* When Mieliluotsi may call (contactChannel 'phone') – the same times as CALL_TIMES in backend/app/valituki/intake.py. */
+const CALL_TIMES = [{ value: '09:00', label: 'klo 9.00' }, { value: '15:00', label: 'klo 15.00' }, { value: '18:30', label: 'klo 18.30' }];
+
 function Rhythm() {
   const { view, run, busy } = useValituki();
   const { client } = useClientUI();
   const options = view.meta.checkInFrequencyOptions;
   const demo = client.intake.demoRhythm;
   const [perWeek, setPerWeek] = useState<number>(demo ? demo.checkInDays.length : 3);
-  const [style, setStyle] = useState<'brief' | 'warm'>(demo?.communicationStyle ?? 'brief');
+  // In the app in writing, or by phone: Mieliluotsi calls on the check-in days, asks how the client is and does a short
+  // thought exercise by speech.
+  const [channel, setChannel] = useState<'app' | 'phone'>('app');
+  const [callTime, setCallTime] = useState('18:30');
   const days = options.find((o) => o.perWeek === perWeek)?.days ?? [0, 2, 5];
+  const phone = channel === 'phone';
   return (
     <div className="screen rhythm-screen">
       <p className="eyebrow">Viimeinen askel</p>
       <h1 className="display-sm">Miten Mieliluotsi tukee sinua?</h1>
       <section className="card">
-        <h3 className="card-title">Millaisia viestejä toivot?</h3>
-        <Segmented label="Viestien sävy" value={style} onChange={setStyle}
-          options={[{ value: 'brief', label: 'Lyhyitä ja asiallisia' }, { value: 'warm', label: 'Lämpimiä ja kannustavia' }]} />
+        <h3 className="card-title">Miten haluat, että pidämme yhteyttä?</h3>
+        <div className="radio-cards">
+          <button type="button" className="radio-card" aria-pressed={!phone} onClick={() => setChannel('app')}>
+            <strong><ChatIcon size={16} /> Sovelluksessa kirjoittaen</strong>
+            <span className="muted small">Vastaat vointikyselyihin ja teet harjoituksia kirjoittamalla, kun sinulle sopii.</span>
+          </button>
+          <button type="button" className="radio-card" aria-pressed={phone} onClick={() => setChannel('phone')}>
+            <strong><PhoneIcon size={16} /> Puhelulla – Mieliluotsi soittaa</strong>
+            <span className="muted small">Sovittuina päivinä Mieliluotsi soittaa, kysyy vointiasi ja tekee kanssasi lyhyen ajatusharjoituksen
+              puhuen.</span>
+          </button>
+        </div>
+        {phone && (
+          <div className="rhythm-call-time">
+            <p className="field-label">Mihin aikaan saan soittaa?</p>
+            <Segmented label="Puheluaika" value={callTime} onChange={setCallTime} options={CALL_TIMES} />
+          </div>
+        )}
       </section>
       <section className="card">
-        <h3 className="card-title">Kuinka usein saan kysyä kuulumisiasi?</h3>
+        <h3 className="card-title">{phone ? 'Kuinka usein saan soittaa?' : 'Kuinka usein saan kysyä kuulumisiasi?'}</h3>
         <div className="radio-cards">
           {[...options].sort((a, b) => b.perWeek - a.perWeek).map((option) => (
             <button key={option.perWeek} type="button" className="radio-card" aria-pressed={perWeek === option.perWeek} onClick={() => setPerWeek(option.perWeek)}>
@@ -267,8 +290,10 @@ function Rhythm() {
         </div>
       </section>
       <button type="button" className="btn btn-primary btn-lg btn-block" disabled={busy}
-        onClick={() => run((s) => api.intakeComplete(s, client.id, { checkInDays: days, communicationStyle: style }),
-          () => 'Mieliluotsi on käytössä. Agentit loivat tukisuunnitelman ja valitsivat päivän ensimmäisen askeleen.')}>
+        onClick={() => run((s) => api.intakeComplete(s, client.id, { checkInDays: days, communicationStyle: demo?.communicationStyle ?? 'brief',
+          contactChannel: channel, callTime: phone ? callTime : undefined }),
+        () => (phone ? 'Mieliluotsi on käytössä. Ensimmäinen vointipuhelu tulee pian – voit myös pyytää sitä heti.'
+          : 'Mieliluotsi on käytössä. Agentit loivat tukisuunnitelman ja valitsivat päivän ensimmäisen askeleen.'))}>
         Aloita Mieliluotsi <ArrowRightIcon size={18} />
       </button>
     </div>

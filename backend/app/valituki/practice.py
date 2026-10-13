@@ -125,7 +125,7 @@ def _aftercare(state: ValitukiState, client_id: str):
 def tool_allowed(state: ValitukiState, client: ClientProfile, tool: str, *, continuation: bool = False) -> tuple[bool, str]:
     """Whether the client may use a tool now – and in plain words why not. Review steps of agreed tasks may always finish."""
     if client.journeyState not in journey.ACTIVE_STATES:
-        return False, 'Harjoitukset ovat käytössä alkukeskustelun jälkeen.'
+        return False, 'Harjoitukset ovat käytössä, kun Mieliluotsi on otettu käyttöön.'
     if client.safetyLock and not client.safetyLock.dismissedAt:
         return False, 'Turvallisuusohjeet ovat näkyvissä – kuittaa ne ensin.'
     if tool == 'checkin':

@@ -2865,9 +2865,10 @@ body {
 .vt .wait-hero-value {
   color: #fff;
   font-family: var(--serif);
-  font-size: 50px;
+  font-size: 44px;
   font-weight: 700;
   line-height: 1.05;
+  white-space: nowrap;
   letter-spacing: -0.01em;
 }
 
@@ -7787,6 +7788,413 @@ body {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ---------- Vointipuhelu: Mieliluotsi calls (contactChannel 'phone') ---------- */
+
+/* The choice in the intake: an icon before each way of keeping in touch, the call time under them. */
+.vt .radio-card strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.vt .rhythm-call-time {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* On the home screen: when Mieliluotsi calls next, and a call now. */
+.vt .cx-call-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  border-radius: 20px;
+  background: var(--cx-surface);
+  box-shadow: var(--cx-shadow);
+}
+
+.vt .cx-call-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  background: #e3f4ea;
+  color: #1d7a4f;
+}
+
+.vt .cx-call-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.vt .cx-call-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* The call screen over the app, like a phone's own: dark, the caller in the middle, the round buttons at the bottom. */
+.vt .call {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 18px 14px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(159, 224, 208, 0.18), transparent 60%),
+    linear-gradient(180deg, #0f3c46, #0a2028);
+  color: #fff;
+  animation: vt-fade 0.2s ease-out;
+}
+
+.vt .call-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vt .call-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  padding: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.vt .call-avatar.is-speaking {
+  box-shadow: 0 0 0 0 rgba(159, 224, 208, 0.7);
+  animation: call-voice 1.2s ease-out infinite;
+}
+
+.vt .call-who {
+  flex: 1;
+  min-width: 0;
+}
+
+.vt .call-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.vt .call-status {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.vt .call-clock {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ringing: the caller big in the middle, pulsing rings. */
+.vt .call.call-ringing .call-avatar {
+  padding: 18px;
+  animation: call-ring 1.6s ease-out infinite;
+}
+
+.vt .call.call-ringing .call-head {
+  flex-direction: column;
+  margin-top: 48px;
+  text-align: center;
+}
+
+.vt .call.call-ringing .call-name {
+  margin-top: 14px;
+  font-size: 30px;
+}
+
+.vt .call-incoming {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: flex-end;
+  gap: 18px;
+  padding-bottom: 18px;
+}
+
+.vt .call-lead {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.vt .call-answer-row,
+.vt .call-answer-labels {
+  display: flex;
+  justify-content: space-around;
+}
+
+.vt .call-answer-labels span {
+  width: 72px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.vt .call-round {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+}
+
+.vt .call-accept {
+  background: #34c759;
+  animation: call-nudge 1.2s ease-in-out infinite;
+}
+
+.vt .call-decline {
+  background: #ff3b30;
+}
+
+.vt .call-decline .ico {
+  transform: rotate(135deg);
+}
+
+/* In the call: the words as a transcript, the answers under it, the controls at the bottom. */
+.vt .call-transcript {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  margin: 16px 0 10px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.vt .call-line {
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  animation: vt-fade 0.2s ease-out;
+}
+
+.vt .call-line.is-luotsi {
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.vt .call-line.is-me {
+  align-self: flex-end;
+  border-bottom-right-radius: 5px;
+  background: #e3f4ea;
+  color: #12402b;
+}
+
+.vt .call-line.is-interim {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.vt .call-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.vt .call-hint {
+  color: #ffd98a;
+  font-size: 12.5px;
+}
+
+.vt .call-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vt .call-chips button,
+.vt .call-scale button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.vt .call-chips button:hover,
+.vt .call-scale button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.vt .call-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.vt .call-scale.is-wide {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.vt .call-scale button {
+  padding: 0;
+  border-radius: 12px;
+}
+
+.vt .call-type {
+  display: flex;
+  gap: 6px;
+}
+
+.vt .call-type input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+}
+
+.vt .call-type input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.vt .call-type button {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--pro-deep, #0a2c34);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.vt .call-type button:disabled {
+  opacity: 0.5;
+}
+
+.vt .call-type .call-skip {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.vt .call-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 4px 0 6px;
+}
+
+.vt .call-ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 64px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.vt .call-ctrl .ico {
+  box-sizing: content-box;
+  padding: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.vt .call-ctrl.is-on .ico {
+  background: #fff;
+  color: #0a2c34;
+}
+
+.vt .call-ctrl:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.vt .call-end {
+  width: 58px;
+  height: 58px;
+}
+
+.vt .call-ended {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.vt .call-ended p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.vt .call-ended .cx-btn {
+  justify-content: center;
+  background: #fff;
+  color: #0a2c34;
+}
+
+.vt .call-fine {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  text-align: center;
+}
+
+@keyframes call-ring {
+  0% { box-shadow: 0 0 0 0 rgba(159, 224, 208, 0.55); }
+  100% { box-shadow: 0 0 0 28px rgba(159, 224, 208, 0); }
+}
+
+@keyframes call-voice {
+  0% { box-shadow: 0 0 0 0 rgba(159, 224, 208, 0.7); }
+  100% { box-shadow: 0 0 0 12px rgba(159, 224, 208, 0); }
+}
+
+@keyframes call-nudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt .call-avatar,
+  .vt .call-accept {
+    animation: none !important;
+  }
 }
 
 .vt .cx-page {

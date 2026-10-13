@@ -391,7 +391,8 @@ class DemoAIProvider(AIProvider):
         if ctx.get('activityTitle'):
             parts.append(f'Tämän päivän askel on {ctx["activityTitle"].lower()} – voit myös ohittaa sen.')
         if ctx.get('nextCheckIn'):
-            parts.append(f'Seuraava check-in: {ctx["nextCheckIn"].rstrip(".")}.')
+            what = 'vointipuhelu' if ctx.get('nextBy') == 'puhelu' else 'check-in'
+            parts.append(f'Seuraava {what}: {ctx["nextCheckIn"].rstrip(".")}.')
         return AIText(' '.join(p for p in parts if p).strip(), 'demo')
 
     def generate_observation_explanation(self, facts):

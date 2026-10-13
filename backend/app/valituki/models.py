@@ -118,6 +118,10 @@ class ClientProfile(Provenance):
     nextCheckInDate: Optional[str] = None
     nextCheckInKind: Literal['routine', 'extra'] = 'routine'
     communicationStyle: Literal['brief', 'warm'] = 'brief'
+    # How Mieliluotsi keeps in touch: in the app (written) or by phone – it calls on the check-in days at callTime, asks
+    # how the client is and does a short thought exercise by speech.
+    contactChannel: Literal['app', 'phone'] = 'app'
+    callTime: Optional[str] = None  # 'HH:MM' when contactChannel is 'phone'
     mode: Mode = 'waiting_support'
     automationPaused: bool = False
     matchingNotificationsPaused: bool = False

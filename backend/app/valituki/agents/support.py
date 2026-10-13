@@ -56,6 +56,7 @@ def on_checkin_completed(state: ValitukiState, event: AgentEvent, provider) -> N
         'trendText': trend.client_text if trend.direction != 'insufficient' else '',
         'activityTitle': activity.title if activity else None,
         'nextCheckIn': relative_label(client.nextCheckInDate, state.currentDate) if client.nextCheckInDate else None,
+        'nextBy': 'puhelu' if client.contactChannel == 'phone' else 'sovellus',
     })
     records.notify(state, audience='client', client_id=client.id, kind='checkin', event=event, agent=AGENT, action_view='today',
                    title='Kiitos check-inistä', body=summary.text)

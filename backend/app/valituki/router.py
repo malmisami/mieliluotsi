@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, ValidationError
 
-from app.valituki import ai, client_actions, intake, professional, scenes, simulation, store, therapy, view
+from app.valituki import ai, client_actions, content, intake, professional, scenes, simulation, store, therapy, view
 from app.valituki.client_actions import ClientActionError
 from app.valituki.handover import HandoverError
 from app.valituki.insights import InsightError
@@ -72,6 +72,8 @@ class ProposalBody(BaseModel):
 class CompleteIntakeBody(BaseModel):
     checkInDays: list[int]
     communicationStyle: Literal['brief', 'warm'] = 'brief'
+    contactChannel: Literal['app', 'phone'] = 'app'
+    callTime: Optional[str] = None
     mood: Optional[int] = Field(default=None, ge=1, le=5)  # or later from the home screen (/baseline)
     anxiety: Optional[int] = Field(default=None, ge=1, le=5)
 
@@ -264,11 +266,23 @@ def _client(state: ValitukiState, client_id: str):
     return get_client(state, client_id)
 
 
+class StartIntakeBody(ConsentBody):
+    # The client app's start: the profile from the records (the referral and the assessment visit), no intake conversation.
+    fromRecords: bool = False
+
+
 @router.post('/clients/{client_id}/intake/start')
-def post_intake_start(client_id: str, body: ConsentBody, therapist_id: Optional[str] = TherapistQ):
-    consent = {k: v for k, v in body.model_dump().items() if v is not None}
-    return _run(lambda s: intake.start(s, _client(s, client_id), consent, client_actions.actor(_client(s, client_id))).id,
-                client_id, therapist_id)
+def post_intake_start(client_id: str, body: StartIntakeBody, therapist_id: Optional[str] = TherapistQ):
+    consent = {k: v for k, v in body.model_dump(exclude={'fromRecords'}).items() if v is not None}
+
+    def begin(s):
+        client = _client(s, client_id)
+        if body.fromRecords:
+            known = (content.client_spec(client.id).get('intake') or {}).get('answers') or {}
+            return intake.start_from_records(s, client, consent, known, client_actions.actor(client)).id
+        return intake.start(s, client, consent, client_actions.actor(client)).id
+
+    return _run(begin, client_id, therapist_id)
 
 
 @router.post('/clients/{client_id}/intake/answer')
@@ -301,7 +315,8 @@ def post_intake_confirm(client_id: str, therapist_id: Optional[str] = TherapistQ
 
 @router.post('/clients/{client_id}/intake/complete')
 def post_intake_complete(client_id: str, body: CompleteIntakeBody, therapist_id: Optional[str] = TherapistQ):
-    rhythm = {'checkInDays': body.checkInDays, 'communicationStyle': body.communicationStyle}
+    rhythm = {'checkInDays': body.checkInDays, 'communicationStyle': body.communicationStyle,
+              'contactChannel': body.contactChannel, 'callTime': body.callTime}
     return _run(lambda s: intake.complete(s, _client(s, client_id), rhythm, body.mood, client_actions.actor(_client(s, client_id)),
                                           ai.get_provider(), anxiety=body.anxiety), client_id, therapist_id)
 

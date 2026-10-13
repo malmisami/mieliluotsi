@@ -29,6 +29,15 @@ class HandoverError(ValueError):
     """The handover action is not possible (HTTP 409)."""
 
 
+
+def _from_records(item) -> bool:
+    """The starting profile came from the records (the referral and the assessment visit), not an intake conversation."""
+    return bool(item and (item.sourceLabel or '').startswith('Esitiedot'))
+
+
+def _start_label(item) -> str:
+    return 'Esitiedot (lähete ja arviointikäynti)' if _from_records(item) else 'Alkukeskustelu'
+
 def find(state: ValitukiState, client_id: str) -> Optional[HandoverSummary]:
     return next((h for h in state.handovers if h.clientId == client_id), None)
 
@@ -88,9 +97,11 @@ def build_sections(state: ValitukiState, client: ClientProfile, record: Handover
     goal_insights = [i for i in shared if i.kind in ('primary_goal', 'secondary_goal')]
     primary = next((i for i in goal_insights if i.kind == 'primary_goal'), None)
     hope = edits.sectionTexts.get('hopes') or (primary.structured.get('hope') if primary else '') or ''
+    hope_source = _source('intake', f'{_start_label(primary)} – omin sanoin', primary.createdAt if primary else None)
     add('hopes', 'Mitä toivon terapialta', 'user_said', text=hope, available=bool(hope), editable=True,
-        unavailable='Ei kirjattu.', sources=[_source('intake', 'Alkukeskustelu – omin sanoin', primary.createdAt if primary else None)],
-        note='Asiakkaan omat sanat alkukeskustelusta. Asiakas voi muokata tekstiä.')
+        unavailable='Ei kirjattu.', sources=[hope_source],
+        note='Asiakkaan omat sanat esitiedoista (lähete ja arviointikäynti). Asiakas voi muokata tekstiä.' if _from_records(primary)
+        else 'Asiakkaan omat sanat alkukeskustelusta. Asiakas voi muokata tekstiä.')
     add('goals', 'Tavoitteeni', 'user_said',
         content=[{'id': i.id, 'text': i.text, 'priority': 'primary' if i.kind == 'primary_goal' else 'secondary',
                   'edited': i.editedByClient, 'approvedAt': i.approvedAt} for i in goal_insights],
@@ -132,7 +143,7 @@ def build_sections(state: ValitukiState, client: ClientProfile, record: Handover
         content={'activities': [{'title': r['title'], 'rating': r['latestRating']} for r in helpful],
                  'ownWords': helped_before.text if helped_before else None},
         sources=[_source('activity', 'Oma arvio harjoituksesta')]
-        + ([_source('insight', 'Alkukeskustelu', helped_before.approvedAt, helped_before.id)] if helped_before else []))
+        + ([_source('insight', _start_label(helped_before), helped_before.approvedAt, helped_before.id)] if helped_before else []))
     not_helpful = [r for r in responses if (r['latestRating'] or 5) <= 2 or r['skipped'] >= 2]
     add('not_helped', 'Mikä ei ole auttanut', 'measured', available=bool(not_helpful),
         unavailable='Ei harjoituksia, jotka olisi arvioitu hyödyttömiksi.',
@@ -149,7 +160,7 @@ def build_sections(state: ValitukiState, client: ClientProfile, record: Handover
     add('observations', 'Hyväksymäni havainnot odotusajalta', 'user_said', available=bool(observed), unavailable='Ei jaettuja havaintoja.',
         content=[{'id': i.id, 'text': i.text, 'kind': i.kind, 'basis': i.evidence.get('basis') if i.kind == 'pattern' else None,
                   'approvedAt': i.approvedAt} for i in observed],
-        sources=[_source('insight', 'Mieliluotsin havainto, jonka asiakas hyväksyi' if i.kind == 'pattern' else 'Alkukeskustelu',
+        sources=[_source('insight', 'Mieliluotsin havainto, jonka asiakas hyväksyi' if i.kind == 'pattern' else _start_label(i),
                          i.approvedAt, i.id) for i in observed],
         note='Havainnot perustuvat asiakkaan omiin vastauksiin – eivät ole diagnooseja.')
     questions = edits.questions if edits.questionsEdited else record.suggestedQuestions

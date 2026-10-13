@@ -277,7 +277,7 @@ export interface ClientView {
   intake: IntakeView;
   checkIn: { due: { id: string; kind: string; dueDate: string; trackLabel: string | null } | null; nextDate: string | null;
     nextLabel: string | null; days: number[]; frequencyText: string; trackLabel: string | null; proactive: boolean;
-    needsBaseline: boolean };
+    needsBaseline: boolean; channel: 'app' | 'phone'; callTime: string | null };
   trend: { direction: string; label: string; text: string; arrow: string; baseline: number | null; series: SeriesPoint[]; historyStored: boolean };
   today: TodayActivity | null;
   mode: ModeSummary;

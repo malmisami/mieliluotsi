@@ -79,6 +79,45 @@ def test_intake_completion_starts_support_immediately(state):
     assert client.todayActivity is not None
 
 
+def test_the_client_can_choose_calls_instead_of_writing(state):
+    """Vointipuhelu: the check-in days stay, Mieliluotsi calls at the chosen time; the choice is in the profile."""
+    from app.valituki.view import client_view
+
+    client = client_of(state)
+    _converse(state, client)
+    intake.confirm(state, client, 'client:cl-aino')
+    intake.complete(state, client, {'checkInDays': [0, 2, 5], 'contactChannel': 'phone', 'callTime': '09:00'}, None, 'client:cl-aino')
+    assert client.contactChannel == 'phone' and client.callTime == '09:00'
+    check = client_view(state, client)['checkIn']
+    assert check['channel'] == 'phone' and check['callTime'] == '09:00' and check['needsBaseline']
+    rhythm = next(i for i in state.insights if i.clientId == client.id and i.kind == 'engagement')
+    assert rhythm.text.startswith('Vointipuhelu 3× viikossa klo 09.00') and rhythm.structured['contactChannel'] == 'phone'
+    # An unknown time falls back to the evening; the app channel needs no time.
+    other = client_of(state, 'cl-mikko')
+    assert other.contactChannel == 'app' and other.callTime is None
+
+
+def test_the_client_can_start_from_the_records_without_an_intake_conversation(state):
+    """No separate intake conversation: with consent the referral and the assessment visit become the starting profile,
+    labelled as such, and the next screen is the rhythm."""
+    client = client_of(state)
+    known = content.client_spec(client.id)['intake']['answers']
+    session = intake.start_from_records(state, client, CONSENT, known, 'client:cl-aino')
+    assert session.status == 'rhythm'
+    assert session.messages == [] and session.pendingQuestionKey is None
+    approved = insights.for_client(state, client.id)
+    assert {i.kind for i in approved} >= {'primary_goal', 'working_style', 'practical'}
+    assert all(i.sourceLabel.startswith('Esitiedot') for i in approved)
+    assert fit_profile.get(state, client.id) is not None
+    assert any(a.action == 'intake_from_records' for a in state.audit)
+    intake.complete(state, client, {'checkInDays': [0, 4], 'communicationStyle': 'brief'}, None, 'client:cl-aino')
+    assert client.journeyState == 'WAITING_ACTIVE'
+    # Without anything to build on the client goes straight to the rhythm; the profile grows from the conversations.
+    other = client_of(state, 'cl-noora')
+    assert intake.start_from_records(state, other, CONSENT, {}, 'client:cl-noora').status == 'rhythm'
+    assert insights.for_client(state, other.id) == []
+
+
 def test_todays_wellbeing_can_be_answered_on_the_home_screen_after_the_intake(state):
     client = client_of(state)
     _converse(state, client)
