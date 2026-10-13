@@ -62,6 +62,21 @@ interface Recognition {
   onresult: ((event: RecognitionEvent) => void) | null; onend: (() => void) | null; onerror: (() => void) | null;
 }
 type RecognitionCtor = new () => Recognition;
+const isNatural = (v: SpeechSynthesisVoice | null) => Boolean(v && /natural|neural|online|premium|enhanced|siri/i.test(v.name));
+
+/** The most natural-sounding Finnish voice the browser has: a neural one (Edge: Microsoft Noora/Harri/Selma Online
+    (Natural)), then a downloaded premium or enhanced voice (macOS: Satu), then Google's, then Satu/Onni, then any Finnish
+    voice – the macOS Eloquence voices last. */
+function bestFinnishVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  const finnish = voices.filter((v) => v.lang.toLowerCase().replace('_', '-').startsWith('fi'));
+  const score = (v: SpeechSynthesisVoice) => (/natural|neural/i.test(v.name) ? 40 : 0) + (/online/i.test(v.name) ? 10 : 0)
+    + (/premium/i.test(v.name) ? 30 : 0) + (/enhanced|siri/i.test(v.name) ? 20 : 0) + (/google/i.test(v.name) ? 15 : 0)
+    + (/satu|onni|noora|harri|selma/i.test(v.name) ? 5 : 0) + (v.lang === 'fi-FI' ? 1 : 0)
+    // macOS's Eloquence voices (Eddy, Flo, Grandma…) come first in the list but sound the most synthetic.
+    - (/eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley/i.test(v.name) ? 20 : 0);
+  return [...finnish].sort((a, b) => score(b) - score(a))[0] ?? null;
+}
+
 const speechWindow = window as unknown as { SpeechRecognition?: RecognitionCtor; webkitSpeechRecognition?: RecognitionCtor };
 const RecognitionImpl: RecognitionCtor | undefined = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
 
@@ -105,7 +120,7 @@ export default function PhoneCall({ onClose }: { onClose: () => void }) {
     if (!('speechSynthesis' in window)) return undefined;
     const pick = () => {
       const voices = window.speechSynthesis.getVoices();
-      voice.current = voices.find((v) => v.lang === 'fi-FI') ?? voices.find((v) => v.lang.toLowerCase().startsWith('fi')) ?? null;
+      voice.current = bestFinnishVoice(voices);
       setHasVoice(Boolean(voice.current));
     };
     pick();
@@ -139,14 +154,23 @@ export default function PhoneCall({ onClose }: { onClose: () => void }) {
   function speak(text: string): Promise<void> {
     if (!speakerRef.current || !voice.current || !('speechSynthesis' in window)) return pause(Math.min(1400, 300 + text.length * 12));
     return new Promise((resolve) => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = voice.current;
-      utterance.lang = voice.current?.lang ?? 'fi-FI';
-      utterance.rate = 1.02;
+      // Sentence by sentence: a basic voice reads a long line in one breath, a short breath between sentences sounds
+      // more like talking.
+      const sentences = text.match(/[^.!?…]+[.!?…]*["”]?\s*/g)?.map((t) => t.trim()).filter(Boolean) ?? [text];
+      let left = sentences.length;
       const done = () => resolve();
-      utterance.onend = done;
-      utterance.onerror = done;
-      window.speechSynthesis.speak(utterance);
+      sentences.forEach((sentence) => {
+        const utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.voice = voice.current;
+        utterance.lang = voice.current?.lang ?? 'fi-FI';
+        // Natural (neural) voices sound best at their own pace; a basic voice is calmer a little slower.
+        utterance.rate = isNatural(voice.current) ? 1 : 0.94;
+        utterance.pitch = 1;
+        const next = () => { left -= 1; if (left <= 0) done(); };
+        utterance.onend = next;
+        utterance.onerror = done;
+        window.speechSynthesis.speak(utterance);
+      });
       window.setTimeout(done, 25000);
     });
   }
