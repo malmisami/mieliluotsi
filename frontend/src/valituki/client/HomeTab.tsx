@@ -45,17 +45,11 @@ function BaselineCard() {
   const { client } = useClientUI();
   const [mood, setMood] = useState<number | null>(null);
   const [anxiety, setAnxiety] = useState<number | null>(null);
-  const demoMood = client.intake.demoMood;
   return (
     <section className="cx-baseline">
       <Scale5 name="Miten voit tänään?" value={mood} onChange={setMood} labels={view.meta.labels.moodScale} />
       <p className="cx-baseline-q">Kuinka paljon ahdistusta tai jännitystä olet tuntenut tänään?</p>
       <Scale5 name="Kuinka paljon ahdistusta tai jännitystä?" value={anxiety} onChange={setAnxiety} labels={view.meta.labels.anxietyScale} />
-      {demoMood && mood === null && (
-        <button type="button" className="link-btn" onClick={() => { setMood(demoMood); setAnxiety(3); }}>
-          Käytä demovastausta (mieliala {demoMood}, ahdistus 3)
-        </button>
-      )}
       <button type="button" className="cx-btn cx-btn-dark cx-btn-block" disabled={busy || mood === null}
         onClick={() => mood !== null && run((s) => api.recordBaseline(s, client.id, { mood, anxiety }),
           () => 'Kiitos! Tästä tulee oma lähtötasosi – vointiasi verrataan siihen, ei muihin.')}>

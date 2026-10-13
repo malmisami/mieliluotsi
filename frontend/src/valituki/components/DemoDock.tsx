@@ -50,6 +50,19 @@ export function AISwitch() {
     void run((s) => api.aiMode(s, mode), describeAI);
   }
 
+  // A note under the switch while Claude is on: the replies are real and take a moment – Demo is the quick way through the
+  // interface. It comes up when the demo reaches stage 2 (the rhythm screen) and again on "Aloita Mieliluotsi", where the
+  // AI starts to answer – and whenever Claude is switched on.
+  const intakeStatus = view.client?.intake.status ?? null;
+  const [noteFor, setNoteFor] = useState(intakeStatus);
+  const [noteClosed, setNoteClosed] = useState(intakeStatus !== 'rhythm');
+  if (noteFor !== intakeStatus) {
+    setNoteFor(intakeStatus);
+    if (intakeStatus === 'rhythm' || (intakeStatus === 'completed' && noteFor === 'rhythm')) setNoteClosed(false);
+  }
+  const closeNote = () => setNoteClosed(true);
+  const showNote = wantsLive && !noteClosed;
+
   return (
     <div className={`dock-ai ${tone}`} role="group" aria-label={legend}>
       {/* The state in one sentence first, then the switch. */}
@@ -59,8 +72,20 @@ export function AISwitch() {
       </span>
       <span className="dock-seg">
         <button type="button" aria-pressed={!wantsLive} disabled={busy} onClick={() => setMode('DEMO_AI_MODE')}>Demo</button>
-        <button type="button" aria-pressed={wantsLive} disabled={busy} onClick={() => setMode('LIVE_AI_MODE')}>Claude</button>
+        <button type="button" aria-pressed={wantsLive} disabled={busy}
+          onClick={() => { setNoteClosed(false); setMode('LIVE_AI_MODE'); }}>Claude</button>
       </span>
+      {showNote && (
+        <div className="dock-ai-note" role="note">
+          <p><strong>Claude API on päällä.</strong> Vastaukset tulevat oikealta tekoälyltä ja voivat viedä muutaman sekunnin.
+            Jos haluat demota käyttöliittymää nopeasti, vaihda Demoon.</p>
+          <div className="dock-ai-note-actions">
+            <button type="button" className="dock-ai-note-demo" disabled={busy}
+              onClick={() => { closeNote(); setMode('DEMO_AI_MODE'); }}>Vaihda Demoon</button>
+            <button type="button" className="dock-ai-note-close" onClick={closeNote}>Selvä</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
