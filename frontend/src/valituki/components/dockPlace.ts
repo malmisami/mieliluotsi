@@ -12,12 +12,12 @@ let side = readSide();
 let slot: HTMLElement | null = null;
 const listeners = new Set<() => void>();
 
+// The control is always in the top bar now: an older choice of the column, still remembered in a browser, is dropped.
 function readSide(): boolean {
   try {
-    return window.localStorage.getItem(KEY) === '1';
-  } catch {
-    return false;
-  }
+    window.localStorage.removeItem(KEY);
+  } catch { /* nothing remembered */ }
+  return false;
 }
 
 function subscribe(listener: () => void) {
